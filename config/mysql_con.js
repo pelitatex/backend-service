@@ -8,8 +8,8 @@ function createPoolForTenant(tenant) {
 
     const pool = createPool({
         host: process.env.DB_HOST || 'localhost',
-        user: 'root',
-        password: '',
+        user: 'testhendry',
+        password: 'Test!@#456&*(',
         database: tenant+'_database',
         waitForConnections: true,
         connectionLimit: 10,
