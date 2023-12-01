@@ -1,5 +1,4 @@
-import dotenv from "dotenv";
-dotenv.config();
+import "./config/loadEnv.js";
 
 //==================imports=========================
 import { createServer } from 'http';
