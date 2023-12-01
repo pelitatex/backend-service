@@ -1,58 +1,70 @@
-import db from "../../config/db.js";
 import md5 from "../../helpers/md5.js";
 import jwt from "../../helpers/jwt.js";
-import db_con from "../../helpers/db_middleware.js";
+import getPoolForRequest from "../../config/mysql_con.js";
 
 const getUser = {
     user: async(args, req)=>{
+      const pool = getPoolForRequest(req);
+      if (!pool) {
+        console.error('Invalid or missing tenant information.');
+        throw new Error("yayaya");
+      }
         try {
             const query = `SELECT * FROM nd_user WHERE id = ?`;
-            const values = [args.id];
-            return new Promise((resolve, reject) => {
-                db.query(query, values, (err, results) => {
-                  if (err) {
-                    console.error('Error executing MySQL query: ' + err);
-                    reject('Error fetching user data');
-                  } else {
-                    resolve(results[0]);
-                  }
-                });
-            });
+            const [rows] = await pool.query(query, [args.id]);
+            return rows[0];
         } catch (error) {
-            
+          console.error(error);
+          throw new Error("Internal Server Error");
         }
     },
-    users: async()=>{
-        try {
-            const query = 'SELECT * FROM nd_user';
-            return new Promise((resolve, reject) => {
-                db.query(query, (err, results) => {
-                  if (err) {
-                    console.error('Error executing MySQL query: ' + err);
-                    reject('Error fetching user data');
-                  } else {
-                    resolve(results);
-                  }
-                });
-            });
-        } catch (error) {
-            
-        }
+    users: async(args, req)=>{
+      const pool = getPoolForRequest(req);
+      if (!pool) {
+        console.error('Invalid or missing tenant information.');
+        throw new Error("yayaya");
+      }
+      try {
+        const query = 'SELECT * FROM nd_user';
+        const [rows] = await pool.query(query);
+        return rows;
+      } catch (error) {
+        console.error(error);
+        throw new Error("Internal Server Error");
+      }
     },
     login: async({username,password}, req)=>{
+      const pool = getPoolForRequest(req);
+      if (!pool) {
+        console.error('Invalid or missing tenant information.');
+        throw new Error("yayaya");
+      }
       try {
         const query = `SELECT id, username, password, posisi_id, time_start, time_end FROM nd_user WHERE username = ?`;
-        const [rows] = await db_con.execute(query, [username]);
-        const isPasswordValid = (md5.generateMD5(password) === rows.password ? true : false);
-        if (isPasswordValid) {
-          return rows;
+        const [rows] = await pool.query(query, [username]);
+        if (typeof rows[0] !== 'undefined') {
+          const isPasswordValid = md5.generateMD5(password) === rows[0].password;
+          if (isPasswordValid) {
+            const user = rows[0];
+            const payload = {
+              id:user.id,
+              username: user.username,
+              posisi_id: user.posisi_id,
+              time_start: user.time_start,
+              time_end: user.time_end
+            }
+            const token = jwt.generateToken(payload);
+            return {token: token};
+          } else {
+            throw new Error("User and password not match'");;
+          }
         }else{
-          reject(new Error('User and password not match'));
+          throw new Error("User and password not match'");;
         }
 
       } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        throw new Error("Internal Server Error Login Process");
       }
   },
 }
