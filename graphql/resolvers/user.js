@@ -1,6 +1,6 @@
 import md5 from "../../helpers/md5.js";
 import jwt from "../../helpers/jwt.js";
-import getPoolForRequest from "../../config/mysql_con.js";
+import getPoolForRequest from "../../config/mysqlCon.js";
 
 const getUser = {
     user: async(args, req)=>{
