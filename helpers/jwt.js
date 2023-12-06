@@ -5,7 +5,7 @@ const env = process.env.NODE_ENV || 'TEST';
 
 import jwt from 'jsonwebtoken';
 
-const LIFETIME = proccess.env[`TOKEN_LIFETIME_${env}`];
+const LIFETIME = process.env[`TOKEN_LIFETIME_${env}`];
 const TOKENSECRET = process.env[`TOKEN_SECRET_${env}`]
 
 const generateToken = (payload) => {
