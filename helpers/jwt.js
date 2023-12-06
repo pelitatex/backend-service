@@ -1,12 +1,15 @@
-const env = process.env.NODE_ENV || 'test';
+import dotenv from "dotenv";
+dotenv.config();
+
+const env = process.env.NODE_ENV || 'TEST';
 
 import jwt from 'jsonwebtoken';
-// import jwtEnv from `@config/jwtEnv`[env];
-import jwtEnv from '../config/jwtEnv.js';
-const envir = jwtEnv[env];
+
+const LIFETIME = proccess.env[`TOKEN_LIFETIME_${env}`];
+const TOKENSECRET = process.env[`TOKEN_SECRET_${env}`]
 
 const generateToken = (payload) => {
-    return jwt.sign(payload, envir.tokenSecret, {expiresIn: '1h'});
+    return jwt.sign(payload, envir.tokenSecret, {expiresIn: LIFETIME});
 }
 
 const verifyToken = (req, res, next) => {
@@ -16,7 +19,7 @@ const verifyToken = (req, res, next) => {
     if(!token.includes(`Bearer `)) return res.status(403).send({success: false, message:"Token is not valid"})
     
     token = token.replace(`Bearer `, ``)
-    jwt.verify(token, envir.tokenSecret, function(err, decoded) {
+    jwt.verify(token, TOKENSECRET, function(err, decoded) {
         if(err){
             return res.status(401).send({success: false, message:"Token has expired"})
         }else {

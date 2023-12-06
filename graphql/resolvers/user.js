@@ -1,6 +1,11 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import md5 from "../../helpers/md5.js";
 import jwt from "../../helpers/jwt.js";
 import getPoolForRequest from "../../config/mysqlCon.js";
+
+const LIFETIME = proccess.env[`TOKEN_LIFETIME_${env}`];
 
 const getUser = {
     user: async(args, req)=>{
@@ -54,7 +59,7 @@ const getUser = {
               time_end: user.time_end
             }
             const token = jwt.generateToken(payload);
-            return {token: token};
+            return {token: token, timeout: LIFETIME};
           } else {
             throw new Error("User and password not match'");;
           }
