@@ -46,7 +46,8 @@ const schema = buildSchema(`#graphql
         pembelian(id: ID!): Pembelian
     }
     type AuthPayload {
-        token: String
+        token: String,
+        timeout: String
     }
     type Mutation {
         login(username: String!, password: String!): AuthPayload
