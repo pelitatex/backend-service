@@ -9,7 +9,7 @@ const LIFETIME = process.env[`TOKEN_LIFETIME_${env}`];
 const TOKENSECRET = process.env[`TOKEN_SECRET_${env}`]
 
 const generateToken = (payload) => {
-    return jwt.sign(payload, envir.tokenSecret, {expiresIn: LIFETIME});
+    return jwt.sign(payload, TOKENSECRET, {expiresIn: LIFETIME});
 }
 
 const verifyToken = (req, res, next) => {
