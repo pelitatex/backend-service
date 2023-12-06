@@ -5,6 +5,7 @@ import md5 from "../../helpers/md5.js";
 import jwt from "../../helpers/jwt.js";
 import getPoolForRequest from "../../config/mysqlCon.js";
 
+const env = process.env.NODE_ENV || 'TEST';
 const LIFETIME = process.env[`TOKEN_LIFETIME_${env}`];
 
 const getUser = {
