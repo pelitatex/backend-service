@@ -66,7 +66,7 @@ wss.on('connection', function connection(ws, req) {
     
     if (path === '/chat') {
         // Handle messages from clients
-        clientData = clientId.split("-");
+        const clientData = clientId.split("-");
         ws.on('message', (message) => {
           console.log(`Received: ${message}`);
     
