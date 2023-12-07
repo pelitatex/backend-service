@@ -16,8 +16,8 @@ const apiGateway = express();
 var server = createServer(apiGateway);
 //==================jwt=========================
 const env = process.env.NODE_ENV || 'TEST';
-const envir = jwtEnv[env];
 
+const TOKENSECRET = process.env[`TOKEN_SECRET_${env}`]
 const PORT_USER = process.env[`PORT_${env}_USER`];
 const PORT_GW = process.env[`PORT_${env}_GATEWAY`];
 const PORT_MESSAGE = process.env[`PORT_${env}_MESSAGE`];
@@ -37,7 +37,7 @@ apiGateway.use(cors({
 apiGateway.use(morgan('dev'));
 
 apiGateway.use(expressjwt({
-    secret:envir.tokenSecret,
+    secret:TOKENSECRET,
     algorithms: ['HS256']
     })
     .unless({
@@ -57,7 +57,6 @@ apiGateway.use('/graphql', (req, res, next) => {
     if (!tenant || !targetMicroservice) {
         return res.status(400).json({ error: 'Missing tenant or Microservice in headers' });
     }
-    
 
     createProxyMiddleware({
         target: forwardToMicroservice[targetMicroservice],

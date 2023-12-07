@@ -29,8 +29,14 @@ wss.on('connection', function connection(ws, req) {
 
     const originWithPath = req.headers['sec-websocket-protocol'];
     const origin = req.headers.origin;
+    
 
     if (!allowedOrigins.includes(origin)) {
+        const url = new URL(request.url, 'http://localhost');
+        const user = url.searchParams.get('user');
+        console.log(`Connection incoming from ${user}.`);
+
+
         if(req.headers.origin !== 'http://localhost'){
             ws.close();
             console.log(`Connection from ${req.headers.origin} rejected.`);
