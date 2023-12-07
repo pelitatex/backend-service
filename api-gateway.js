@@ -67,7 +67,6 @@ apiGateway.use('/graphql', (req, res, next) => {
 
 wss.on('connection', (ws, req) => {
 
-    console.log('re',req);
     // Handle WebSocket connections
     console.log('WebSocket connection established');
   

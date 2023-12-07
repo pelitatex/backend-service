@@ -32,9 +32,7 @@ wss.on('connection', function connection(ws, req) {
     
 
     if (!allowedOrigins.includes(origin)) {
-        const url = new URL(request.url, 'http://localhost');
-        const user = url.searchParams.get('user');
-        console.log(`Connection incoming from ${user}.`);
+        // console.log(`Connection incoming from ${user}.`);
 
 
         if(req.headers.origin !== 'http://localhost'){
@@ -51,6 +49,9 @@ wss.on('connection', function connection(ws, req) {
 
         }
     }
+
+    const url = new URL(request.url, 'http://localhost');
+    const user = url.searchParams.get('user');
 
 
     // console.log('A client connected');
@@ -72,7 +73,7 @@ wss.on('connection', function connection(ws, req) {
           wss.clients.forEach((client) => {
             console.log(client.readyState, WebSocket.OPEN);
             if (client !== ws && client.readyState === WebSocket.OPEN) {
-              client.send(JSON.stringify({sender:'server', contentType: 'message', content: `message from ${clientId} : ${message}`}));
+              client.send(JSON.stringify({sender:'server', contentType: 'message', content: `message from ${clientId} : ${message}`,user:user}));
             }
           });
         });
