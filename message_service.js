@@ -50,7 +50,7 @@ wss.on('connection', function connection(ws, req) {
         }
     }
 
-    const url = new URL(request.url, 'http://localhost');
+    const url = new URL(req.url, 'http://localhost');
     const user = url.searchParams.get('user');
 
 
