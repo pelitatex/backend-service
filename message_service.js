@@ -58,7 +58,7 @@ wss.on('connection', function connection(ws, req) {
     const clientId=generateUniqueId();
     // console.log(`Client ID: ${clientId}`);
     clients.set(clientId, ws);
-    ws.send(JSON.stringify({sender:'server', contentType: 'userID', content:clientId}));
+    ws.send(JSON.stringify({sender:'server', contentType: 'userID', content:clientId, path:path, user:user}));
     
     // You can access the URL path using req.url
     const path = req.url;
