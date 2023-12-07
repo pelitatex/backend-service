@@ -55,7 +55,7 @@ wss.on('connection', function connection(ws, req) {
 
 
     // console.log('A client connected');
-    const clientId=generateUniqueId();
+    const clientId=generateUniqueId(user);
 
     
     // You can access the URL path using req.url
@@ -66,13 +66,13 @@ wss.on('connection', function connection(ws, req) {
     
     if (path === '/chat') {
         // Handle messages from clients
+        clientData = clientId.split("-");
         ws.on('message', (message) => {
           console.log(`Received: ${message}`);
     
           // Broadcast the message to all clients
           wss.clients.forEach((client) => {
-            console.log(client.readyState, WebSocket.OPEN);
-            if (client !== ws && client.readyState === WebSocket.OPEN) {
+            if (client !== ws && clientData[0] !== user && client.readyState === WebSocket.OPEN) {
               client.send(JSON.stringify({sender:'server', contentType: 'message', content: `message from ${clientId} : ${message}`,user:user}));
             }
           });
@@ -87,14 +87,14 @@ wss.on('connection', function connection(ws, req) {
     }
 });
 
-function generateUniqueId(){
+function generateUniqueId(user){
     const d = new Date();
     let h = (d.getHours());
     let m = (d.getMinutes());
     let s = (d.getSeconds());
     let ms = (d.getMilliseconds());
     const rand = (Math.random(0,10)*100).toFixed(0);
-    let time = 'user' + h + m + s + ms + rand;
+    let time = user+'-' + h + m + s + ms + rand;
     return time;
     
 }
