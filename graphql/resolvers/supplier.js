@@ -20,7 +20,7 @@ const getSupplier = {
           throw new Error("Internal Server Error Supplier Single");
         }
     },
-    suppliers: async()=>{
+    suppliers: async(args, req)=>{
       const pool = checkPool(req);
 
         try {

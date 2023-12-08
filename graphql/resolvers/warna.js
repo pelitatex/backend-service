@@ -20,7 +20,7 @@ const getWarna = {
           throw new Error("Internal Server Error Warna Single");
         }
     },
-    warnas: async()=>{
+    warnas: async(args, req)=>{
       const pool = checkPool(req);
 
         try {

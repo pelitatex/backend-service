@@ -21,7 +21,7 @@ const getBarang = {
           throw new Error("Internal Server Error Barang Single");
         }
     },
-    barangs: async()=>{
+    barangs: async(args, req)=>{
       const pool = checkPool(req);
         try {
           const query = 'SELECT * FROM nd_barang';
