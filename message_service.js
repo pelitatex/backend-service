@@ -66,10 +66,7 @@ wss.on('connection', function connection(ws, req) {
     
     if (path === '/chat') {
         // Handle messages from clients
-        const clientData = clientId.split("-");
         ws.on('message', (message) => {
-          console.log(`Received: ${message}`);
-    
           // Broadcast the message to all clients
           wss.clients.forEach((client) => {
             if (client !== ws && client.readyState === WebSocket.OPEN) {

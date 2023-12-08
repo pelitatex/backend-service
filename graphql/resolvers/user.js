@@ -8,43 +8,41 @@ import getPoolForRequest from "../../config/mysqlCon.js";
 const env = process.env.NODE_ENV || 'TEST';
 const LIFETIME = process.env[`TOKEN_LIFETIME_${env}`];
 
+const checkPool = (req) => {
+  const pool = getPoolForRequest(req);
+  if (!pool) {
+    console.error('Invalid or missing tenant information.');
+    throw new Error("No connection to database");
+  }
+  return pool;
+}
+
 const getUser = {
     user: async(args, req)=>{
-      const pool = getPoolForRequest(req);
-      if (!pool) {
-        console.error('Invalid or missing tenant information.');
-        throw new Error("yayaya");
-      }
+      const pool = checkPool(req);
         try {
             const query = `SELECT * FROM nd_user WHERE id = ?`;
             const [rows] = await pool.query(query, [args.id]);
             return rows[0];
         } catch (error) {
           console.error(error);
-          throw new Error("Internal Server Error");
+          throw new Error("Internal Server Error User Single");
         }
     },
     users: async(args, req)=>{
-      const pool = getPoolForRequest(req);
-      if (!pool) {
-        console.error('Invalid or missing tenant information.');
-        throw new Error("yayaya");
-      }
+      const pool = checkPool(req);
+
       try {
         const query = 'SELECT * FROM nd_user';
         const [rows] = await pool.query(query);
         return rows;
       } catch (error) {
         console.error(error);
-        throw new Error("Internal Server Error");
+        throw new Error("Internal Server Error User All");
       }
     },
     login: async({username,password}, req)=>{
-      const pool = getPoolForRequest(req);
-      if (!pool) {
-        console.error('Invalid or missing tenant information.');
-        throw new Error("yayaya");
-      }
+      const pool = checkPool(req);
       try {
         const query = `SELECT id, username, password, posisi_id, time_start, time_end FROM nd_user WHERE username = ?`;
         const [rows] = await pool.query(query, [username]);
@@ -62,10 +60,10 @@ const getUser = {
             const token = jwt.generateToken(payload);
             return {token: token, timeout: LIFETIME};
           } else {
-            throw new Error("User and password not match'");;
+            throw new Error("User and password not match'");
           }
         }else{
-          throw new Error("User and password not match'");;
+          throw new Error("User and password not match'");
         }
 
       } catch (error) {
