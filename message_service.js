@@ -72,7 +72,7 @@ wss.on('connection', function connection(ws, req) {
     
           // Broadcast the message to all clients
           wss.clients.forEach((client) => {
-            if (client !== ws && clientData[0] !== user && client.readyState === WebSocket.OPEN) {
+            if (client !== ws && client.readyState === WebSocket.OPEN) {
               client.send(JSON.stringify({sender:'server', contentType: 'message', content: `message from ${user} : ${message}`,user:user}));
             }
           });
