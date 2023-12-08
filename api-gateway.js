@@ -26,7 +26,7 @@ const wss = new WebSocketServer({ port: PORT_GW_MS });
 
 
 const forwardToMicroservice = {
-    "users":`http://localhost:${PORT_USER}/graphql`
+    "master":`http://localhost:${PORT_USER}/graphql`
 };
 
 apiGateway.use(cors({
