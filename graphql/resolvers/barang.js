@@ -1,17 +1,8 @@
 import getPoolForRequest from "../../config/mysqlCon.js";
 
-const checkPool = (req) => {
-  const pool = getPoolForRequest(req);
-  if (!pool) {
-    console.error('Invalid or missing tenant information.');
-    throw new Error("No connection to database");
-  }
-  return pool;
-}
-
 const getBarang = {
     barang: async(args, req)=>{
-      const pool = checkPool(req);
+      const pool = getPoolForRequest(req);
         try {
           const query = `SELECT * FROM nd_barang WHERE id = ?`;
           const [rows] = await pool.query(query, [args.id]);
@@ -22,7 +13,7 @@ const getBarang = {
         }
     },
     barangs: async(args, req)=>{
-      const pool = checkPool(req);
+      const pool = getPoolForRequest(req);
         try {
           const query = 'SELECT * FROM nd_barang';
           const [rows] = await pool.query(query);
