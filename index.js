@@ -7,6 +7,8 @@ import cors from "cors";
 import { graphqlHTTP } from "express-graphql";
 import schema from "./graphql/schema.js";
 import resolvers from "./graphql/resolvers/index.js";
+// import getPoolForRequest from "../../config/mysqlCon.js";
+
 
 const env = process.env.NODE_ENV || 'TEST';
 
@@ -25,6 +27,7 @@ app.use(cors({
 }));
 
 app.use(morgan('dev'));
+
 
 app.use(
     '/graphql',

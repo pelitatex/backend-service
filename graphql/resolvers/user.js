@@ -3,19 +3,9 @@ dotenv.config();
 
 import md5 from "../../helpers/md5.js";
 import jwt from "../../helpers/jwt.js";
-import getPoolForRequest from "../../config/mysqlCon.js";
 
 const env = process.env.NODE_ENV || 'TEST';
 const LIFETIME = process.env[`TOKEN_LIFETIME_${env}`];
-
-const checkPool = (req) => {
-  const pool = getPoolForRequest(req);
-  if (!pool) {
-    console.error('Invalid or missing tenant information.');
-    throw new Error("No connection to database");
-  }
-  return pool;
-}
 
 const getUser = {
     user: async(args, req)=>{
@@ -23,7 +13,13 @@ const getUser = {
         try {
             const query = `SELECT * FROM nd_user WHERE id = ?`;
             const [rows] = await pool.query(query, [args.id]);
-            return rows[0];
+            connection.release();
+            if (queryError) {
+              console.error('Error executing query:', queryError.message);
+              throw new Error("Internal Server Error User Single query");
+            } else {
+              return rows[0];
+            }
         } catch (error) {
           console.error(error);
           throw new Error("Internal Server Error User Single");
