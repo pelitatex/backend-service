@@ -3,13 +3,15 @@ dotenv.config();
 
 import md5 from "../../helpers/md5.js";
 import jwt from "../../helpers/jwt.js";
+import getPoolForRequest from "../../config/mysqlCon.js";
+
 
 const env = process.env.NODE_ENV || 'TEST';
 const LIFETIME = process.env[`TOKEN_LIFETIME_${env}`];
 
 const getUser = {
     user: async(args, req)=>{
-      const pool = checkPool(req);
+      const pool = getPoolForRequest(req);
         try {
             const query = `SELECT * FROM nd_user WHERE id = ?`;
             const [rows] = await pool.query(query, [args.id]);
@@ -26,7 +28,7 @@ const getUser = {
         }
     },
     users: async(args, req)=>{
-      const pool = checkPool(req);
+      const pool = getPoolForRequest(req);
 
       try {
         const query = 'SELECT * FROM nd_user';
@@ -38,7 +40,8 @@ const getUser = {
       }
     },
     login: async({username,password}, req)=>{
-      const pool = checkPool(req);
+      const pool = getPoolForRequest(req);
+
       try {
         const query = `SELECT id, username, password, posisi_id, time_start, time_end FROM nd_user WHERE username = ?`;
         const [rows] = await pool.query(query, [username]);
