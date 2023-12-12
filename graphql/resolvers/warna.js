@@ -1,6 +1,7 @@
 import getPoolForRequest from "../../config/mysqlCon.js";
 
-const getWarna = {
+const warnaResolver = {
+  Query:{
     warna: async(args, req)=>{
       const pool = getPoolForRequest(req);
         try {
@@ -24,6 +25,7 @@ const getWarna = {
           throw new Error("Internal Server Error Warna All");
         }
     }
+  }
 }
 
-export default getWarna;
+export default warnaResolver;

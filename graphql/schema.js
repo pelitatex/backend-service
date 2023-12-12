@@ -9,6 +9,17 @@ const schema = buildSchema(`#graphql
         time_start: String!
         time_end: String!
     }
+    type SKUBarang {
+        id: ID!
+        nama_barang: String!
+        sku_id: Int!
+        status_aktif: Boolean!
+    }
+    type Satuan {
+        id: ID!
+        nama: String!
+        status_aktif: Boolean!
+    }
     type Barang {
         id: ID!
         nama_jual: String!

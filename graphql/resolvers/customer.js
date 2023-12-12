@@ -1,6 +1,7 @@
 import getPoolForRequest from "../../config/mysqlCon.js";
 
-const getCustomer = {
+const customerResolver = {
+  Query:{
     customer: async(args, req)=>{
       const pool = getPoolForRequest(req);
         try {
@@ -23,6 +24,7 @@ const getCustomer = {
           throw new Error("Internal Server Error Customer All");
         }
     }
+  }
 }
 
-export default getCustomer;
+export default customerResolver;

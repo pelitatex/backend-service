@@ -1,32 +1,31 @@
 import getPoolForRequest from "../../config/mysqlCon.js";
 
-const supplierResolver = {
+const satuanResolver = {
   Query:{
-    supplier: async(args, req)=>{
+    satuan: async(args, req)=>{
       const pool = getPoolForRequest(req);
         try {
-            const query = `SELECT * FROM nd_supplier WHERE id = ?`;
+            const query = `SELECT * FROM nd_satuan WHERE id = ?`;
             const [rows] = await pool.query(query, [args.id]);
             return rows[0];
         } catch (error) {
           console.error(error);
-          throw new Error("Internal Server Error Supplier Single");
+          throw new Error("Internal Server Error Satuan Single");
         }
     },
-    suppliers: async(args, req)=>{
+    satuans: async(args, req)=>{
       const pool = getPoolForRequest(req);
 
         try {
-            const query = 'SELECT * FROM nd_supplier';
+            const query = 'SELECT * FROM nd_satuan';
             const [rows] = await pool.query(query);
             return rows;
         } catch (error) {
           console.error(error);
-          throw new Error("Internal Server Error Supplier All");
+          throw new Error("Internal Server Error Satuan All");
         }
     }
-
   }
 }
 
-export default supplierResolver;
+export default satuanResolver;

@@ -9,7 +9,8 @@ import getPoolForRequest from "../../config/mysqlCon.js";
 const env = process.env.NODE_ENV || 'TEST';
 const LIFETIME = process.env[`TOKEN_LIFETIME_${env}`];
 
-const getUser = {
+const userResolver = {
+  Query : {
     user: async(args, req)=>{
       const pool = getPoolForRequest(req);
         try {
@@ -69,7 +70,8 @@ const getUser = {
         console.error(error);
         throw new Error("Internal Server Error Login Process");
       }
+    }
   },
 }
 
-export default getUser;
+export default userResolver;
