@@ -49,8 +49,8 @@ const schema = buildSchema(`#graphql
     type Query{
         users: [User]
         user(id: Int!): User
-        barangs: [Barang]
-        barang(id: ID!): Barang
+        skubarangs: [SKUBarang]
+        skubarang(id: ID!): SKUBarang
         warnas: [Warna]
         warna(id: ID!): Warna
         customers: [Customer]

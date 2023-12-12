@@ -40,8 +40,6 @@ const userResolver = {
         throw new Error("Internal Server Error User All");
       }
     },
-  },
-  Mutation:{
     login: async({username,password}, req)=>{
       const pool = getPoolForRequest(req);
 
