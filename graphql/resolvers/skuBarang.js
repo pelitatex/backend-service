@@ -1,4 +1,12 @@
 import getPoolForRequest from "../../config/mysqlCon.js";
+import DataLoader from "dataloader";
+
+const satuanLoader = new DataLoader(async(ids)=>{
+  const query = `SELECT * FROM nd_sku_barang WHERE id IN (?)`;
+  const satuans = await pool.query(query, [ids]);
+  const satuanMap = new Map(satuans.map((satuan)=>[satuan.id,satuan]));
+  return ids.map((id)=>satuanMap.get(id));
+});
 
 const skuBarangResolver = {
   Query:{
@@ -27,15 +35,7 @@ const skuBarangResolver = {
   },
   Barang:{
     satuan: async(parent)=>{
-      const pool = getPoolForRequest(req);
-        try {
-            const query = `SELECT * FROM nd_satuan WHERE id = ?`;
-            const [rows] = await pool.query(query, [parent.satuan_id]);
-            return rows[0];
-        } catch (error) {
-          console.error(error);
-          throw new Error("Internal Server Error Satuan Single");
-        }
+      return satuanLoader(parent.satuan_id)
     },
   }
 }
