@@ -47,6 +47,10 @@ const schema = buildSchema(`#graphql
         no_faktur: String!
         supplier_id: Int!
     }
+    type AuthPayload {
+        token: String,
+        timeout: String
+    }
     type Query{
         users: [User]
         user(id: Int!): User
@@ -60,11 +64,7 @@ const schema = buildSchema(`#graphql
         supplier(id: ID!): Supplier        
         pembelians(first: Int, after: String): [Pembelian]
         pembelian(id: ID!): Pembelian
-    }
-    type AuthPayload {
-        token: String,
-        timeout: String
-    }
+    }    
     type Mutation {
         login(username: String!, password: String!): AuthPayload
     }

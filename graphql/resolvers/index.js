@@ -7,13 +7,13 @@ import supplierResolver from "./supplier.js";
 import customerResolver from "./customer.js";
 
 const resolvers = _.merge(
-    userResolver.Query,
-    skuBarangResolver.Query,
-    skuBarangResolver.SKUBarang,
-    warnaResolver.Query,
-    supplierResolver.Query,
-    customerResolver.Query,
-    userResolver.Mutation
+    {},
+    userResolver,
+    skuBarangResolver,
+    warnaResolver,
+    supplierResolver,
+    customerResolver,
+    userResolver
 );
 
 console.log('resolver', resolvers);
