@@ -9,7 +9,7 @@ import customerResolver from "./customer.js";
 const resolvers = _.merge(
     userResolver.Query,
     skuBarangResolver.Query,
-    skuBarangResolver.Barang,
+    skuBarangResolver.SKUBarang,
     warnaResolver.Query,
     supplierResolver.Query,
     customerResolver.Query,
