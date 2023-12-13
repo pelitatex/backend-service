@@ -14,6 +14,7 @@ const schema = buildSchema(`#graphql
         nama_barang: String!
         sku_id: Int!
         status_aktif: Boolean!
+        satuan: Satuan!
     }
     type Satuan {
         id: ID!
