@@ -1,19 +1,12 @@
-import getPoolForRequest from "../../config/mysqlCon.js";
+import { createSatuanLoader } from "./loader.js";
 
 const satuanResolver = {
   Query:{
-    satuan: async(args, req)=>{
-      const pool = getPoolForRequest(req);
-        try {
-            const query = `SELECT * FROM nd_satuan WHERE id = ?`;
-            const [rows] = await pool.query(query, [args.id]);
-            return rows[0];
-        } catch (error) {
-          console.error(error);
-          throw new Error("Internal Server Error Satuan Single");
-        }
+    satuan: async(args, req, context)=>{
+      const satuanLoader = context.satuanLoader || createSatuanLoader(req)
+      return satuanLoader.load(args.id)
     },
-    satuans: async(args, req)=>{
+    satuans: async(args, req, context)=>{
       const pool = getPoolForRequest(req);
 
         try {
