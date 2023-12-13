@@ -1,19 +1,17 @@
 import _ from "lodash";
 
-import getUser from "./user.js";
-import getBarang from "./barang.js";
-import getWarna from "./warna.js";
-import getSupplier from "./supplier.js";
-import getCustomer from "./customer.js";
-import getPembelian from "./pembelian.js";
+import userResolver from "./user.js";
+import skuBarangResolver from "./skuBarang.js";
+import warnaResolver from "./warna.js";
+import supplierResolver from "./supplier.js";
+import customerResolver from "./customer.js";
 
 const resolvers = _.merge(
-    getUser,
-    getBarang,
-    getWarna,
-    getSupplier,
-    getCustomer,
-    getPembelian
+    userResolver,
+    skuBarangResolver,
+    warnaResolver,
+    supplierResolver,
+    customerResolver,
     );
 
 console.log('resolver', resolvers);
