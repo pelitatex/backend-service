@@ -3,7 +3,7 @@ import { createSatuanLoader } from "./loader.js";
 
 const skuBarangResolver = {
   Query:{
-    barang: async(args, req)=>{
+    skuBarang: async(args, req)=>{
       const pool = getPoolForRequest(req);
         try {
           const query = `SELECT * FROM nd_sku_barang WHERE id = ?`;
@@ -14,7 +14,7 @@ const skuBarangResolver = {
           throw new Error("Internal Server Error Barang Single");
         }
     },
-    barangs: async(args, req)=>{
+    skuBarangs: async(args, req)=>{
       const pool = getPoolForRequest(req);
         try {
           const query = 'SELECT * FROM nd_sku_barang';
@@ -26,7 +26,7 @@ const skuBarangResolver = {
         }
     }
   },
-  Barang:{
+  SKUBarang:{
     satuan: async(parent, args, context)=>{
       const satuanLoader = context.satuanLoader || createSatuanLoader(context.req)
       return satuanLoader.load(parent.satuan_id)
