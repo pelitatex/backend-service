@@ -44,7 +44,7 @@ const userResolver = {
   Mutation:{
     login: async({username,password}, req)=>{
       const pool = getPoolForRequest(req);
-      console.log(req.headers['x-tenant'])
+      console.log(req.headers['x-tenant']);
       try {
         const query = `SELECT id, username, password, posisi_id, time_start, time_end FROM nd_user WHERE username = ?`;
         const [rows] = await pool.query(query, [username]);

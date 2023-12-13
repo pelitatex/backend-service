@@ -6,13 +6,19 @@ import warnaResolver from "./warna.js";
 import supplierResolver from "./supplier.js";
 import customerResolver from "./customer.js";
 
-const resolvers = _.merge(
-    userResolver,
-    skuBarangResolver,
-    warnaResolver,
-    supplierResolver,
-    customerResolver,
-    );
+const resolvers = {
+    Query: _.merge(
+        userResolver,Query,
+        skuBarangResolver,Query,
+        warnaResolver,Query,
+        supplierResolver,Query,
+        customerResolver,Query,
+        )
+    ,
+    Mutation: _.merge(
+        userResolver.Mutation
+    )
+};
 
 console.log('resolver', resolvers);
 
