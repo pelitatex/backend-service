@@ -10,7 +10,7 @@ import eSchema from "./graphql/resolvers/index.js";
 
 // internal source needed
 import {createSatuanLoader} from "./helpers/loader.js";
-import getPoolForRequest from "./config/mysqlConTest.js";
+import getPoolForRequest from "./config/mysqlCon.js";
 
 
 const env = process.env.NODE_ENV || 'TEST';
