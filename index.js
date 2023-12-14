@@ -6,8 +6,11 @@ import cors from "cors";
 
 import { graphqlHTTP } from "express-graphql";
 import schema from "./graphql/schema.js";
-import resolvers from "./graphql/resolvers/index.js";
-// import getPoolForRequest from "../../config/mysqlCon.js";
+import eSchema from "./graphql/resolvers/index.js";
+
+// internal source needed
+import {createSatuanLoader} from "./helpers/loader.js";
+import getPoolForRequest from "./config/mysqlCon.js";
 
 
 const env = process.env.NODE_ENV || 'TEST';
@@ -26,15 +29,27 @@ app.use(cors({
     methods: 'GET,POST', // You can specify the HTTP methods you want to allow
 }));
 
+// app.use(cors());
+
 app.use(morgan('dev'));
 
-
+const loader = {
+    satuanLoader : null
+};
 app.use(
     '/graphql',
-    graphqlHTTP({
-        schema:schema,
-        rootValue: resolvers,
-        graphiql: (env === 'test' || env === 'dev' ? true : false)
+    graphqlHTTP( async (req) => {
+        const pool = await getPoolForRequest(req);
+        if (loader.satuanLoader === null) {
+            console.log('null');
+            loader.satuanLoader = await createSatuanLoader(pool);
+        }
+        const satuanLoader = loader.satuanLoader;
+        return{
+            schema:eSchema,
+            graphiql: true,
+            context: {loader:{satuanLoader}, pool: pool}
+        }
     })
 );
 

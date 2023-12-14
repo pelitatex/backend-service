@@ -1,9 +1,11 @@
-import getPoolForRequest from "../../config/mysqlCon.js";
-
 const customerResolver = {
   Query:{
-    customer: async(args, req)=>{
-      const pool = getPoolForRequest(req);
+    customer: async(_,args, context)=>{
+      const pool = context.pool;
+      if (!pool) {
+        console.log('context', pool);
+        throw new Error('Database pool not available in context.');
+      }
         try {
             const query = `SELECT * FROM nd_customer WHERE id = ?`;
             const [rows] = await pool.query(query, [args.id]);
@@ -13,9 +15,13 @@ const customerResolver = {
           throw new Error("Internal Server Error Customer All");
         }
     },
-    customers: async()=>{
-      const pool = getPoolForRequest(req);
-        try {
+    customers: async(_,args,context)=>{
+      const pool = context.pool;
+      if (!pool) {
+        console.log('context', pool);
+        throw new Error('Database pool not available in context.');
+      }
+      try {
           const query = 'SELECT * FROM nd_customer';
           const [rows] = await pool.query(query);
           return rows;

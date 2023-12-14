@@ -1,9 +1,11 @@
-import getPoolForRequest from "../../config/mysqlCon.js";
-
 const warnaResolver = {
   Query : {
-    warna: async(args, req)=>{
-      const pool = getPoolForRequest(req);
+    warna: async(_,args, context)=>{
+      const pool = context.pool;
+      if (!pool) {
+        console.log('context', pool);
+        throw new Error('Database pool not available in context.');
+      }
         try {
             const query = `SELECT * FROM nd_warna WHERE id = ?`;
             const [rows] = await pool.query(query, [args.id]);
@@ -13,8 +15,12 @@ const warnaResolver = {
           throw new Error("Internal Server Error Warna Single");
         }
     },
-    warnas: async(args, req)=>{
-      const pool = getPoolForRequest(req);
+    warnas: async(_,args, context)=>{
+      const pool = context.pool;
+        if (!pool) {
+          console.log('context', pool);
+          throw new Error('Database pool not available in context.');
+        }
 
         try {
             const query = 'SELECT * FROM nd_warna';

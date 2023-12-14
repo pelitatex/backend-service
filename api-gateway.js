@@ -41,7 +41,7 @@ apiGateway.use(expressjwt({
     algorithms: ['HS256']
     })
     .unless({
-        path:['/login','/graphql','/websocket', 'graphiql']
+        path:['/login','/graphql','/websocket']
     })
 );
 

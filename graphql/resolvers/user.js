@@ -3,7 +3,6 @@ dotenv.config();
 
 import md5 from "../../helpers/md5.js";
 import jwt from "../../helpers/jwt.js";
-import getPoolForRequest from "../../config/mysqlCon.js";
 
 
 const env = process.env.NODE_ENV || 'TEST';
@@ -11,26 +10,28 @@ const LIFETIME = process.env[`TOKEN_LIFETIME_${env}`];
 
 const userResolver = {
   Query : {
-    user: async(args, req)=>{
-      const pool = getPoolForRequest(req);
+    user: async(_,args, context)=>{
+      const pool = context.pool;
+        if (!pool) {
+          console.log('context', pool);
+          throw new Error('Database pool not available in context.');
+        }
         try {
+          console.log(args);
             const query = `SELECT * FROM nd_user WHERE id = ?`;
             const [rows] = await pool.query(query, [args.id]);
-            connection.release();
-            if (queryError) {
-              console.error('Error executing query:', queryError.message);
-              throw new Error("Internal Server Error User Single query");
-            } else {
-              return rows[0];
-            }
+            return rows[0];
         } catch (error) {
           console.error(error);
           throw new Error("Internal Server Error User Single");
         }
     },
-    users: async(args, req)=>{
-      const pool = getPoolForRequest(req);
-
+    users: async(_,args, context)=>{
+      const pool = context.pool;
+        if (!pool) {
+          console.log('context', pool);
+          throw new Error('Database pool not available in context.');
+        }
       try {
         const query = 'SELECT * FROM nd_user';
         const [rows] = await pool.query(query);

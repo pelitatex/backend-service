@@ -54,16 +54,16 @@ const schema = buildSchema(`#graphql
     type Query{
         users: [User]
         user(id: Int!): User
-        skubarangs: [SKUBarang]
-        skubarang(id: ID!): SKUBarang
+        skuBarangs: [SKUBarang]
+        skuBarang(id: ID!): SKUBarang
         warnas: [Warna]
         warna(id: ID!): Warna
+        satuan(id: ID!): Satuan
+        satuans: [Satuan]
         customers: [Customer]
         customer(id: ID!): Customer
         suppliers: [Supplier]
         supplier(id: ID!): Supplier        
-        pembelians(first: Int, after: String): [Pembelian]
-        pembelian(id: ID!): Pembelian
     }    
     type Mutation {
         login(username: String!, password: String!): AuthPayload

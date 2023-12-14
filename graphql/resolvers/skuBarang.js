@@ -1,10 +1,11 @@
-import getPoolForRequest from "../../config/mysqlCon.js";
-import { createSatuanLoader } from "./loader.js";
-
 const skuBarangResolver = {
   Query:{
-    skuBarang: async(args, req)=>{
-      const pool = getPoolForRequest(req);
+    skuBarang: async(_,args, context)=>{
+      const pool = context.pool;
+        if (!pool) {
+          console.log('context', pool);
+          throw new Error('Database pool not available in context.');
+        }
         try {
           const query = `SELECT * FROM nd_sku_barang WHERE id = ?`;
           const [rows] = await pool.query(query, [args.id]);
@@ -14,11 +15,16 @@ const skuBarangResolver = {
           throw new Error("Internal Server Error Barang Single");
         }
     },
-    skuBarangs: async(args, req)=>{
-      const pool = getPoolForRequest(req);
+    skuBarangs: async(_,args, context)=>{
+      const pool = context.pool;
+        if (!pool) {
+          console.log('context', pool);
+          throw new Error('Database pool not available in context.');
+        }
         try {
           const query = 'SELECT * FROM nd_sku_barang';
           const [rows] = await pool.query(query);
+          console.log('47',rows[47]);
           return rows;
         } catch (error) {
           console.error(error);
@@ -27,9 +33,15 @@ const skuBarangResolver = {
     }
   },
   SKUBarang:{
-    satuan: async(parent, args, context)=>{
-      const satuanLoader = context.satuanLoader || createSatuanLoader(context.req)
-      return satuanLoader.load(parent.satuan_id)
+    satuan: async(parent, _, context)=>{
+      if (!context.loader.satuanLoader) {
+        throw new Error("satuan loader is null");
+      }
+
+      if (!parent.satuan_id) {
+        return'aneh';
+      }
+      return context.loader.satuanLoader.load(parent.satuan_id);
     },
   }
 }
