@@ -43,9 +43,12 @@ const userResolver = {
     },
   },
   Mutation:{
-    login: async({username,password}, req)=>{
-      const pool = getPoolForRequest(req);
-      console.log(req.headers['x-tenant']);
+    login: async(_,{username,password}, context)=>{
+      const pool = context.pool;
+        if (!pool) {
+          console.log('context', pool);
+          throw new Error('Database pool not available in context.');
+        }
       try {
         const query = `SELECT id, username, password, posisi_id, time_start, time_end FROM nd_user WHERE username = ?`;
         const [rows] = await pool.query(query, [username]);
