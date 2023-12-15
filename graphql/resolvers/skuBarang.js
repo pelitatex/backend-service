@@ -7,6 +7,7 @@ const skuBarangResolver = {
           throw new Error('Database pool not available in context.');
         }
         try {
+          context.useSatuanLoader = true;
           const query = `SELECT * FROM nd_sku_barang WHERE id = ?`;
           const [rows] = await pool.query(query, [args.id]);
           return rows[0];
@@ -22,9 +23,9 @@ const skuBarangResolver = {
           throw new Error('Database pool not available in context.');
         }
         try {
+          context.useSatuanLoader = false;
           const query = 'SELECT * FROM nd_sku_barang';
           const [rows] = await pool.query(query);
-          console.log('47',rows[47]);
           return rows;
         } catch (error) {
           console.error(error);
@@ -41,7 +42,24 @@ const skuBarangResolver = {
       if (!parent.satuan_id) {
         return'aneh';
       }
-      return context.loader.satuanLoader.load(parent.satuan_id);
+      if (context.useSatuanLoader) {
+        return context.loader.satuanLoader.load(parent.satuan_id);
+      } else {
+        const pool = context.pool;
+        if (!pool) {
+          console.log('context', pool);
+          throw new Error('Database pool not available in context.');
+        }
+        try {
+          const query = 'SELECT * FROM nd_satuan';
+          const [rows] = await pool.query(query);
+          const satuan = rows.find((satuan) => satuan.id === parent.satuan_id);
+          return satuan;
+        } catch (error) {
+          console.error(error);
+          throw new Error("Internal Server Error Satuan All");
+        }        
+      }
     },
   }
 }

@@ -11,11 +11,11 @@ export const createSatuanLoader = (pool) => new DataLoader(async(ids)=>{
         satuans.map((satuan)=>{
             satuanMap.set((satuan.id).toString(),satuan);
         });
+        console.log(satuanMap);
         const result = ids.map((id)=>satuanMap.get(id.toString()));
-        console.log(result);
         return result;        
     } catch (error) {
-        console.error(error);
+        console.error(error + ' yuaa');
         throw new Error("Internal Server Error Satuan Loader");
     }
 });

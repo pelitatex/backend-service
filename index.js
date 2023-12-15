@@ -24,12 +24,12 @@ const permissions = {
 };
 
 
-// app.use(cors({
-//     origin: [`http://localhost:${PORT_GW}`], // Replace with the origin of your React app
-//     methods: 'GET,POST', // You can specify the HTTP methods you want to allow
-// }));
+app.use(cors({
+    origin: [`http://localhost:${PORT_GW}`], // Replace with the origin of your React app
+    methods: 'GET,POST', // You can specify the HTTP methods you want to allow
+}));
 
-app.use(cors());
+// app.use(cors());
 
 app.use(morgan('dev'));
 
