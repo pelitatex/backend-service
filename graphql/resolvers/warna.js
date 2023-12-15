@@ -15,7 +15,7 @@ const warnaResolver = {
           throw new Error("Internal Server Error Warna Single");
         }
     },
-    warnas: async(_,args, context)=>{
+    allWarna: async(_,args, context)=>{
       const pool = context.pool;
         if (!pool) {
           console.log('context', pool);

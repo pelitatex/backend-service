@@ -6,7 +6,7 @@ const satuanResolver = {
       } 
       return context.loader.satuanLoader.load(args.id)
     },
-    satuans: async(_,args, context)=>{
+    allSatuan: async(_,args, context)=>{
       try {
         const pool = context.pool;
         if (!pool) {

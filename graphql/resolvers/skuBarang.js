@@ -16,7 +16,7 @@ const skuBarangResolver = {
           throw new Error("Internal Server Error Barang Single");
         }
     },
-    skuBarangs: async(_,args, context)=>{
+    allSkuBarang: async(_,args, context)=>{
       const pool = context.pool;
         if (!pool) {
           console.log('context', pool);

@@ -18,7 +18,7 @@ const supplierResolver = {
           throw new Error("Internal Server Error Supplier Single");
         }
     },
-    suppliers: async(_,args, req)=>{
+    allSupplier: async(_,args, req)=>{
       // const pool = getPoolForRequest(req);
       const pool = context.pool;
         if (!pool) {

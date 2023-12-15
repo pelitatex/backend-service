@@ -8,6 +8,8 @@ import warnaResolver from "./warna.js";
 import supplierResolver from "./supplier.js";
 import customerResolver from "./customer.js";
 import satuanResolver from './satuan.js';
+import skuComponentResolver from './skuComponent.js';
+
 
 const resolvers = _.merge(
     userResolver,
@@ -15,7 +17,8 @@ const resolvers = _.merge(
     warnaResolver,
     supplierResolver,
     customerResolver,
-    satuanResolver
+    satuanResolver,
+    skuComponentResolver
 );
 
 console.log('resolver', resolvers);

@@ -15,7 +15,7 @@ const customerResolver = {
           throw new Error("Internal Server Error Customer All");
         }
     },
-    customers: async(_,args,context)=>{
+    allCustomer: async(_,args,context)=>{
       const pool = context.pool;
       if (!pool) {
         console.log('context', pool);

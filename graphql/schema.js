@@ -9,6 +9,13 @@ const schema = buildSchema(`#graphql
         time_start: String!
         time_end: String!
     }
+    type SKUComponent {
+        id: ID!
+        nama: String!
+        kode: String!
+        keterangan: String
+        status_aktif: Boolean!
+    }
     type SKUBarang {
         id: ID!
         nama_barang: String!
@@ -52,18 +59,26 @@ const schema = buildSchema(`#graphql
         timeout: String
     }
     type Query{
-        users: [User]
         user(id: Int!): User
-        skuBarangs: [SKUBarang]
+        allUser: [User]
+        skuBahan(id: ID!):SKUComponent
+        allSkuBahan: [SKUComponent]
+        skuFitur(id: ID!): SKUComponent
+        allSkuFitur: [SKUComponent]
+        skuGrade(id: ID!): SKUComponent
+        allSkuGrade: [SKUComponent]
+        skuTipe(id: ID!): SKUComponent
+        allSkuTipe: [SKUComponent]
         skuBarang(id: ID!): SKUBarang
-        warnas: [Warna]
+        allSkuBarang: [SKUBarang]
         warna(id: ID!): Warna
+        allWarna: [Warna]
         satuan(id: ID!): Satuan
-        satuans: [Satuan]
-        customers: [Customer]
+        allSatuan: [Satuan]
+        allCustomer: [Customer]
         customer(id: ID!): Customer
-        suppliers: [Supplier]
         supplier(id: ID!): Supplier        
+        allSupplier: [Supplier]
     }    
     type Mutation {
         login(username: String!, password: String!): AuthPayload
