@@ -12,7 +12,7 @@ const schema = buildSchema(`#graphql
     type SKUBarang {
         id: ID!
         nama_barang: String!
-        sku_id: Int!
+        sku_id: String!
         status_aktif: Boolean!
         satuan: Satuan!
     }
