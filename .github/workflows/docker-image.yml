@@ -20,7 +20,7 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         context: .
-        file: ./Dockerfile
+        file: ./dockerfile
         push: false
         # tags: yourusername/yourappname:latest
         # Replace 'yourusername/yourappname' with your DockerHub username and the name of your app
