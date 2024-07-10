@@ -18,5 +18,12 @@
     "morgan": "^1.10.0",
     "mysql2": "^3.6.3",
     "ws": "^8.14.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
+  },
+  "scripts": {
+      "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js  --detectOpenHandles"
   }
 }

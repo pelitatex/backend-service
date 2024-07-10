@@ -29,3 +29,6 @@ dist/
 
 # Optional: Environment variables
 .env
+
+# Optional: Docker
+dockerfile

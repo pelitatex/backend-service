@@ -10,7 +10,7 @@ import eSchema from "./graphql/resolvers/index.js";
 
 // internal source needed
 import {createSatuanLoader} from "./helpers/loader.js";
-import getPoolForRequest from "./config/mysqlCon.js";
+import getPoolForRequest from "./config/mysqlConTest.js";
 
 
 const env = process.env.NODE_ENV || 'TEST';
@@ -40,15 +40,10 @@ app.use(
     '/graphql',
     graphqlHTTP( async (req) => {
         const pool = await getPoolForRequest(req);
-        if (loader.satuanLoader === null) {
-            console.log('null');
-            loader.satuanLoader = await createSatuanLoader(pool);
-        }
-        const satuanLoader = loader.satuanLoader;
         return{
             schema:eSchema,
             graphiql: true,
-            context: {loader:{satuanLoader}, pool: pool}
+            context: {pool: pool}
         }
     })
 );

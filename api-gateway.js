@@ -21,8 +21,8 @@ const TOKENSECRET = process.env[`TOKEN_SECRET_${env}`]
 const PORT_USER = process.env[`PORT_${env}_USER`];
 const PORT_GW = process.env[`PORT_${env}_GATEWAY`];
 const PORT_MESSAGE = process.env[`PORT_${env}_MESSAGE`];
-const PORT_GW_MS = process.env[`PORT_${env}_Gw_MESSAGE`];
-const wss = new WebSocketServer({ port: PORT_GW_MS });
+// const PORT_GW_MS = process.env[`PORT_${env}_Gw_MESSAGE`];
+// const wss = new WebSocketServer({ port: PORT_GW_MS });
 
 
 const forwardToMicroservice = {
@@ -36,24 +36,34 @@ apiGateway.use(cors({
 
 apiGateway.use(morgan('dev'));
 
+// Rate limiter middleware
+/* const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limit each IP to 100 requests per windowMs
+    message: "Too many requests from this IP, please try again later."
+}); */
+
 apiGateway.use(expressjwt({
     secret:TOKENSECRET,
     algorithms: ['HS256']
-    })
-    .unless({
-        path:['/login','/graphql','/websocket']
-    })
-);
+})
+.unless({
+    path:['/login','/graphql','/websocket']
+}));
+
+apiGateway.use((err, req, res, next) => {
+    if (err.name === 'UnauthorizedError') {
+        res.status(401).json({ error: 'Unauthorized' });
+    } else {
+        next(err);
+    }
+});
 
 apiGateway.use('/graphql', (req, res, next) => {
     
     const tenant = req.headers['x-tenant'];
     const targetMicroservice = req.headers['x-microservice'];
-    console.log('tenant',tenant, 'ms',targetMicroservice );
-    if (typeof tenant === 'undefined') {
-        return res.status(400).json({ error: 'tenant undefined in headers' });
-        
-    }
+    
     if (!tenant || !targetMicroservice) {
         return res.status(400).json({ error: 'Missing tenant or Microservice in headers' });
     }
@@ -65,7 +75,7 @@ apiGateway.use('/graphql', (req, res, next) => {
     })(req, res, next);
 });
 
-wss.on('connection', (ws, req) => {
+/* wss.on('connection', (ws, req) => {
 
     // Handle WebSocket connections
     console.log('WebSocket connection established');
@@ -88,10 +98,12 @@ const wsProxy = createProxyMiddleware({
 server.on('upgrade', (request, socket, head) => {
     console.log('request', request);
     wsProxy(request, socket, head);
-});
+}); */
 
-apiGateway.listen(PORT_GW, () => {
+/* apiGateway.listen(PORT_GW, () => {
     console.log(`API Gateway is running on port ${PORT_GW}`);
-});
+}); */
+
+export default apiGateway;
   
 
