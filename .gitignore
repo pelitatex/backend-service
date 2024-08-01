@@ -14,9 +14,6 @@ Thumbs.db
 .vscode/
 .idea/
 
-#config file
-config/
-
 # Dependency directories
 jspm_packages/
 
@@ -34,3 +31,5 @@ dist/
 tests/
 jest.config.js
 
+# mysql data
+data/db/

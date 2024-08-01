@@ -1,4 +1,4 @@
-import "./config/loadEnv.js";
+import "dotenv/config";
 
 import express from "express";
 import morgan from "morgan";
@@ -10,7 +10,7 @@ import eSchema from "./graphql/resolvers/index.js";
 
 // internal source needed
 import {createSatuanLoader} from "./helpers/loader.js";
-import getPoolForRequest from "./config/mysqlConTest.js";
+import { getPool } from "./config/db.js";
 
 
 const env = process.env.NODE_ENV || 'TEST';
@@ -25,8 +25,8 @@ const permissions = {
 
 
 app.use(cors({
-    origin: [`http://localhost:${PORT_GW}`], // Replace with the origin of your React app
-    methods: 'GET,POST', // You can specify the HTTP methods you want to allow
+    origin: [`http://localhost:${PORT_GW}`, process.env.FRONTEND_URL], // Replace with the origin of your React app
+    methods: 'GET,POST,OPTIONS', // You can specify the HTTP methods you want to allow
 }));
 
 // app.use(cors());
@@ -39,7 +39,7 @@ const loader = {
 app.use(
     '/graphql',
     graphqlHTTP( async (req) => {
-        const pool = await getPoolForRequest(req);
+        const pool = getPool();
         return{
             schema:eSchema,
             graphiql: true,
