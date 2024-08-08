@@ -30,7 +30,8 @@ const customerResolver = {
           throw new Error("Internal Server Error Customer All");
         }
     }
-  }
+  },
+
 }
 
 export default customerResolver;

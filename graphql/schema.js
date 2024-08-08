@@ -3,12 +3,27 @@ import { buildSchema } from 'graphql';
 const schema = buildSchema(`#graphql
     type User {
         id: ID!
-        username: String!
-        password: String!
-        posisi_id: Int!
-        time_start: String!
-        time_end: String!
+        username: String
+        password: String
+        posisi_id: Int
+        time_start: String
+        time_end: String
         status_aktif: Boolean!
+        has_account: Boolean!
+        nama: String!
+        alamat:String
+        telepon:String
+        jenis_kelamin:String
+        kota_lahir:String
+        tgl_lahir:String
+        status_perkawinan:String
+        jumlah_anak:Int
+        agama:String
+        nik:String
+        npwp:String
+        profile_picture:String
+        ktp_picture:String
+        npwp_picture:String
     }
     type SKUComponent {
         id: ID!
@@ -43,7 +58,37 @@ const schema = buildSchema(`#graphql
     }
     type Customer {
         id: ID!
-        nama: String
+        tipe_company: String!
+        nama: String!
+        alias: String
+        alamat: String
+        blok: String
+        no: String
+        rt: String
+        rw: String
+        kecamatan: String
+        kelurahan: String
+        kota: String
+        provinsi: String
+        kode_pos: String
+        npwp: String
+        nik: String
+        email: String
+        contact_person: String
+        tempo_kredit: Int
+        warning_kredit: Int
+        limit_warning_type: String
+        limit_amount: Int
+        limit_atas: Int
+        limit_warning_amount: Int
+        img_link: String
+        npwp_link: String
+        ktp_link: String
+        medsos_link: String
+        locked_status: Boolean
+        user_id: Int!
+        created_at: String
+        updated_at: String
         status_aktif: Boolean!
     }
     type Supplier {
@@ -91,20 +136,50 @@ const schema = buildSchema(`#graphql
         updateWarna(id: ID!, input: UpdateWarnaInput!): Warna
     }
     input UpdateUserInput {
-        username: String!
-        password: String!
-        posisi_id: Int!
+        username: String
+        password: String
+        posisi_id: Int
         time_start: String
         time_end: String
         status_aktif: Boolean!
+        has_account: Boolean!
+        nama: String!
+        alamat: String
+        telepon: String
+        jenis_kelamin: String
+        kota_lahir: String
+        tgl_lahir: String
+        status_perkawinan: String
+        jumlah_anak: Int
+        agama: String
+        nik: String
+        npwp: String
+        profile_picture:String
+        ktp_picture:String
+        npwp_picture:String
     }
     input AddUserInput {
-        username: String!
-        password: String!
-        posisi_id: Int!
+        username: String
+        password: String
+        posisi_id: Int
         time_start: String
         time_end: String
         status_aktif: Boolean!
+        has_account: Boolean!
+        nama: String!
+        alamat: String
+        telepon: String
+        jenis_kelamin: String
+        kota_lahir: String
+        tgl_lahir: String
+        status_perkawinan: String
+        jumlah_anak: Int
+        agama: String
+        nik: String
+        npwp: String
+        profile_picture:String
+        ktp_picture:String
+        npwp_picture:String
     }
     input AddWarnaInput {
         warna_beli: String
