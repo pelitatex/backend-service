@@ -36,7 +36,9 @@ const schema = buildSchema(`#graphql
     }
     type Warna {
         id: ID!
+        warna_beli: String
         warna_jual: String!
+        kode_warna: String
         status_aktif: Boolean!
     }
     type Customer {
@@ -85,6 +87,8 @@ const schema = buildSchema(`#graphql
         login(username: String!, password: String!): AuthPayload
         addUser(input: AddUserInput!): User
         updateUser(id: ID!, input: UpdateUserInput!): User
+        addWarna(input: AddWarnaInput!): Warna
+        updateWarna(id: ID!, input: UpdateWarnaInput!): Warna
     }
     input UpdateUserInput {
         username: String!
@@ -102,6 +106,20 @@ const schema = buildSchema(`#graphql
         time_end: String
         status_aktif: Boolean!
     }
+    input AddWarnaInput {
+        warna_beli: String
+        warna_jual: String!
+        kode_warna: String
+        status_aktif: Boolean!
+    }
+
+    input UpdateWarnaInput {
+        warna_beli: String
+        warna_jual: String!
+        kode_warna: String
+        status_aktif: Boolean
+    }
+
 `);
 
 

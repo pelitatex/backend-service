@@ -18,7 +18,7 @@ Thumbs.db
 jspm_packages/
 
 # Optional: Testing
-coverage/
+coverage/   
 
 # Optional: Build process
 build/
