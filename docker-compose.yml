@@ -1,7 +1,8 @@
 version: '3'
 services:
-app:
-image: backend-test
-ports:
-- "3301:3301"
-command: ["node", "index.js"]
+  app:
+    build: .
+    image: backend-test
+    ports:
+      - "3301:3301"
+    command: ["node", "index.js"]
