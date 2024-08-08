@@ -9,8 +9,9 @@ import schema from "./graphql/schema.js";
 import eSchema from "./graphql/resolvers/index.js";
 
 // internal source needed
-import {createSatuanLoader} from "./helpers/loader.js";
-import { getPool } from "./config/db.js";
+// import {createSatuanLoader} from "./helpers/loader.js";
+// import { getPool } from "./config/db.js";
+import getPoolForRequest from "./config/mysqlCon.js";
 
 
 const env = process.env.NODE_ENV || 'TEST';
@@ -32,14 +33,14 @@ app.use(cors({
 // app.use(cors());
 
 app.use(morgan('dev'));
-
-const loader = {
-    satuanLoader : null
-};
 app.use(
     '/graphql',
     graphqlHTTP( async (req) => {
-        const pool = getPool();
+        let xTenant = "default"; ;
+        if(typeof req.headers['x-tenant'] !== 'undefined'){
+            xTenant = req.headers['x-tenant'];
+        }
+        const pool = getPoolForRequest(xTenant);
         return{
             schema:eSchema,
             graphiql: true,

@@ -1,4 +1,7 @@
-const app = require('./api-gateway');
+// const app = require('./api-gateway');
+// const port = process.env.PORT || 3000;
+
+import app from './api-gateway.js';
 const port = process.env.PORT || 3000;
 
 app.listen(port, () => {

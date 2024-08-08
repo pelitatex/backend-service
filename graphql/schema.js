@@ -4,10 +4,11 @@ const schema = buildSchema(`#graphql
     type User {
         id: ID!
         username: String!
+        password: String!
         posisi_id: Int!
-        status_aktif: Boolean!
         time_start: String!
         time_end: String!
+        status_aktif: Boolean!
     }
     type SKUComponent {
         id: ID!
@@ -79,9 +80,27 @@ const schema = buildSchema(`#graphql
         customer(id: ID!): Customer
         supplier(id: ID!): Supplier        
         allSupplier: [Supplier]
-    }    
+    }
     type Mutation {
         login(username: String!, password: String!): AuthPayload
+        addUser(input: AddUserInput!): User
+        updateUser(id: ID!, input: UpdateUserInput!): User
+    }
+    input UpdateUserInput {
+        username: String!
+        password: String!
+        posisi_id: Int!
+        time_start: String
+        time_end: String
+        status_aktif: Boolean!
+    }
+    input AddUserInput {
+        username: String!
+        password: String!
+        posisi_id: Int!
+        time_start: String
+        time_end: String
+        status_aktif: Boolean!
     }
 `);
 

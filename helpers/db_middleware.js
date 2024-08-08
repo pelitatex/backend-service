@@ -1,4 +1,4 @@
-import { getPool } from "../config/db.js";
+import { getPool } from "../config/mysqlCon.js";
 
 const db_middleware = async (req, res, next) => {
   const tenant = req.headers['x-tenant']; // You can change this based on your strategy for determining the tenant
