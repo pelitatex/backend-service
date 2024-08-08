@@ -6,3 +6,5 @@ services:
     ports:
       - "3301:3301"
     command: ["node", "index.js"]
+    env_file:
+      - .env
