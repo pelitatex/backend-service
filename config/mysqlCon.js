@@ -8,10 +8,10 @@ function createPoolForTenant() {
 
     const poolGet = mysql.createPool({
         host: process.env.DB_HOST || 'localhost',
-        user: process.env.DB_USER,
-        password: process.env.DB_PASS,
-        database: process.env.DB_NAME,
-        port: process.env.DB_PORT || 3306,
+        user: process.env.DB_USER || 'devTester',
+        password: process.env.DB_PASS || 'Rinjani575960!!',
+        database: process.env.DB_NAME || 'centralTest_database',
+        port: process.env.DB_PORT || 3308,
         waitForConnections: true,
         connectionLimit: 10,
         queueLimit: 0
