@@ -33,3 +33,7 @@ jest.config.js
 
 # mysql data
 data/db/
+
+#docker
+Dockerfile
+docker-compose.yml
