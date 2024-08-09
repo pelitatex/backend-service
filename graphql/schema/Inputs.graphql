@@ -1,0 +1,115 @@
+input UpdateUserInput {
+    username: String
+    password: String
+    posisi_id: Int
+    time_start: String
+    time_end: String
+    status_aktif: Boolean!
+    has_account: Boolean!
+    nama: String!
+    alamat: String
+    telepon: String
+    jenis_kelamin: String
+    kota_lahir: String
+    tgl_lahir: String
+    status_perkawinan: String
+    jumlah_anak: Int
+    agama: String
+    nik: String
+    npwp: String
+    profile_picture:String
+    ktp_picture:String
+    npwp_picture:String
+}
+input AddUserInput {
+    username: String
+    password: String
+    posisi_id: Int
+    time_start: String
+    time_end: String
+    status_aktif: Boolean!
+    has_account: Boolean!
+    nama: String!
+    alamat: String
+    telepon: String
+    jenis_kelamin: String
+    kota_lahir: String
+    tgl_lahir: String
+    status_perkawinan: String
+    jumlah_anak: Int
+    agama: String
+    nik: String
+    npwp: String
+    profile_picture:String
+    ktp_picture:String
+    npwp_picture:String
+}
+input AddWarnaInput {
+    warna_beli: String
+    warna_jual: String!
+    kode_warna: String
+    status_aktif: Boolean!
+}
+
+input UpdateWarnaInput {
+    warna_beli: String
+    warna_jual: String!
+    kode_warna: String
+    status_aktif: Boolean
+}
+input AddTokoInput {
+    kode: String!
+    nama: String!
+    alamat: String
+    telepon: String
+    email: String
+    kota: String
+    kode_pos: String
+    npwp: String
+    kode_toko: String!
+    status_aktif: Boolean!
+    nama_domain: String
+    email_pajak: String
+}
+input UpdateTokoInput {
+    kode: String!
+    nama: String!
+    alamat: String
+    telepon: String
+    email: String
+    kota: String
+    kode_pos: String
+    npwp: String
+    kode_toko: String!
+    status_aktif: Boolean!
+    nama_domain: String
+    email_pajak: String
+}
+input AddSupplierInput {
+    kode: String!
+    nama: String!
+    alamat: String
+    telepon: String
+    fax: String
+    kota: String
+    kode_pos: String
+    nama_bank: String
+    no_rek_bank: String
+    email: String
+    website: String
+    status_aktif: Boolean!
+}
+input UpdateSupplierInput {
+    kode: String!
+    nama: String!
+    alamat: String
+    telepon: String
+    fax: String
+    kota: String
+    kode_pos: String
+    nama_bank: String
+    no_rek_bank: String
+    email: String
+    website: String
+    status_aktif: Boolean!
+}   

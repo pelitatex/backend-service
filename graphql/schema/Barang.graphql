@@ -1,0 +1,5 @@
+type Barang {
+    id: ID!
+    nama_jual: String!
+    status_aktif: Boolean!
+}

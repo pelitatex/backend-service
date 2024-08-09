@@ -1,0 +1,7 @@
+type Warna {
+    id: ID!
+    warna_beli: String
+    warna_jual: String!
+    kode_warna: String
+    status_aktif: Boolean!
+}

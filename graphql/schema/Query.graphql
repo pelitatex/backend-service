@@ -1,0 +1,24 @@
+type Query{
+    user(id: Int!): User
+    allUser: [User]
+    skuBahan(id: ID!):SKUComponent
+    allSkuBahan: [SKUComponent]
+    skuFitur(id: ID!): SKUComponent
+    allSkuFitur: [SKUComponent]
+    skuGrade(id: ID!): SKUComponent
+    allSkuGrade: [SKUComponent]
+    skuTipe(id: ID!): SKUComponent
+    allSkuTipe: [SKUComponent]
+    skuBarang(id: ID!): SKUBarang
+    allSkuBarang: [SKUBarang]
+    warna(id: ID!): Warna
+    allWarna: [Warna]
+    satuan(id: ID!): Satuan
+    allSatuan: [Satuan]
+    allCustomer: [Customer]
+    customer(id: ID!): Customer
+    supplier(id: ID!): Supplier        
+    allSupplier: [Supplier]
+    toko(id: ID!): Toko
+    allToko: [Toko]
+}

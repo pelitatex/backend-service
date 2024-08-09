@@ -1,0 +1,24 @@
+type User {
+    id: ID!
+    username: String
+    password: String
+    posisi_id: Int
+    time_start: String
+    time_end: String
+    status_aktif: Boolean!
+    has_account: Boolean!
+    nama: String!
+    alamat:String
+    telepon:String
+    jenis_kelamin:String
+    kota_lahir:String
+    tgl_lahir:String
+    status_perkawinan:String
+    jumlah_anak:Int
+    agama:String
+    nik:String
+    npwp:String
+    profile_picture:String
+    ktp_picture:String
+    npwp_picture:String
+}

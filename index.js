@@ -5,8 +5,8 @@ import morgan from "morgan";
 import cors from "cors";
 
 import { graphqlHTTP } from "express-graphql";
-import schema from "./graphql/schema.js";
-import eSchema from "./graphql/resolvers/index.js";
+// import schema from "./graphql/schema.js";
+import eSchema from "./graphql/index.js";
 
 // internal source needed
 // import {createSatuanLoader} from "./helpers/loader.js";

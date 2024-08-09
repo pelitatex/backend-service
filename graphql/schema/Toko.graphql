@@ -1,0 +1,14 @@
+type Toko{
+    id: ID!
+    nama: String!
+    alamat: String
+    telepon: String
+    email: String
+    kota: String
+    kode_pos: String
+    npwp: String
+    kode_toko: String!
+    status_aktif: Boolean!
+    nama_domain: String
+    email_pajak: String
+}

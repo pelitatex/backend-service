@@ -1,0 +1,7 @@
+type SKUComponent {
+    id: ID!
+    nama: String!
+    kode: String!
+    keterangan: String
+    status_aktif: Boolean!
+}

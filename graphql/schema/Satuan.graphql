@@ -1,0 +1,5 @@
+type Satuan {
+    id: ID!
+    nama: String!
+    status_aktif: Boolean!
+}

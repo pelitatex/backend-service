@@ -1,0 +1,11 @@
+type Mutation {
+    login(username: String!, password: String!): AuthPayload
+    addUser(input: AddUserInput!): User
+    updateUser(id: ID!, input: UpdateUserInput!): User
+    addWarna(input: AddWarnaInput!): Warna
+    updateWarna(id: ID!, input: UpdateWarnaInput!): Warna
+    addToko(input: AddTokoInput!): Toko
+    updateToko(id: ID!, input: UpdateTokoInput!): Toko
+    addSupplier(input: AddSupplierInput!): Supplier
+    updateSupplier(id: ID!, input: UpdateSupplierInput!): Supplier
+}
