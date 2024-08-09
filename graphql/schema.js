@@ -93,8 +93,19 @@ const schema = buildSchema(`#graphql
     }
     type Supplier {
         id: ID!
+        kode: String!
         nama: String!
+        alamat: String
+        telepon: String
+        fax: String
+        kota: String
+        kode_pos: String
+        nama_bank: String
+        no_rek_bank: String
+        email: String
+        website: String
         status_aktif: Boolean!
+        
     }    
     type Pembelian {
         id: ID!
@@ -152,6 +163,8 @@ const schema = buildSchema(`#graphql
         updateWarna(id: ID!, input: UpdateWarnaInput!): Warna
         addToko(input: AddTokoInput!): Toko
         updateToko(id: ID!, input: UpdateTokoInput!): Toko
+        addSupplier(input: AddSupplierInput!): Supplier
+        updateSupplier(id: ID!, input: UpdateSupplierInput!): Supplier
     }
     input UpdateUserInput {
         username: String
@@ -213,6 +226,7 @@ const schema = buildSchema(`#graphql
         status_aktif: Boolean
     }
     input AddTokoInput {
+        kode: String!
         nama: String!
         alamat: String
         telepon: String
@@ -226,6 +240,7 @@ const schema = buildSchema(`#graphql
         email_pajak: String
     }
     input UpdateTokoInput {
+        kode: String!
         nama: String!
         alamat: String
         telepon: String
@@ -238,6 +253,34 @@ const schema = buildSchema(`#graphql
         nama_domain: String
         email_pajak: String
     }
+    input AddSupplierInput {
+        kode: String!
+        nama: String!
+        alamat: String
+        telepon: String
+        fax: String
+        kota: String
+        kode_pos: String
+        nama_bank: String
+        no_rek_bank: String
+        email: String
+        website: String
+        status_aktif: Boolean!
+    }
+    input UpdateSupplierInput {
+        kode: String!
+        nama: String!
+        alamat: String
+        telepon: String
+        fax: String
+        kota: String
+        kode_pos: String
+        nama_bank: String
+        no_rek_bank: String
+        email: String
+        website: String
+        status_aktif: Boolean!
+    }   
 
 
 `);
