@@ -7,11 +7,11 @@ var pool = {};
 function createPoolForTenant() {
 
     const poolGet = mysql.createPool({
-        host: process.env.DB_HOST || 'localhost',
-        user: process.env.DB_USER || 'devTester',
-        password: process.env.DB_PASS || 'Rinjani575960!!',
-        database: process.env.DB_NAME || 'centralTest_database',
-        port: process.env.DB_PORT || 3308,
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASS ,
+        database: process.env.DB_NAME,
+        port: process.env.DB_PORT,
         waitForConnections: true,
         connectionLimit: 10,
         queueLimit: 0
@@ -28,7 +28,6 @@ function getPoolForRequest(tenant) {
   }
 
   if (typeof pool[tenantFromHeader] === 'undefined') {
-    console.log("test");
     pool[tenantFromHeader] = createPoolForTenant();
   }
   

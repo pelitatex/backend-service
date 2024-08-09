@@ -102,6 +102,20 @@ const schema = buildSchema(`#graphql
         no_faktur: String!
         supplier_id: Int!
     }
+    type Toko{
+        id: ID!
+        nama: String!
+        alamat: String
+        telepon: String
+        email: String
+        kota: String
+        kode_pos: String
+        npwp: String
+        kode_toko: String!
+        status_aktif: Boolean!
+        nama_domain: String
+        email_pajak: String
+    }
     type AuthPayload {
         token: String,
         timeout: String
@@ -127,6 +141,8 @@ const schema = buildSchema(`#graphql
         customer(id: ID!): Customer
         supplier(id: ID!): Supplier        
         allSupplier: [Supplier]
+        toko(id: ID!): Toko
+        allToko: [Toko]
     }
     type Mutation {
         login(username: String!, password: String!): AuthPayload
@@ -134,6 +150,8 @@ const schema = buildSchema(`#graphql
         updateUser(id: ID!, input: UpdateUserInput!): User
         addWarna(input: AddWarnaInput!): Warna
         updateWarna(id: ID!, input: UpdateWarnaInput!): Warna
+        addToko(input: AddTokoInput!): Toko
+        updateToko(id: ID!, input: UpdateTokoInput!): Toko
     }
     input UpdateUserInput {
         username: String
@@ -194,6 +212,33 @@ const schema = buildSchema(`#graphql
         kode_warna: String
         status_aktif: Boolean
     }
+    input AddTokoInput {
+        nama: String!
+        alamat: String
+        telepon: String
+        email: String
+        kota: String
+        kode_pos: String
+        npwp: String
+        kode_toko: String!
+        status_aktif: Boolean!
+        nama_domain: String
+        email_pajak: String
+    }
+    input UpdateTokoInput {
+        nama: String!
+        alamat: String
+        telepon: String
+        email: String
+        kota: String
+        kode_pos: String
+        npwp: String
+        kode_toko: String!
+        status_aktif: Boolean!
+        nama_domain: String
+        email_pajak: String
+    }
+
 
 `);
 
