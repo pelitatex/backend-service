@@ -8,4 +8,6 @@ type Mutation {
     updateToko(id: ID!, input: UpdateTokoInput!): Toko
     addSupplier(input: AddSupplierInput!): Supplier
     updateSupplier(id: ID!, input: UpdateSupplierInput!): Supplier
+    addCustomer(input: AddCustomerInput!): Customer
+    updateCustomer(id: ID!, input: UpdateCustomerInput!): Customer
 }

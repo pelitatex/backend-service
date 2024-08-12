@@ -20,9 +20,9 @@ type Customer {
     tempo_kredit: Int
     warning_kredit: Int
     limit_warning_type: String
+    limit_warning_amount: Int
     limit_amount: Int
     limit_atas: Int
-    limit_warning_amount: Int
     img_link: String
     npwp_link: String
     ktp_link: String

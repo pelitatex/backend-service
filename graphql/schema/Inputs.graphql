@@ -112,4 +112,68 @@ input UpdateSupplierInput {
     email: String
     website: String
     status_aktif: Boolean!
-}   
+}
+input AddCustomerInput {
+    tipe_company: String!
+    nama: String!
+    alias: String
+    alamat: String
+    blok: String
+    no: String
+    rt: String
+    rw: String
+    kecamatan: String
+    kelurahan: String
+    kota: String
+    provinsi: String
+    kode_pos: String
+    npwp: String
+    nik: String
+    email: String
+    contact_person: String
+    tempo_kredit: Int
+    warning_kredit: Int
+    limit_warning_type: String
+    limit_warning_amount: Int
+    limit_amount: Int
+    limit_atas: Int
+    img_link: String
+    npwp_link: String
+    ktp_link: String
+    medsos_link: String
+    locked_status: Boolean
+    user_id: Int!
+    status_aktif: Boolean!
+}
+input UpdateCustomerInput {
+    tipe_company: String!
+    nama: String!
+    alias: String
+    alamat: String
+    blok: String
+    no: String
+    rt: String
+    rw: String
+    kecamatan: String
+    kelurahan: String
+    kota: String
+    provinsi: String
+    kode_pos: String
+    npwp: String
+    nik: String
+    email: String
+    contact_person: String
+    tempo_kredit: Int
+    warning_kredit: Int
+    limit_warning_type: String
+    limit_warning_amount: Int
+    limit_amount: Int
+    limit_atas: Int
+    img_link: String
+    npwp_link: String
+    ktp_link: String
+    medsos_link: String
+    locked_status: Boolean
+    user_id: Int!
+    status_aktif: Boolean!
+}

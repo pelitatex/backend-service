@@ -24,9 +24,10 @@ const permissions = {
     'admin':['read','write']
 };
 
+console.log(PORT_GW);
 
 app.use(cors({
-    origin: [`http://localhost:${PORT_GW}`, process.env.FRONTEND_URL], // Replace with the origin of your React app
+    origin: [`http://localhost:${PORT_GW}`], // Replace with the origin of your React app
     methods: 'GET,POST,OPTIONS', // You can specify the HTTP methods you want to allow
 }));
 
@@ -35,20 +36,35 @@ app.use(cors({
 app.use(morgan('dev'));
 app.use(
     '/graphql',
-    graphqlHTTP( async (req) => {
-        let xTenant = "default"; ;
-        if(typeof req.headers['x-tenant'] !== 'undefined'){
-            xTenant = req.headers['x-tenant'];
+    graphqlHTTP( async (req, res) => {
+        // console.log('req.headers', req.headers);
+
+        try {
+            if (!req.headers['x-tenant']) {
+                return res.status(400).json({ error: 'Missing tenante in headers' });
+            }
+            
+            const xTenant = req.headers['x-tenant'];
+            const pool = await getPoolForRequest(xTenant);
+
+            console.log('res', res);
+            
+            return{
+                schema:eSchema,
+                graphiql: true,
+                context: {pool: pool}
+            }
+
+        } catch (error) {
+            console.error('Error occurred:', error);
+            return res.status(500).json({ error: error.message });
         }
-        const pool = getPoolForRequest(xTenant);
-        return{
-            schema:eSchema,
-            graphiql: true,
-            context: {pool: pool}
-        }
+
     })
 );
 
-app.listen(PORT, ()=>{
+export default app;
+
+/* app.listen(PORT, () => {
     console.log(`Service start on ${PORT}`);
-});
+}); */

@@ -30,7 +30,7 @@ const forwardToMicroservice = {
 };
 
 apiGateway.use(cors({
-    origin: ['http://localhost:8081', 'http://localhost:3333'],
+    origin: ['http://localhost:8081' , process.env.FRONTEND_URL],
     methods: 'GET,POST',
 }));
 
@@ -62,10 +62,11 @@ apiGateway.use((err, req, res, next) => {
 apiGateway.use('/graphql', (req, res, next) => {
     
     const tenant = req.headers['x-tenant'];
-    const targetMicroservice = req.headers['x-microservice'];
+    // const targetMicroservice = req.headers['x-microservice'];
+    const targetMicroservice = 'master';
     
-    if (!tenant || !targetMicroservice) {
-        return res.status(400).json({ error: 'Missing tenant or Microservice in headers' });
+    if (!tenant) {
+        return res.status(400).json({ error: 'Missing tenant in headers' });
     }
 
     createProxyMiddleware({

@@ -23,7 +23,7 @@ const resolvers = _.merge(
     skuComponentResolver
 );
 
-console.log('resolver', resolvers);
+// console.log('resolver', resolvers);
 
 // const typeDefs = schema;
 
