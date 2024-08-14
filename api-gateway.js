@@ -61,19 +61,22 @@ apiGateway.use((err, req, res, next) => {
 
 apiGateway.use('/graphql', (req, res, next) => {
     
-    const tenant = req.headers['x-tenant'];
+    let tenant = req.headers['x-tenant'];
     // const targetMicroservice = req.headers['x-microservice'];
     const targetMicroservice = 'master';
     
     if (!tenant) {
         return res.status(400).json({ error: 'Missing tenant in headers' });
+    //    let tenant = "testapi001"; 
     }
 
-    createProxyMiddleware({
+    const proxy = createProxyMiddleware({
         target: forwardToMicroservice[targetMicroservice],
         changeOrigin: true,
         pathRewrite: { '^/graphql': '' }, // Remove the '/graphql' prefix before forwarding
-    })(req, res, next);
+    });
+
+    proxy(req, res, next);
 });
 
 /* wss.on('connection', (ws, req) => {

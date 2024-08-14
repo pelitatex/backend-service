@@ -1,4 +1,5 @@
 type Query{
+    hello: String
     user(id: Int!): User
     allUser: [User]
     skuBahan(id: ID!):SKUComponent

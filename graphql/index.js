@@ -9,10 +9,12 @@ import supplierResolver from "./resolvers/supplier.js";
 import customerResolver from "./resolvers/customer.js";
 import satuanResolver from './resolvers/satuan.js';
 import tokoResolver from './resolvers/toko.js';
+import helloResolver from './resolvers/hello.js';
 import skuComponentResolver from './resolvers/skuComponent.js';
 
 
 const resolvers = _.merge(
+    helloResolver,
     userResolver,
     skuBarangResolver,
     warnaResolver,

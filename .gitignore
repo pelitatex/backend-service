@@ -27,10 +27,6 @@ dist/
 # Optional: Environment variables
 .env
 
-# test
-tests/
-jest.config.js
-
 # mysql data
 data/db/
 
