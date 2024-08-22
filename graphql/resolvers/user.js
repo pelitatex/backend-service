@@ -106,7 +106,9 @@ const userResolver = {
         throw new Error('Nama is required.');
       }
 
-      if(!has_account){status_aktif=0}
+      if(!has_account){
+        status_aktif=0;
+      }
       else{
         if (status_aktif == null) {
           throw new Error('Status aktif is required.');          
@@ -140,9 +142,7 @@ const userResolver = {
 
         hashedPassword = await bcrypt.hash(password, 10);
 
-      }
-
-      
+      }      
 
       try {
         const query = `INSERT INTO nd_user 
@@ -176,7 +176,6 @@ const userResolver = {
 
       const pool = context.pool;
       if (!pool) {
-        console.log('context', pool);
         throw new Error('Database pool not available in context.');
       }
 
@@ -184,7 +183,16 @@ const userResolver = {
         throw new Error('Nama is required.');
       }
 
-      if(!has_account){status_aktif=0}
+      const getUsername = `SELECT username, password FROM nd_user WHERE id = ?`;
+      const [rows] = await pool.query(getUsername, [id]);
+      let usernameHistory = rows[0].username;
+      let passwordHistory = rows[0].password;
+
+      if(!has_account){
+        status_aktif=0;
+        username = usernameHistory;
+        password = null;
+      }
       else{
         if (status_aktif == null) {
           throw new Error('Status aktif is required.');          
@@ -193,7 +201,11 @@ const userResolver = {
           throw new Error('Username is required.');
         }
         if (!password) {
-          throw new Error('Password is required.');
+          if (passwordHistory == null || passwordHistory == '') {
+            throw new Error('Password is required.');
+          }else{
+            password = passwordHistory;
+          }
         }
 
         if (time_start == null || time_end == null || time_start=='' || time_end == '') {

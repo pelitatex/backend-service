@@ -1,32 +1,18 @@
-import "./config/loadEnv.js";
-
+import env from "./config/loadEnv.js";
 //==================imports=========================
-import { createServer } from 'http';
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import { createProxyMiddleware } from "http-proxy-middleware";
-
 import { expressjwt } from "express-jwt";
-import jwtEnv from "./config/jwtEnv.js";
-import WebSocket, { WebSocketServer } from 'ws';
-
 
 const apiGateway = express();
-var server = createServer(apiGateway);
-//==================jwt=========================
-const env = process.env.NODE_ENV || 'TEST';
-
-const TOKENSECRET = process.env[`TOKEN_SECRET_${env}`]
-const PORT_USER = process.env[`PORT_${env}_USER`];
-const PORT_GW = process.env[`PORT_${env}_GATEWAY`];
-const PORT_MESSAGE = process.env[`PORT_${env}_MESSAGE`];
-// const PORT_GW_MS = process.env[`PORT_${env}_Gw_MESSAGE`];
-// const wss = new WebSocketServer({ port: PORT_GW_MS });
+const TOKENSECRET = process.env[`TOKEN_SECRET`]
+const PORT_APP = process.env[`PORT_APP`];
 
 
 const forwardToMicroservice = {
-    "master":`http://localhost:${PORT_USER}/graphql`
+    "master":`http://localhost:${PORT_APP}/graphql`
 };
 
 apiGateway.use(cors({
@@ -62,12 +48,11 @@ apiGateway.use((err, req, res, next) => {
 apiGateway.use('/graphql', (req, res, next) => {
     
     let tenant = req.headers['x-tenant'];
-    // const targetMicroservice = req.headers['x-microservice'];
     const targetMicroservice = 'master';
+
     
     if (!tenant) {
         return res.status(400).json({ error: 'Missing tenant in headers' });
-    //    let tenant = "testapi001"; 
     }
 
     const proxy = createProxyMiddleware({
@@ -78,35 +63,6 @@ apiGateway.use('/graphql', (req, res, next) => {
 
     proxy(req, res, next);
 });
-
-/* wss.on('connection', (ws, req) => {
-
-    // Handle WebSocket connections
-    console.log('WebSocket connection established');
-  
-    ws.on('message', (message) => {
-      console.log(`Received: ${message}`);
-    });
-  
-    ws.on('close', () => {
-      console.log('WebSocket connection closed');
-    });
-});
-
-const wsProxy = createProxyMiddleware({
-    target: `http://localhost:${PORT_MESSAGE}`,
-    ws: true,
-    changeOrigin: true,
-});
-
-server.on('upgrade', (request, socket, head) => {
-    console.log('request', request);
-    wsProxy(request, socket, head);
-}); */
-
-/* apiGateway.listen(PORT_GW, () => {
-    console.log(`API Gateway is running on port ${PORT_GW}`);
-}); */
 
 export default apiGateway;
   

@@ -1,11 +1,9 @@
 import request from 'supertest';
 import apiGateway from '../api-gateway.js';
 import {jest} from '@jest/globals'
-import dotenv from 'dotenv';
 
-dotenv.config();
-const env = process.env.NODE_ENV || 'TEST';
-const port_user = process.env[`PORT_${env}_USER`];
+import env from '../config/loadEnv.js';
+const port_user = process.env[`PORT_USER`];
 
 // Mock the http-proxy-middleware module
 jest.mock('http-proxy-middleware', () => ({

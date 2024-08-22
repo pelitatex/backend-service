@@ -1,9 +1,9 @@
 import request from 'supertest';
 import app from '../index';
 
-const env = process.env.NODE_ENV || 'TEST';
-const port_user = process.env[`PORT_${env}_USER`];
-const port_gw = process.env[`PORT_${env}_GATEWAY`];
+import dotenv from 'dotenv';
+dotenv.config({ path: '.env.development' });
+const port_gw = process.env.PORT_GATEWAY;
 
 
 describe('Index API', () => {
@@ -11,14 +11,17 @@ describe('Index API', () => {
     it('should respond with an error when a blank query is sent', async () => {
         const response = await request(app)
             .post('/graphql')
+            .set('Origin', `http://localhost:${port_gw}`) // Set a valid origin
+            
             .send({
-                query: ' '
+                query: ''
             });
         
         // Checking the response status code and error message
         expect(response.statusCode).toBe(400);
         expect(response.body.errors).toBeDefined();
         expect(response.body.errors[0].message).toBe('Syntax Error: Unexpected <EOF>.');
+        
     });
 
     // Test for valid request origin
@@ -51,7 +54,7 @@ describe('Index API', () => {
     });
 
     // Test for invalid IP address
-    /* it('should reject requests from invalid IP address', async () => {
+    it('should reject requests from invalid IP address', async () => {
         const response = await request(app)
         .post('/graphql')
         .set('X-Forwarded-For', '192.168.100.1') // Mock an invalid IP
@@ -62,7 +65,7 @@ describe('Index API', () => {
         // Expect a forbidden response
         expect(response.statusCode).toBe(403);
         expect(response.body.error).toBe('Forbidden: Invalid origin');
-    }); */
+    });
         
 });
 
