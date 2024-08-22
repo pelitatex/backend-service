@@ -1,5 +1,13 @@
 type Barang {
     id: ID!
     nama_jual: String!
+    sku_id: Int
+    jenis_barang: String
+    satuan_id: Int
+    qty_warning: Int!
+    deskripsi_info: String
+    tipe_qty: Int
+    created_at: String!
+    updated_at: String!
     status_aktif: Boolean!
 }

@@ -1,29 +1,38 @@
-// import getPoolForRequest from "../../config/mysqlCon.js";
+const barangResolver = {
+    Query: {
+        barang: () => {
+            // Logic to fetch barang data from database or any other source
+            const barangData = {
+                id: 1,
+                name: "Barang 1",
+                price: 10.99,
+            };
+            return barangData;
+        },
+    },
+    Mutation: {
+        addBarang: (_, { input }) => {
+            // Logic to add new barang to the database or any other source
+            const newBarang = {
+                id: 2,
+                name: input.name,
+                price: input.price,
+            };
+            return newBarang;
+        },
+        updateBarang: (_, { id, input }) => {
+            // Logic to update existing barang in the database or any other source
+            const updatedBarang = {
+                id: id,
+                name: input.name,
+                price: input.price,
+            };
+            return updatedBarang;
+        },
+    },
+};
 
-// const getBarang = {
-//     barang: async(args, req)=>{
-//       const pool = getPoolForRequest(req);
-//         try {
-//           const query = `SELECT * FROM nd_barang WHERE id = ?`;
-//           const [rows] = await pool.query(query, [args.id]);
-//           return rows[0];
-//         } catch (error) {
-//           console.error(error);
-//           throw new Error("Internal Server Error Barang Single");
-//         }
-//     },
-//     barangs: async(args, req)=>{
-//       const pool = getPoolForRequest(req);
-//         try {
-//           const query = 'SELECT * FROM nd_barang';
-//           const [rows] = await pool.query(query);
-//           return rows;
-//         } catch (error) {
-//           console.error(error);
-//           throw new Error("Internal Server Error Barang All");
-//         }
-//     }
-// }
+export default barangResolver;
 
-// export default getBarang;
+
 export default null;

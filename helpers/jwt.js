@@ -1,12 +1,12 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-const env = process.env.NODE_ENV || 'TEST';
+const env = process.env.NODE_ENV || 'development';
 
 import jwt from 'jsonwebtoken';
 
-const LIFETIME = process.env[`TOKEN_LIFETIME_${env}`];
-const TOKENSECRET = process.env[`TOKEN_SECRET_${env}`]
+const LIFETIME = process.env[`TOKEN_LIFETIME`];
+const TOKENSECRET = process.env[`TOKEN_SECRET`]
 
 const generateToken = (payload) => {
     return jwt.sign(payload, TOKENSECRET, {expiresIn: LIFETIME});
