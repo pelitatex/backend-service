@@ -10,4 +10,14 @@ type Mutation {
     updateSupplier(id: ID!, input: UpdateSupplierInput!): Supplier
     addCustomer(input: AddCustomerInput!): Customer
     updateCustomer(id: ID!, input: UpdateCustomerInput!): Customer
+    addBarang(input: AddBarangInput!): Barang
+    updateBarang(id: ID!, input: UpdateBarangInput!): Barang
+    addBahan(input: AddBarangComponent!): BarangComponent
+    updateBahan(id: ID!, input: UpdateBarangComponent!): BarangComponent
+    addFitur(input: AddBarangComponent!): BarangComponent
+    updateFitur(id: ID!, input: UpdateBarangComponent!): BarangComponent
+    addGrade(input: AddBarangComponent!): BarangComponent
+    updateGrade(id: ID!, input: UpdateBarangComponent!): BarangComponent
+    addTipe(input: AddBarangComponent!): BarangComponent
+    updateTipe(id: ID!, input: UpdateBarangComponent!): BarangComponent
 }

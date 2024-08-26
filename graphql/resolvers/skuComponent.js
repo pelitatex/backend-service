@@ -1,6 +1,6 @@
 const skuComponentResolver = {
   Query:{
-    skuBahan: async(_,args, context)=>{
+    /* skuBahan: async(_,args, context)=>{
       const pool = context.pool;
         if (!pool) {
           console.log('context', pool);
@@ -119,7 +119,7 @@ const skuComponentResolver = {
           console.error(error);
           throw new Error("Internal Server Error Barang All");
         }
-    },
+    }, */
   }
 }
 

@@ -177,3 +177,41 @@ input UpdateCustomerInput {
     user_id: Int!
     status_aktif: Boolean!
 }
+
+input AddBarangInput {
+    sku_id: Int
+    nama_jual: String!
+    satuan_id: Int
+    jenis_barang: String
+    grade: String
+    bahan: String
+    tipe: String
+    fitur: String
+    qty_warning: Int
+    deskripsi_info: String
+    status_aktif: Boolean!
+}
+
+input UpdateBarangInput {
+    sku_id: Int
+    nama_jual: String!
+    satuan_id: Int
+    jenis_barang: String
+    grade: String
+    bahan: String
+    tipe: String
+    fitur: String
+    qty_warning: Int
+    deskripsi_info: String
+    status_aktif: Boolean!
+}
+
+input AddBarangComponent {
+    nama: String!
+    keterangan: String   
+}
+
+input UpdateBarangComponent {
+    nama: String!
+    keterangan: String
+}

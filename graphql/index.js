@@ -10,7 +10,8 @@ import customerResolver from "./resolvers/customer.js";
 import satuanResolver from './resolvers/satuan.js';
 import tokoResolver from './resolvers/toko.js';
 import helloResolver from './resolvers/hello.js';
-import skuComponentResolver from './resolvers/skuComponent.js';
+// import skuComponentResolver from './resolvers/skuComponent.js';
+import barangComponentResolver from './resolvers/barangComponent.js';
 
 
 const resolvers = _.merge(
@@ -22,7 +23,7 @@ const resolvers = _.merge(
     customerResolver,
     satuanResolver,
     tokoResolver,
-    skuComponentResolver
+    barangComponentResolver
 );
 
 // console.log('resolver', resolvers);

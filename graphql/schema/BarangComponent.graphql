@@ -1,0 +1,6 @@
+type BarangComponent {
+    id: ID!
+    nama: String!
+    kode: String
+    keterangan: String
+}

@@ -2,14 +2,14 @@ type Query{
     hello: String
     user(id: Int!): User
     allUser: [User]
-    skuBahan(id: ID!):SKUComponent
-    allSkuBahan: [SKUComponent]
-    skuFitur(id: ID!): SKUComponent
-    allSkuFitur: [SKUComponent]
-    skuGrade(id: ID!): SKUComponent
-    allSkuGrade: [SKUComponent]
-    skuTipe(id: ID!): SKUComponent
-    allSkuTipe: [SKUComponent]
+    bahan(id:Int!):BarangComponent
+    allBahan: [BarangComponent]
+    fitur(id:Int!):BarangComponent
+    allFitur: [BarangComponent]
+    grade(id:Int!):BarangComponent
+    allGrade: [BarangComponent]
+    tipe(id:Int!):BarangComponent
+    allTipe: [BarangComponent]
     skuBarang(id: ID!): SKUBarang
     allSkuBarang: [SKUBarang]
     warna(id: ID!): Warna
