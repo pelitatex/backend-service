@@ -22,4 +22,8 @@ type Query{
     allSupplier: [Supplier]
     toko(id: ID!): Toko
     allToko: [Toko]
+    documentControl(id: ID!): DocumentControl
+    allDocumentControl: [DocumentControl]
+    department(id: ID!): Department
+    allDepartment: [Department]
 }

@@ -206,12 +206,40 @@ input UpdateBarangInput {
     status_aktif: Boolean!
 }
 
-input AddBarangComponent {
+input AddBarangComponentInput {
     nama: String!
     keterangan: String   
 }
 
-input UpdateBarangComponent {
+input UpdateBarangComponentInput {
     nama: String!
     keterangan: String
 }
+
+input AddDocumentControlInput{
+    department_id: Int!
+    kode: String!
+    nama: String!
+    keterangan: String
+    status_aktif: Boolean!
+}
+
+input UpdateDocumentControlInput{
+    department_id: Int!
+    kode: String!
+    nama: String!
+    keterangan: String
+    status_aktif: Boolean!
+}
+
+input AddDepartmentInput{
+    kode: String!
+    nama: String!
+    status_aktif: Boolean!
+}
+
+input UpdateDepartmentInput{
+    kode: String!
+    nama: String!
+    status_aktif: Boolean!
+}   

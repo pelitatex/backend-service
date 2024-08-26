@@ -123,35 +123,35 @@ const barangComponentResolver = {
     },
     Mutation: {
         addBahan: async (_, input, context) => {
-            const result = await addBarangComponent(input, 'bahan', context);
+            const result = await addBarangComponent(input, 'barang_bahan', context);
             return result;
         },
         updateBahan: async (_, args, context) => {
-            const result = await updateBarangComponent(args.input, args.id, 'bahan', context);
+            const result = await updateBarangComponent(args.input, args.id, 'barang_bahan', context);
             return result;
         },
         addFitur: async (_, input, context) => {
-            const result = await addBarangComponent(input, 'fitur', context);
+            const result = await addBarangComponent(input, 'barang_fitur', context);
             return result;
         },
         updateFitur: async (_, args, context) => {
-            const result = await updateBarangComponent(args.input, args.id, 'fitur', context);
+            const result = await updateBarangComponent(args.input, args.id, 'barang_fitur', context);
             return result;
         },
         addGrade: async (_, input, context) => {
-            const result = await addBarangComponent(input, 'grade', context);
+            const result = await addBarangComponent(input, 'barang_grade', context);
             return result;
         },
         updateGrade: async (_, args, context) => {
-            const result = await updateBarangComponent(args.input, args.id, 'grade', context);
+            const result = await updateBarangComponent(args.input, args.id, 'barang_grade', context);
             return result;
         },
         addTipe: async (_, input, context) => {
-            const result = await addBarangComponent(input, 'tipe', context);
+            const result = await addBarangComponent(input, 'barang_tipe', context);
             return result;
         },
         updateTipe: async (_, args, context) => {
-            const result = await updateBarangComponent(args.input, args.id, 'tipe', context);
+            const result = await updateBarangComponent(args.input, args.id, 'barang_tipe', context);
             return result;
         },
     }
@@ -220,8 +220,9 @@ const updateBarangComponent = async (input, id, table, context) => {
         return updatedRows[0];
     }catch (error) {
         console.error(error);
-        throw new Error(`Internal Server Error Update ${table}`);
+        throw new Error(error.message || `Internal Server Error Update ${table}`);
     }
+    
 }
 
 export default barangComponentResolver;

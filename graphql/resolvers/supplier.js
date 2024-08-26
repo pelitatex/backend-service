@@ -54,13 +54,6 @@ const supplierResolver = {
         status_aktif
       } = input;
 
-      if (!nama || nama.trim() === '') {
-        throw new Error('Nama cannot be null or blank');
-      }
-
-      if (!kode || kode.trim() === '') {
-        throw new Error('Kode cannot be null or blank');
-      }
 
       const pool = context.pool;
       if (!pool) {

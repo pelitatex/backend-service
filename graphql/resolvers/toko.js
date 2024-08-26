@@ -54,14 +54,6 @@ const tokoResolver = {
           nama_domain,
           email_pajak } = input;
         
-        if (!nama || nama.trim() === '') {
-          throw new Error('Nama cannot be null or blank');
-        }
-
-        if (!kode_toko || kode_toko.trim() === '') {
-          throw new Error('kode toko cannot be null or blank');
-        }
-        
         const checkQueryNama = 'SELECT COUNT(*) as count FROM nd_toko WHERE nama = ?';
         const [checkResultNama] = await pool.query(checkQueryNama, [nama]);
         if (checkResultNama[0].count > 0) {
@@ -134,14 +126,7 @@ const tokoResolver = {
           nama_domain,
           email_pajak } = input;
 
-        if (!nama || nama.trim() === '') {
-          throw new Error('Nama cannot be null or blank');
-        }
-
-        if (!kode_toko || kode_toko.trim() === '') {
-          throw new Error('kode toko cannot be null or blank');
-        }
-
+          
         if (status_aktif == null) {
           status_aktif = true;
         }

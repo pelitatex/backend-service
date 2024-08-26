@@ -1,0 +1,15 @@
+type DocumentControl {
+    id: ID!
+    department_id: Int!
+    kode: String!
+    nama: String!
+    keterangan: String
+    status_aktif: Boolean!
+}
+
+type Department {
+    id: ID!
+    kode: String!
+    nama: String!
+    status_aktif: Boolean!
+}
