@@ -87,6 +87,8 @@ const documentControlResolver = {
 
         const query = `INSERT INTO nd_document_control (department_id, nama, kode, keterangan, status_aktif) VALUES (?, ?, ?, ?, ?)`;
         const [result] = await pool.query(query, [department_id, nama.toUpperCase(), paddedKode, keterangan, status_aktif]);
+        queryLogger(pool, `nd_document_control`, result.insertId, query, [department_id, nama.toUpperCase(), paddedKode, keterangan, status_aktif]);
+
         return { id: result.insertId, department_id, nama: nama.toUpperCase(), kode : paddedKode, keterangan, status_aktif };
       } catch (error) {
         console.error(error);
@@ -120,7 +122,13 @@ const documentControlResolver = {
           keterangan = ?,
           status_aktif = ?
         WHERE id = ?`;
-        await pool.query(query, [department_id, nama.toUpperCase(), paddedKode, keterangan, status_aktif, id]);
+
+        const [result] = await pool.query(query, [department_id, nama.toUpperCase(), paddedKode, keterangan, status_aktif, id]);
+        if (result.affectedRows === 0) {
+          throw new Error("Document Control not found");
+        }
+        queryLogger(pool, `nd_document_control`, result.insertId, query, [department_id, nama.toUpperCase(), paddedKode, keterangan, status_aktif]);
+
         return { id: id, department_id, nama : nama.toUpperCase(), kode : paddedKode, keterangan, status_aktif };
       } catch (error) {
         console.error(error);
@@ -149,6 +157,8 @@ const documentControlResolver = {
         
         const query = `INSERT INTO nd_department (nama, kode, status_aktif) VALUES (?, ?, ?)`;
         const [result] = await pool.query(query, [nama.toUpperCase(), paddedKode, status_aktif]);
+        queryLogger(pool, `nd_department`, result.insertId, query, [nama.toUpperCase(), paddedKode, status_aktif]);
+
         return { id: result.insertId, nama: nama.toUpperCase(), kode : paddedKode, status_aktif };
       } catch (error) {
         console.error(error);
@@ -176,7 +186,12 @@ const documentControlResolver = {
 
 
         const query = `UPDATE nd_department SET nama = ?, kode = ?, status_aktif = ? WHERE id = ?`;
-        await pool.query(query, [nama.toUpperCase(), paddedKode, status_aktif, id]);
+        const [result] = await pool.query(query, [nama.toUpperCase(), paddedKode, status_aktif, id]);
+        if (result.affectedRows === 0) {
+          throw new Error("Department not found");
+        }
+        queryLogger(pool, `nd_department`, id, query,  [nama.toUpperCase(), paddedKode, status_aktif, id]);
+
         return {id: id, nama : nama.toUpperCase(), kode: paddedKode, status_aktif};
       } catch (error) {
         console.error(error);

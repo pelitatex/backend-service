@@ -63,6 +63,7 @@ const warnaResolver = {
         
         const query = 'INSERT INTO nd_warna (warna_jual, warna_beli, kode_warna, status_aktif) VALUES (?, ?, ?, ?)';
         const [result] = await pool.query(query, [warna_jual, warna_beli, kode_warna, status_aktif]);
+        queryLogger(pool, `nd_warna`, result.insertId, query, [warna_jual, warna_beli, kode_warna, status_aktif]);
         return { id: result.insertId, warna_jual, warna_beli, kode_warna, status_aktif };
       } catch (error) {
         console.error(error);
@@ -103,6 +104,9 @@ const warnaResolver = {
         if (result.affectedRows === 0) {
           throw new Error('Warna not found');
         }
+
+        queryLogger(pool, `nd_warna`, id, query, [warna_jual, warna_beli, kode_warna, status_aktif, id]);
+
         return { id, warna_jual, warna_beli, kode_warna, status_aktif };
 
       } catch (error) {

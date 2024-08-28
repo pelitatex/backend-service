@@ -1,3 +1,5 @@
+import queryLogger from "../../helpers/queryLogger.js";
+
 const barangResolver = {
     Query: {
         barang: async(_,args, context)=>{
@@ -68,6 +70,18 @@ const barangResolver = {
                     deskripsi_info,
                     status_aktif
                 ]);
+
+                queryLogger(pool, 'nd_barang' ,query, [sku_id,
+                    nama_jual,
+                    satuan_id,
+                    jenis_barang,
+                    grade,
+                    bahan,
+                    tipe,
+                    fitur,
+                    qty_warning,
+                    deskripsi_info,
+                    status_aktif]);
                 return {id: result.insertId,
                     sku_id,
                     nama_jual,
@@ -106,13 +120,42 @@ const barangResolver = {
                                qty_warning = ?, deskripsi_info = ?, status_aktif = ? 
                                WHERE id = ?`;
                 
-                await pool.query(query, [
+                const [result] = await pool.query(query, [
                     sku_id, nama_jual, satuan_id, jenis_barang, 
                     grade, bahan, tipe, fitur, 
                     qty_warning, deskripsi_info, status_aktif, 
                     id
                 ]);
-                return true;
+
+                if (result.affectedRows === 0) {
+                    throw new Error(`Satuan with id ${id} not found.`);
+                }
+
+                queryLogger(pool, 'nd_barang' ,query, [sku_id,
+                    nama_jual,
+                    satuan_id,
+                    jenis_barang,
+                    grade,
+                    bahan,
+                    tipe,
+                    fitur,
+                    qty_warning,
+                    deskripsi_info,
+                    status_aktif, id]);
+
+                return {id,
+                    sku_id,
+                    nama_jual,
+                    satuan_id,
+                    jenis_barang,
+                    grade,
+                    bahan,
+                    tipe,
+                    fitur,
+                    qty_warning,
+                    deskripsi_info,
+                    status_aktif
+                 };
             } catch (error) {
                 console.error(error);
                 throw new Error("Internal Server Error Update Barang");

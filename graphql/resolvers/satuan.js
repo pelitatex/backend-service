@@ -1,3 +1,5 @@
+import queryLogger from "../../helpers/queryLogger.js";
+
 const satuanResolver = {
   Query:{
     satuan: async(_,args, context)=>{
@@ -42,6 +44,7 @@ const satuanResolver = {
         const { nama, status_aktif } = input;
         const query = 'INSERT INTO nd_satuan (nama, status_aktif) VALUES (?, ?)';
         const [result] = await pool.query(query, [nama, status_aktif]);
+        queryLogger(pool, 'nd_satuan', result.insertId ,query, [nama, status_aktif]);
         return { id: result.insertId, nama, status_aktif };
       } catch (error) {
         console.error(error);
@@ -61,6 +64,7 @@ const satuanResolver = {
         if (result.affectedRows === 0) {
           throw new Error(`Satuan with id ${id} not found.`);
         }
+        queryLogger(pool, 'nd_satuan' ,query, [nama, status_aktif,id]);
         return { id : id, nama, status_aktif };
       } catch (error) {
         console.error(error);

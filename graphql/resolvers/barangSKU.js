@@ -77,6 +77,7 @@ const barangSKUResolver = {
         const query = 'INSERT INTO nd_barang_sku (sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif) VALUES (?, ?, ?, ?, ?, ?, ?)';
         const [result] = await pool.query(query, [sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif]);
         const insertedId = result.insertId;
+        queryLogger(pool, `nd_barang_sku`, result.insertId, query, [sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif]);
         return {id: insertedId, sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif};
       } catch (error) {
         console.error(error);
@@ -112,7 +113,11 @@ const barangSKUResolver = {
         }
 
         const query = 'UPDATE nd_barang_sku SET nama_barang = ?, nama_jual = ?, status_aktif = ? WHERE id = ?';
-        await pool.query(query, [nama_barang.toUpperCase(), nama_jual.toUpperCase(), status_aktif, id]);
+        const [result] = await pool.query(query, [nama_barang.toUpperCase(), nama_jual.toUpperCase(), status_aktif, id]);
+        if (result.affectedRows === 0) {
+          throw new Error('Barang SKU not found');
+        }
+        queryLogger(pool, `nd_barang_sku`, id, query, [nama_barang.toUpperCase(), nama_jual.toUpperCase(), status_aktif, id]);
 
         const updatedQuery = `SELECT * FROM nd_barang_sku WHERE id = ?`;
         const [rows] = await pool.query(updatedQuery, [id]);

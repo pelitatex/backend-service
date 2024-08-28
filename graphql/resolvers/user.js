@@ -76,6 +76,9 @@ const userResolver = {
               time_end: user.time_end
             };
             const token = jwt.generateToken(payload);
+
+            const queryLog = `INSERT INTO user_log (user_id, activity) VALUES (?, ?)`;
+            const [res] = await pool.query(queryLog, [user.id, 'login']);
             return { token: token, timeout: LIFETIME };
             
           }
@@ -125,8 +128,7 @@ const userResolver = {
           time_start="07:00:00";
           time_end="18:00:00";
         }
-        
-        
+                
 
         try {
           const checkUserExistenceQuery = `SELECT * FROM nd_user WHERE username = ?`;
@@ -156,8 +158,13 @@ const userResolver = {
           has_account, nama, alamat, telepon, jenis_kelamin,
           kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp
         ]);
-        const insertedUserId = result.insertId;
-        return { id: insertedUserId, username, password:hashedPassword, posisi_id, time_start, time_end, status_aktif,
+
+        queryLogger(pool, `nd_user`, result.insertId, query, [username, hashedPassword, posisi_id, time_start, time_end, status_aktif,
+          has_account, nama, alamat, telepon, jenis_kelamin,
+          kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp
+        ]);
+        
+        return { id: result.insertId, username, password:hashedPassword, posisi_id, time_start, time_end, status_aktif,
           has_account, nama, alamat, telepon, jenis_kelamin,
           kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp
          };
@@ -242,6 +249,10 @@ const userResolver = {
         if (result.affectedRows === 0) {
           throw new Error("User not found");
         }
+        queryLogger(pool, `nd_user`, id, query, [username, hashedPassword, posisi_id, time_start, time_end, status_aktif, 
+          has_account, nama, alamat, telepon, jenis_kelamin,
+          kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp, id]);
+        
         return { id, username, password, posisi_id, time_start, time_end, status_aktif,
           has_account, nama, alamat, telepon, jenis_kelamin,
           kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp

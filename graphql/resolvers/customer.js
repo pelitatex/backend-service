@@ -64,6 +64,17 @@ const customerResolver = {
           contact_person, telepon, email, medsos_link, 
           jenis_perkerjaan, jenis_produk, 
           status_aktif]);
+
+        queryLogger(pool, `nd_customer`, result.insertId, query, [tipe_company, nama, alamat, blok, no, rt, rw, 
+          kecamatan, kelurahan, kota, provinsi, kode_pos, 
+          npwp, nik, tempo_kredit, 
+          warning_kredit, limit_warning_type, limit_warning_amount, 
+          limit_amount, limit_atas, 
+          img_link, npwp_link, ktp_link, 
+          contact_person, telepon, email, medsos_link, 
+          jenis_perkerjaan, jenis_produk, 
+          status_aktif]);
+
         return { id: result.insertId, tipe_company, nama, alamat, blok, no, rt, rw,
           kecamatan, kelurahan, kota, provinsi, kode_pos,
           npwp, nik, tempo_kredit, warning_kredit,
@@ -111,7 +122,7 @@ const customerResolver = {
         jenis_perkerjaan = ?, jenis_produk = ?,
         status_aktif = ?
         WHERE id = ?`;
-        await pool.query(query, [tipe_company, nama, alamat, blok, no, rt, rw,
+        const [result] = await pool.query(query, [tipe_company, nama, alamat, blok, no, rt, rw,
           kecamatan, kelurahan, kota, provinsi, kode_pos,
           npwp, nik, tempo_kredit, warning_kredit,
           limit_warning_type, limit_warning_amount, limit_amount, limit_atas,
@@ -119,6 +130,20 @@ const customerResolver = {
           contact_person, telepon, email, medsos_link,
           jenis_perkerjaan, jenis_produk,
           status_aktif, id]);
+        
+        if (result.affectedRows === 0) {
+          throw new Error("Customer not found");
+        }
+
+        queryLogger(pool, `nd_customer`, result.insertId, query, [tipe_company, nama, alamat, blok, no, rt, rw,
+          kecamatan, kelurahan, kota, provinsi, kode_pos,
+          npwp, nik, tempo_kredit, warning_kredit,
+          limit_warning_type, limit_warning_amount, limit_amount, limit_atas,
+          img_link, npwp_link, ktp_link,
+          contact_person, telepon, email, medsos_link,
+          jenis_perkerjaan, jenis_produk,
+          status_aktif, id]);
+
         return { id, tipe_company, nama, alamat, blok, no, rt, rw,
           kecamatan, kelurahan, kota, provinsi, kode_pos,
           npwp, nik, tempo_kredit, warning_kredit,

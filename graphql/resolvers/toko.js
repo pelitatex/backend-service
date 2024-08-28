@@ -66,10 +66,6 @@ const tokoResolver = {
           throw new Error('Kode Toko already exists');
         }
 
-        if (status_aktif == null) {
-          status_aktif = false;
-        }
-        
         const query = `INSERT INTO nd_toko (
           nama, alamat, telepon, email, 
           kota, kode_pos,npwp,
@@ -89,6 +85,21 @@ const tokoResolver = {
           status_aktif,
           nama_domain,
           email_pajak]);
+        
+        queryLogger(pool, `nd_toko`, result.insertId, query, [
+          nama,
+          alamat,
+          telepon,
+          email,
+          kota,
+          kode_pos,
+          npwp,
+          kode_toko,
+          status_aktif,
+          nama_domain,
+          email_pajak] );
+
+        
         return { id: result.insertId, nama,
           alamat,
           telepon,
@@ -157,6 +168,11 @@ const tokoResolver = {
         if (result.affectedRows === 0) {
           throw new Error('Toko not found');
         }
+        queryLogger(pool, `nd_toko`, id, query, [
+          nama, alamat, telepon, email,
+          kota, kode_pos, npwp, 
+          kode_toko, status_aktif, nama_domain, email_pajak, 
+          id] );
         return { id, nama, alamat, telepon, email, kota, kode_pos, npwp, kode_toko, status_aktif, nama_domain, email_pajak };
 
       } catch (error) {

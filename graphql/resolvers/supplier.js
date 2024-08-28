@@ -86,6 +86,9 @@ const supplierResolver = {
           status_aktif
         ) VALUES (?,?,?,?, ?,?,?,?, ?,?,?,?)`;
         const [result] = await pool.query(query, [kode, nama, alamat, telepon, fax, kota, kode_pos, nama_bank, no_rek_bank, email, website, status_aktif]);
+
+        queryLogger(pool, `nd_supplier`, result.insertId, query, [kode, nama, alamat, telepon, fax, kota, kode_pos, nama_bank, no_rek_bank, email, website, status_aktif]);
+
         return { id: result.insertId, kode, nama, alamat, telepon, fax, kota, kode_pos, nama_bank, no_rek_bank, email, website, status_aktif };
       } catch (error) {
         console.error(error);
@@ -140,6 +143,7 @@ const supplierResolver = {
         if (result.affectedRows === 0) {
           throw new Error("Supplier not found");
         }
+        queryLogger(pool, `nd_supplier`, id, query, [kode, nama, alamat, telepon, fax, kota, kode_pos, nama_bank, no_rek_bank, email, website, status_aktif]);
         return { id, kode, nama, alamat, telepon, fax, kota, kode_pos, nama_bank, no_rek_bank, email, website, status_aktif };
       } catch (error) {
         console.error(error);

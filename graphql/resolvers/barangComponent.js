@@ -1,3 +1,5 @@
+import queryLogger from "../../helpers/queryLogger.js";
+
 const barangComponentResolver = {
     Query: {
         bahan: async(_,args, context)=>{
@@ -35,35 +37,35 @@ const barangComponentResolver = {
     },
     Mutation: {
         addBahan: async (_, input, context) => {
-            const result = await addBarangComponent(input, 'barang_bahan', context);
+            const result = await addBarangComponent(input, 'bahan', context);
             return result;
         },
         updateBahan: async (_, args, context) => {
-            const result = await updateBarangComponent(args.input, args.id, 'barang_bahan', context);
+            const result = await updateBarangComponent(args.input, args.id, 'bahan', context);
             return result;
         },
         addFitur: async (_, input, context) => {
-            const result = await addBarangComponent(input, 'barang_fitur', context);
+            const result = await addBarangComponent(input, 'fitur', context);
             return result;
         },
         updateFitur: async (_, args, context) => {
-            const result = await updateBarangComponent(args.input, args.id, 'barang_fitur', context);
+            const result = await updateBarangComponent(args.input, args.id, 'fitur', context);
             return result;
         },
         addGrade: async (_, input, context) => {
-            const result = await addBarangComponent(input, 'barang_grade', context);
+            const result = await addBarangComponent(input, 'grade', context);
             return result;
         },
         updateGrade: async (_, args, context) => {
-            const result = await updateBarangComponent(args.input, args.id, 'barang_grade', context);
+            const result = await updateBarangComponent(args.input, args.id, 'grade', context);
             return result;
         },
         addTipe: async (_, input, context) => {
-            const result = await addBarangComponent(input, 'barang_tipe', context);
+            const result = await addBarangComponent(input, 'tipe', context);
             return result;
         },
         updateTipe: async (_, args, context) => {
-            const result = await updateBarangComponent(args.input, args.id, 'barang_tipe', context);
+            const result = await updateBarangComponent(args.input, args.id, 'tipe', context);
             return result;
         },
     }
@@ -114,13 +116,13 @@ const addBarangComponent = async ({input}, table, context) => {
     }
     try {
 
-        const checkExistQuery = `SELECT * FROM nd_${table} WHERE nama = ?`;
+        const checkExistQuery = `SELECT * FROM nd_barang_${table} WHERE nama = ?`;
         const [existingRows] = await pool.query(checkExistQuery, [nama]);
         if (existingRows.length > 0) {
             throw new Error(`${table} with nama already exists.`);
         }
 
-        const getLastInsertedKodeQuery = `SELECT kode FROM nd_${table} ORDER BY kode DESC LIMIT 1`;
+        const getLastInsertedKodeQuery = `SELECT kode FROM nd_barang_${table} ORDER BY kode DESC LIMIT 1`;
         const [lastInsertedKodeRows] = await pool.query(getLastInsertedKodeQuery);
         let paddedKode = '00';
         if (lastInsertedKodeRows.length > 0) {
@@ -129,8 +131,11 @@ const addBarangComponent = async ({input}, table, context) => {
         }
         
 
-        const query = `INSERT INTO nd_${table} (nama, kode, keterangan) VALUES (?, ?, ?)`;
+        const query = `INSERT INTO nd_barang_${table} (nama, kode, keterangan) VALUES (?, ?, ?)`;
         const [result] = await pool.query(query, [nama.toUpperCase(), paddedKode, keterangan]);
+
+        queryLogger(pool, `nd_barang_${table}`, result.insertId ,query, [nama.toUpperCase(), paddedKode, keterangan]);
+
         return { id: result.insertId, nama: nama.toUpperCase(), kode:paddedKode, keterangan };
     } catch (error) {
         console.error(error);
@@ -149,17 +154,19 @@ const updateBarangComponent = async (input, id, table, context) => {
         throw new Error('Nama cannot be null or blank');
     }
     try {
-        const checkExistQuery = `SELECT * FROM nd_${table} WHERE nama = ? AND id != ?`;
+        const checkExistQuery = `SELECT * FROM nd_barang_${table} WHERE nama = ? AND id != ?`;
         const [existingRows] = await pool.query(checkExistQuery, [nama, id]);
         if (existingRows.length > 0) {
             throw new Error(`${table} with nama already exists.`);
         }
 
-        const query = `UPDATE nd_${table} SET nama = ?, keterangan = ? WHERE id = ?`;
+        const query = `UPDATE nd_barang_${table} SET nama = ?, keterangan = ? WHERE id = ?`;
         const [result] = await pool.query(query, [nama.toUpperCase(), keterangan, id]);
         if (result.affectedRows === 0) {
             throw new Error(`${table} with id ${id} not found.`);
         }
+        queryLogger(pool, `nd_barang_${table}`,'id', query, [nama.toUpperCase(), keterangan, id]);
+
         const getUpdatedDataQuery = `SELECT * FROM nd_${table} WHERE id = ?`;
         const [updatedRows] = await pool.query(getUpdatedDataQuery, [id]);
         return updatedRows[0];
