@@ -1,3 +1,4 @@
+import queryLogger from "../../helpers/queryLogger.js";
 
 const supplierResolver = {
   Query:{

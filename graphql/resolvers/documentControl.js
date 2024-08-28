@@ -1,3 +1,5 @@
+import queryLogger from "../../helpers/queryLogger.js";
+
 const documentControlResolver = {
   Query:{
     documentControl: async(_,args, context)=>{

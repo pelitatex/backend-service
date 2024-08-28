@@ -4,6 +4,7 @@ dotenv.config();
 import md5 from "../../helpers/md5.js";
 import jwt from "../../helpers/jwt.js";
 import bcrypt from "bcrypt";
+import queryLogger from "../../helpers/queryLogger.js";
 
 
 const env = process.env.NODE_ENV || 'TEST';

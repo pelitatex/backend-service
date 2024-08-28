@@ -1,3 +1,5 @@
+import queryLogger from "../../helpers/queryLogger.js";
+
 const customerResolver = {
   Query:{
     customer: async(_,args, context)=>{

@@ -1,3 +1,5 @@
+import queryLogger from "../../helpers/queryLogger.js";
+
 const warnaResolver = {
   Query : {
     warna: async(_,args, context)=>{

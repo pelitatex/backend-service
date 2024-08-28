@@ -1,3 +1,5 @@
+import queryLogger from "../../helpers/queryLogger.js";
+
 const tokoResolver = {
   Query : {
     toko: async(_,args, context)=>{
