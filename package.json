@@ -19,6 +19,7 @@
     "lodash": "^4.17.21",
     "morgan": "^1.10.0",
     "mysql2": "^3.6.3",
+    "uuid": "^10.0.0",
     "ws": "^8.14.2"
   },
   "devDependencies": {

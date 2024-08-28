@@ -1,124 +1,36 @@
 const barangComponentResolver = {
     Query: {
         bahan: async(_,args, context)=>{
-            const pool = context.pool;
-            if (!pool) {
-                console.log('context', pool);
-                throw new Error('Database pool not available in context.');
-            }
-            try {
-                const query = `SELECT * FROM nd_bahan WHERE id = ?`;
-                const [rows] = await pool.query(query, [args.id]);
-                return rows[0];
-            } catch (error) {
-            console.error(error);
-            throw new Error("Internal Server Error Bahan All");
-            }
+            const result =await getBarangComponent(args, 'bahan', context);
+            return result;
         },
         allBahan: async (_, args, context) => {
-            const pool = context.pool;
-            if (!pool) {
-                console.log('context', pool);
-                throw new Error('Database pool not available in context.');
-            }
-            try {
-                const query = `SELECT * FROM nd_bahan`;
-                const [rows] = await pool.query(query);
-                return rows;
-            } catch (error) {
-                console.error(error);
-                throw new Error("Internal Server Error All Bahan");
-            }
+            const result =await getAllBarangComponent('bahan',context);
+            return result;
         },
         fitur: async (_, args, context) => {
-            const pool = context.pool;
-            if (!pool) {
-                console.log('context', pool);
-                throw new Error('Database pool not available in context.');
-            }
-            try {
-                const query = `SELECT * FROM nd_fitur WHERE id = ?`;
-                const [rows] = await pool.query(query, [args.id]);
-                return rows[0];
-            } catch (error) {
-                console.error(error);
-                throw new Error("Internal Server Error Fitur");
-            }
+            const result =await getBarangComponent(args, 'fitur', context);
+            return result;
         },
         allFitur: async (_, args, context) => {
-            const pool = context.pool;
-            if (!pool) {
-                console.log('context', pool);
-                throw new Error('Database pool not available in context.');
-            }
-            try {
-                const query = `SELECT * FROM nd_fitur`;
-                const [rows] = await pool.query(query);
-                return rows;
-            } catch (error) {
-                console.error(error);
-                throw new Error("Internal Server Error All Fitur");
-            }
+            const result =await getAllBarangComponent('fitur',context);
+            return result;
         },
         grade: async (_, args, context) => {
-            const pool = context.pool;
-            if (!pool) {
-                console.log('context', pool);
-                throw new Error('Database pool not available in context.');
-            }
-            try {
-                const query = `SELECT * FROM nd_grade WHERE id = ?`;
-                const [rows] = await pool.query(query, [args.id]);
-                return rows[0];
-            } catch (error) {
-                console.error(error);
-                throw new Error("Internal Server Error Grade");
-            }
+            const result =await getBarangComponent(args, 'grade', context);
+            return result;
         },
         allGrade: async (_, args, context) => {
-            const pool = context.pool;
-            if (!pool) {
-                console.log('context', pool);
-                throw new Error('Database pool not available in context.');
-            }
-            try {
-                const query = `SELECT * FROM nd_grade`;
-                const [rows] = await pool.query(query);
-                return rows;
-            } catch (error) {
-                console.error(error);
-                throw new Error("Internal Server Error All Grade");
-            }
+            const result =await getAllBarangComponent('grade',context);
+            return result;
         },
         tipe: async (_, args, context) => {
-            const pool = context.pool;
-            if (!pool) {
-                console.log('context', pool);
-                throw new Error('Database pool not available in context.');
-            }
-            try {
-                const query = `SELECT * FROM nd_tipe WHERE id = ?`;
-                const [rows] = await pool.query(query, [args.id]);
-                return rows[0];
-            } catch (error) {
-                console.error(error);
-                throw new Error("Internal Server Error Tipe");
-            }
+            const result =await getBarangComponent(args, 'tipe', context);
+            return result;
         },
         allTipe: async (_, args, context) => {
-            const pool = context.pool;
-            if (!pool) {
-                console.log('context', pool);
-                throw new Error('Database pool not available in context.');
-            }
-            try {
-                const query = `SELECT * FROM nd_tipe`;
-                const [rows] = await pool.query(query);
-                return rows;
-            } catch (error) {
-                console.error(error);
-                throw new Error("Internal Server Error All Tipe");
-            }
+            const result =await getAllBarangComponent('tipe',context);
+            return result;
         },
     },
     Mutation: {
@@ -154,6 +66,39 @@ const barangComponentResolver = {
             const result = await updateBarangComponent(args.input, args.id, 'barang_tipe', context);
             return result;
         },
+    }
+}
+
+const getBarangComponent = async (args, table, context) => {
+    const pool = context.pool;
+    if (!pool) {
+        console.log('context', pool);
+        throw new Error('Database pool not available in context.');
+    }
+    try {
+        const query = `SELECT * FROM nd_barang_${table} WHERE id = ?`;
+        const [rows] = await pool.query(query, [args.id]);
+        return rows[0];
+    } catch (error) {
+        console.error(error);
+        throw new Error("Internal Server Error "+table);
+    }
+}
+
+const getAllBarangComponent = async (table, context) => {
+    const pool = context.pool;
+    if (!pool) {
+        console.log('context', pool);
+        throw new Error('Database pool not available in context.');
+    }
+    try {
+        const query = `SELECT * FROM nd_barang_${table}`;
+        const [rows] = await pool.query(query);
+        console.log('result',rows);
+        return rows;
+    } catch (error) {
+        console.error(error);
+        throw new Error("Internal Server Error All "+table);
     }
 }
 

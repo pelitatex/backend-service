@@ -24,4 +24,8 @@ type Mutation {
     updateDocumentControl(id: ID!, input: UpdateDocumentControlInput!): DocumentControl
     addDepartment(input: AddDepartmentInput!): Department   
     updateDepartment(id: ID!, input: UpdateDepartmentInput!): Department
+    addSatuan(input: AddSatuanInput!): Satuan
+    updateSatuan(id: ID!, input: UpdateSatuanInput!): Satuan
+    addBarangSKU(input: AddBarangSKUInput!): BarangSKU
+    updateBarangSKU(id: ID!, input: UpdateBarangSKUInput!): BarangSKU
 }

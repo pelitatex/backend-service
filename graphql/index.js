@@ -3,7 +3,7 @@ import _ from "lodash";
 import typeDefs from "./schema/index.js";
 
 import userResolver from "./resolvers/user.js";
-import skuBarangResolver from "./resolvers/skuBarang.js";
+import skuBarangResolver from "./resolvers/barangSKU.js";
 import warnaResolver from "./resolvers/warna.js";
 import supplierResolver from "./resolvers/supplier.js";
 import customerResolver from "./resolvers/customer.js";
@@ -13,6 +13,7 @@ import helloResolver from './resolvers/hello.js';
 // import skuComponentResolver from './resolvers/skuComponent.js';
 import barangComponentResolver from './resolvers/barangComponent.js';
 import documentControlResolver from './resolvers/documentControl.js';
+import barangSKUResolver from './resolvers/barangSKU.js';
 
 
 const resolvers = _.merge(
@@ -25,7 +26,8 @@ const resolvers = _.merge(
     satuanResolver,
     tokoResolver,
     barangComponentResolver,
-    documentControlResolver
+    documentControlResolver,
+    barangSKUResolver
 );
 
 // console.log('resolver', resolvers);
