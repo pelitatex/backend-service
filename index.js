@@ -30,7 +30,7 @@ app.use((req, res, next) => {
     
     const hostname = req.headers.origin ? new URL(req.headers.origin).hostname : '';
 
-    if (env === "development" || env === "testing" || allowedIPs.includes(clientIP) || hostname == "localhost") {
+    if (ENVIRONMENT === "development" || ENVIRONMENT === "testing" || allowedIPs.includes(clientIP) || hostname == "localhost") {
         console.log(clientIP, hostname);
         next();
     } else {
