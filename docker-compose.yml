@@ -4,7 +4,8 @@ services:
     build: .
     image: backend-test
     ports:
-      - "3301:3301"
+      - "3301-3304:3301-3304"
     command: ["node", "server.js"]
     env_file:
       - .env
+      - .env.testing
