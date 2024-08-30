@@ -1,4 +1,4 @@
-import env from "./config/loadEnv.js";
+import {FRONTEND_URL, PORT_GATEWAY, ENVIRONMENT} from "./config/loadEnv.js";
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
@@ -10,11 +10,11 @@ import eSchema from "./graphql/index.js";
 import getPoolForRequest from "./config/mysqlCon.js";
 
 const app = express();
-const PORT_GW = process.env[`PORT_GATEWAY`];
+const PORT_GW = PORT_GATEWAY;
 const allowedCors = [];
-if (env === "development" || "testing") {
+if (ENVIRONMENT === "development" || "testing") {
     allowedCors.push(`http://localhost`);
-    allowedCors.push(process.env.FRONTEND_URL);
+    allowedCors.push(FRONTEND_URL);
 }else{
     allowedCors.push(`http://localhost:${PORT_GW}`);
 }

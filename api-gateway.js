@@ -1,4 +1,4 @@
-import env from "./config/loadEnv.js";
+import {FRONTEND_URL} from "./config/loadEnv.js";
 //==================imports=========================
 import express from "express";
 import morgan from "morgan";
@@ -16,7 +16,7 @@ const forwardToMicroservice = {
 };
 
 apiGateway.use(cors({
-    origin: ['http://localhost:8081' , process.env.FRONTEND_URL],
+    origin: ['http://localhost:8081' , FRONTEND_URL],
     methods: 'GET,POST',
 }));
 

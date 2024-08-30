@@ -1,14 +1,7 @@
-import dotenv from "dotenv";
-dotenv.config();
-
-import md5 from "../../helpers/md5.js";
+import {LIFETIME} from "../../config/loadEnv.js";
 import jwt from "../../helpers/jwt.js";
 import bcrypt from "bcrypt";
 import queryLogger from "../../helpers/queryLogger.js";
-
-
-const env = process.env.NODE_ENV || 'TEST';
-const LIFETIME = process.env[`TOKEN_LIFETIME_${env}`];
 
 const userResolver = {
   Query : {

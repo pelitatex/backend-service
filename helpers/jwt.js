@@ -1,15 +1,5 @@
-import dotenv from "dotenv";
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
-const env = process.env.NODE_ENV || 'development';
-dotenv.config({ path: path.resolve(__dirname, `../.env.${env}`) });
-
+import {LIFETIME, TOKENSECRET} from '../config/loadEnv.js';
 import jwt from 'jsonwebtoken';
-
-const LIFETIME = process.env[`TOKEN_LIFETIME`];
-const TOKENSECRET = process.env[`TOKEN_SECRET`]
 
 const generateToken = (payload) => {
     return jwt.sign(payload, TOKENSECRET, {expiresIn: LIFETIME});
