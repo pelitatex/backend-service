@@ -1,4 +1,4 @@
-import {FRONTEND_URL} from "./config/loadEnv.js";
+import {FRONTEND_URL, TOKENSECRET, PORT_APP} from "./config/loadEnv.js";
 //==================imports=========================
 import express from "express";
 import morgan from "morgan";
@@ -7,9 +7,6 @@ import { createProxyMiddleware } from "http-proxy-middleware";
 import { expressjwt } from "express-jwt";
 
 const apiGateway = express();
-const TOKENSECRET = process.env[`TOKEN_SECRET`]
-const PORT_APP = process.env[`PORT_APP`];
-
 
 const forwardToMicroservice = {
     "master":`http://localhost:${PORT_APP}/graphql`
