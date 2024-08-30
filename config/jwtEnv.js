@@ -5,19 +5,12 @@ const __dirname = path.dirname(__filename);
 // Load the root .env file first
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
+const env = process.env.NODE_ENV || 'development';
+dotenv.config({ path: path.resolve(__dirname, `../.env.${env}`) });
+
 const jwtEnv = {
-    "TEST": {
-        "tokenLife" : process.env.TOKEN_LIFE_TEST,
-        "tokenSecret" : process.env.TOKEN_SECRET_TEST || 'test-rahasia'
-    },
-    "DEV" : {
-        "tokenLife" : process.env.TOKEN_LIFE_DEV,
-        "tokenSecret" : process.env.TOKEN_SECRET_DEV || 'development-rahasia',
-    },
-    "PROD" : {
-        "tokenLife" : process.env.TOKEN_LIFE_PROD,
-        "tokenSecret" : process.env.TOKEN_SECRET_PROD || 'production-rahasia',
-    }
+    "tokenLife" : process.env.TOKEN_LIFE,
+    "tokenSecret" : process.env.TOKEN_SECRET || 'test-rahasia'
 }
 
 export default jwtEnv;
