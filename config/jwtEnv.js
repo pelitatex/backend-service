@@ -1,4 +1,4 @@
-import dotenv from "dotenv";
+/* import dotenv from "dotenv";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -11,6 +11,7 @@ dotenv.config({ path: path.resolve(__dirname, `../.env.${env}`) });
 const jwtEnv = {
     "tokenLife" : process.env.TOKEN_LIFE,
     "tokenSecret" : process.env.TOKEN_SECRET || 'test-rahasia'
-}
+} */
+const jwtEnv = {}
 
 export default jwtEnv;
