@@ -14,7 +14,7 @@ RUN npm install --legacy-peer-deps
 COPY . .
 
 # Expose the port the app runs on
-EXPOSE 3301
+EXPOSE 3301-3304
 
 # Use a non-root user to run the application
 USER node

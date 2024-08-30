@@ -9,3 +9,4 @@ services:
     env_file:
       - .env
       - .env.testing
+    network_mode: "host"
