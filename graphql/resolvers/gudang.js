@@ -93,6 +93,7 @@ const gudangResolver = {
       }
     },
   },
+  
 }
 
 export default gudangResolver;

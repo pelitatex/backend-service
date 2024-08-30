@@ -1,17 +1,16 @@
 import mysql from "mysql2/promise";
-import dotenv from "dotenv";
-dotenv.config();
+import { DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT } from "./loadEnv";
 
 var pool = {};
 
 function createPoolForTenant() {
 
     const poolGet = mysql.createPool({
-        host: process.env.DB_HOST,
-        user: process.env.DB_USER,
-        password: process.env.DB_PASS ,
-        database: process.env.DB_NAME,
-        port: process.env.DB_PORT,
+        host: DB_HOST,
+        user: DB_USER,
+        password: DB_PASS ,
+        database: DB_NAME,
+        port: DB_PORT,
         waitForConnections: true,
         connectionLimit: 10,
         queueLimit: 0
