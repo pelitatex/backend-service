@@ -1,0 +1,10 @@
+type Gudang{
+    id: ID!
+    nama: String!
+    lokasi: String
+    status_default: Boolean!
+    visible: Boolean!
+    gudang_group_id: Int
+    urutan: Int
+    status_aktif: Boolean!
+}
