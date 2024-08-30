@@ -1,5 +1,5 @@
 import mysql from "mysql2/promise";
-import { DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT } from "./loadEnv";
+import { DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT } from "../config/loadEnv.js";
 
 var pool = {};
 
