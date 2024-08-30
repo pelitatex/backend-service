@@ -5,6 +5,6 @@ services:
     image: backend-test
     ports:
       - "3301:3301"
-    command: ["node", "index.js"]
+    command: ["node", "server.js"]
     env_file:
       - .env

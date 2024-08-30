@@ -20,4 +20,4 @@ EXPOSE 3301
 USER node
 
 # Command to run the application
-CMD ["node", "index.js"]
+CMD ["node", "server.js"]
