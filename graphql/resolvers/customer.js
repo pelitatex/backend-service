@@ -34,7 +34,7 @@ const customerResolver = {
     }
   },
   Mutation: {
-    addCustomer: async (_, input, context) => {
+    addCustomer: async (_, {input}, context) => {
       const pool = context.pool;
       if (!pool) {
         console.log('context', pool);
@@ -56,7 +56,21 @@ const customerResolver = {
 
         } = input;
         
-        const query = 'INSERT INTO nd_customer (name, email, phone) VALUES (?, ?, ?)';
+        const query = `INSERT INTO nd_customer (tipe_company, nama, alamat, blok, no, rt, rw,
+        kecamatan, kelurahan, kota, provinsi, kode_pos,
+        npwp, nik, tempo_kredit, warning_kredit,
+        limit_warning_type, limit_warning_amount, limit_amount, limit_atas,
+        img_link, npwp_link, ktp_link,
+        contact_person, telepon1, email, medsos_link,
+        jenis_perkerjaan, jenis_produk,
+        status_aktif
+        ) VALUES ( ?, ?, ?, ?, ?, ?, ?,
+         ?, ?, ?, ?, ?,
+         ?, ?, ?, ?,
+         ?, ?, ?, ?,
+         ?, ?, ?,
+         ?, ?, ?, ?,
+         ?, ?, ?)`;
         const [result] = await pool.query(query, [tipe_company, nama, alamat, blok, no, rt, rw, 
           kecamatan, kelurahan, kota, provinsi, kode_pos, 
           npwp, nik, tempo_kredit, 
@@ -120,7 +134,7 @@ const customerResolver = {
         limit_warning_type = ?, limit_warning_amount = ?,
         limit_amount = ?, limit_atas = ?,
         img_link = ?, npwp_link = ?, ktp_link = ?,
-        contact_person = ?, telepon = ?, email = ?, medsos_link = ?,
+        contact_person = ?, telepon1 = ?, email = ?, medsos_link = ?,
         jenis_perkerjaan = ?, jenis_produk = ?,
         status_aktif = ?
         WHERE id = ?`;

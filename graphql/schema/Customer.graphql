@@ -29,6 +29,8 @@ type Customer {
     medsos_link: String
     locked_status: Boolean
     user_id: Int!
+    jenis_pekerjaan: String
+    jenis_produk: String
     created_at: String
     updated_at: String
     status_aktif: Boolean!

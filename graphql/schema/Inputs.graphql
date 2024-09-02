@@ -143,6 +143,8 @@ input AddCustomerInput {
     medsos_link: String
     locked_status: Boolean
     user_id: Int!
+    jenis_pekerjaan: String
+    jenis_produk: String
     status_aktif: Boolean!
 }
 input UpdateCustomerInput {
@@ -174,7 +176,9 @@ input UpdateCustomerInput {
     ktp_link: String
     medsos_link: String
     locked_status: Boolean
-    user_id: Int!
+    user_id: Int!    
+    jenis_pekerjaan: String
+    jenis_produk: String
     status_aktif: Boolean!
 }
 
