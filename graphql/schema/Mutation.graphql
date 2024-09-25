@@ -1,5 +1,6 @@
 type Mutation {
     login(username: String!, password: String!): AuthPayload
+    pinChecker(input: pinUserInput!): User
     addUser(input: AddUserInput!): User
     updateUser(id: ID!, input: UpdateUserInput!): User
     addWarna(input: AddWarnaInput!): Warna

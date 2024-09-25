@@ -86,6 +86,41 @@ const userResolver = {
         console.error(error);
         throw new Error(error.message);
       }
+    },
+    pinChecker: async(_,{input}, context)=>{
+      const pool = context.pool;
+      const {pin} = input;
+      if (!pool) {
+        console.log('context', pool);
+        throw new Error('Database pool not available in context.');
+      }
+      if (!pin) {
+        throw new Error('PIN is required.');
+      }
+      try {
+        const query = `SELECT * FROM nd_user WHERE pin = ? and has_account = 1 and status_aktif = 1`;
+        const [rows] = await pool.query(query, [pin]);
+        
+        if (typeof rows[0] !== 'undefined') {
+          return {
+            id: rows[0].id,
+            has_account: rows[0].has_account,
+            nama: rows[0].nama,
+            username: rows[0].username,
+            posisi_id: rows[0].posisi_id,
+            time_start: rows[0].time_start,
+            time_end: rows[0].time_end,
+            status_aktif: rows[0].status_aktif
+          }         
+          
+        }else{
+          throw new Error("User not found");
+        }
+
+      } catch (error) {
+        console.error(error);
+        throw new Error(error.message);
+      }
     }
     ,addUser: async(_, {input}, context) => {
       let { username, password, posisi_id, time_start, time_end, status_aktif,

@@ -264,7 +264,7 @@ input AddBarangSKUInput{
     warna_id: Int!
     satuan_id: Int!
     status_aktif: Boolean!
-}
+} 
 
 input UpdateBarangSKUInput{
     nama_barang: String!
@@ -290,4 +290,8 @@ input UpdateGudangInput{
     gudang_group_id: Int
     urutan: Int
     status_aktif: Boolean!
+}
+
+input pinUserInput{
+    pin: String!
 }
