@@ -2,6 +2,8 @@ import {LIFETIME, TOKENSECRET} from '../config/loadEnv.js';
 import jwt from 'jsonwebtoken';
 
 const generateToken = (payload) => {
+    console.log('tokenSecret',TOKENSECRET, ' LIFETIME', LIFETIME);
+    console.log('Token generated at:', new Date().toISOString());
     return jwt.sign(payload, TOKENSECRET, {expiresIn: LIFETIME});
 }
 
