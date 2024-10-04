@@ -2,7 +2,6 @@ import {FRONTEND_URL, PORT_GATEWAY, ENVIRONMENT, ALLOWED_IPS, TRUSTED_ORIGINS, N
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
-import axios from "axios";
 
 import { graphqlHTTP } from "express-graphql";
 import eSchema from "./graphql/index.js";
@@ -85,10 +84,54 @@ app.get('/hello', (req, res) => {
     res.json({message: 'Request allowed'});
 });
 
-app.get('/customers/:customer_index', (req, res) => {
+app.get('/customers-legacy/:company_index', async (req, res) => { 
+    const company_index = parseInt(req.params.company_index);
+    console.log('company_index', company_index);
     try {
-        const company_index = parseInt(req.params.company_index);
-        const otherAppUrl = `${NODE2_URL}/customers/${customerIndex}`;
+        const otherAppUrl = `${NODE2_URL}/customers/${company_index}`;
+
+        console.log(`Fetching data from other app: ${otherAppUrl}`);
+
+        axios.get(otherAppUrl)
+            .then(response => {
+                res.json(response.data);
+            })
+            .catch(error => {
+                console.error(`Error fetching data from other app: ${error.message}`);
+                res.status(500).json({ error: 'Failed to fetch data from other app' });
+            });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch data from other app' });
+    }
+});
+
+app.get('/customers-legacy/sudah_verifikasi_oleh_pajak', async (req, res) => { 
+    try {
+        const otherAppUrl = `${NODE2_URL}/customers/sudah_verifikasi_oleh_pajak`;
+
+        console.log(`Fetching data from other app: ${otherAppUrl}`);
+
+        axios.get(otherAppUrl)
+            .then(response => {
+                res.json(response.data);
+            })
+            .catch(error => {
+                console.error(`Error fetching data from other app: ${error.message}`);
+                res.status(500).json({ error: 'Failed to fetch data from other app' });
+            });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch data from other app' });
+    }
+});
+
+app.get('/customers-legacy/:company_index/:id', async (req, res) => { 
+    const id = parseInt(req.params.id);
+    const company_index = parseInt(req.params.company_index);
+    console.log('company_index', company_index);
+    try {
+        const otherAppUrl = `${NODE2_URL}/customers/${company_index}/${id}`;
+
+        console.log(`Fetching data from other app: ${otherAppUrl}`);
 
         axios.get(otherAppUrl)
             .then(response => {
