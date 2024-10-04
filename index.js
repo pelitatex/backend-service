@@ -56,8 +56,10 @@ app.use((req, res, next) => {
             console.log(`Testing Mode: Access granted to IP - ${clientIP}, Hostname - ${hostname} `);
             next();
         } else {
-            console.log(`Allowed IPs: ${allowedIPs}, clientIP: ${clientIP}`);
-            console.log(`test: ${allowedIPs.includes(clientIP)}`);
+            console.log(`Allowed IPs:`);
+            console.log(allowedIPs);
+            console.log(`clientIP:${clientIP}`);
+            console.log(`test: ${allowedIPs.includes(clientIP.toString().trim())}`);
             console.error(`Testing Mode: Access denied to IP - ${clientIP}, Hostname - ${hostname}`);
             // return res.status(403).json({ error: 'Forbidden: IP not allowed in testing environment' });
             return res.status(403).send( {error:`Forbidden: IP not allowed in testing environment`} );
