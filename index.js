@@ -1,13 +1,15 @@
-import {FRONTEND_URL, PORT_GATEWAY, ENVIRONMENT, ALLOWED_IPS, TRUSTED_ORIGINS} from "./config/loadEnv.js";
+import {FRONTEND_URL, PORT_GATEWAY, ENVIRONMENT, ALLOWED_IPS, TRUSTED_ORIGINS, NODE2_URL} from "./config/loadEnv.js";
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
+import axios from "axios";
 
 import { graphqlHTTP } from "express-graphql";
 import eSchema from "./graphql/index.js";
 
 // import { getPool } from "./config/db.js";
 import getPoolForRequest from "./config/mysqlCon.js";
+import axios from 'axios';
 
 process.env.TZ = 'UTC';
 const app = express();
@@ -81,6 +83,24 @@ app.use((req, res, next) => {
 
 app.get('/hello', (req, res) => {
     res.json({message: 'Request allowed'});
+});
+
+app.get('/customers/:customer_index', (req, res) => {
+    try {
+        const company_index = parseInt(req.params.company_index);
+        const otherAppUrl = `${NODE2_URL}/customers/${customerIndex}`;
+
+        axios.get(otherAppUrl)
+            .then(response => {
+                res.json(response.data);
+            })
+            .catch(error => {
+                console.error(`Error fetching data from other app: ${error.message}`);
+                res.status(500).json({ error: 'Failed to fetch data from other app' });
+            });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch data from other app' });
+    }
 });
 
 app.use(

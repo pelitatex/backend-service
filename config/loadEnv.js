@@ -40,6 +40,7 @@ export const DB_NAME  = process.env.DB_NAME;
 export const DB_PORT =  process.env.DB_PORT;
 export const TRUSTED_ORIGINS = process.env.TRUSTED_ORIGINS;
 export const ALLOWED_IPS = process.env.ALLOWED_IPS;
+export const NODE2_URL = process.env.NODE2_URL;
 
 // Export the variables to be used in other modules
 if (envMain === 'development' || envMain === 'testing') {
