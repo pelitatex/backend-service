@@ -53,7 +53,9 @@ app.use((req, res, next) => {
     } else if (ENVIRONMENT === "testing") {
         // In testing, restrict access only to allowed IPs
         if (allowedIPs.includes(clientIP) || hostname === "localhost") {
-            console.log(`Testing Mode: Access granted to IP - ${clientIP}, Hostname - ${hostname}`);
+            console.log(`Testing Mode: Access granted to IP - ${clientIP}, Hostname - ${hostname} `);
+            console.log(`Allowed IPs: ${allowedIPs}, clientIP: ${clientIP}`);
+            console.log(`test: ${allowedIPs.includes(clientIP)}`);
             next();
         } else {
             console.error(`Testing Mode: Access denied to IP - ${clientIP}, Hostname - ${hostname}`);
