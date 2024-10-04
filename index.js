@@ -27,11 +27,14 @@ app.use(cors({
 app.use(morgan('dev'));
 app.use((req, res, next) => {
     const allowedIPs = ALLOWED_IPS.split(',');
-    const clientIP = req.headers['x-forwarded-for'] 
+    let clientIP = req.headers['x-forwarded-for'] 
         ? req.headers['x-forwarded-for'].split(',')[0].trim() 
         : req.connection.remoteAddress;
-    const trustedOrigins = TRUSTED_ORIGINS.split(',');
 
+    if (clientIP.startsWith('::ffff:')) {
+        clientIP = clientIP.substring(7);
+    }
+    const trustedOrigins = TRUSTED_ORIGINS.split(',');
     
     const hostname = req.headers.origin ? new URL(req.headers.origin).hostname : '';
 
