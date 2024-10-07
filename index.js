@@ -21,7 +21,15 @@ if (ENVIRONMENT === "development" || "testing") {
     allowedCors.push(`http://localhost:${PORT_GW}`);
 }
 app.use(cors({
-    origin: allowedCors, 
+    origin: (origin, callback) => {
+        if (allowedCors.indexOf(origin) !== -1 || !origin) {
+            console.info(`Allowed CORS for origin: ${origin}`);
+            callback(null, true);
+        } else {
+            console.warn(`Blocked CORS for origin: ${origin}`);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     methods: 'GET,POST,OPTIONS',
 }));
 
@@ -38,6 +46,8 @@ app.use((req, res, next) => {
     const trustedOrigins = TRUSTED_ORIGINS.split(',');
     
     const hostname = req.headers.origin ? new URL(req.headers.origin).hostname : '';
+    console.log(`Mode: ${clientIP}, ${hostname}`);
+
 
     if (ENVIRONMENT === "development") {
         // In development, allow all access
