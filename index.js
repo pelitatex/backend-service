@@ -19,18 +19,7 @@ if (ENVIRONMENT === "development" || "testing") {
 }else{
     allowedCors.push(`http://localhost:${PORT_GW}`);
 }
-app.use(cors({
-    origin: (origin, callback) => {
-        if (allowedCors.indexOf(origin) !== -1 || !origin) {
-            console.info(`Allowed CORS for origin: ${origin}`);
-            callback(null, true);
-        } else {
-            console.warn(`Blocked CORS for origin: ${origin}`);
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    methods: 'GET,POST,OPTIONS',
-}));
+app.use(cors());
 
 app.use(morgan('dev'));
 app.use((req, res, next) => {
