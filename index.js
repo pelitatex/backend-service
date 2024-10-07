@@ -39,14 +39,6 @@ app.use((req, res, next) => {
     
     const hostname = req.headers.origin ? new URL(req.headers.origin).hostname : '';
 
-    /* if (ENVIRONMENT === "development" || ENVIRONMENT === "testing" || allowedIPs.includes(clientIP) || hostname == "localhost") {
-        
-        console.log(clientIP, hostname);
-        next();
-    } else {
-      return res.status(403).json({ error: 'Forbidden: Invalid origin' });
-    } */
-
     if (ENVIRONMENT === "development") {
         // In development, allow all access
         console.log(`Development Mode: Access granted to IP - ${clientIP}, Hostname - ${hostname}`);
@@ -75,6 +67,10 @@ app.use((req, res, next) => {
             // return res.status(403).json({ error: 'Forbidden: Access denied in production environment' });
             return res.status(403).send({error:`Request blocked`});
         }
+    }else if (err.name === 'CorsError') {
+        return res.status(403).json({
+          error: 'CORS error: The origin is not allowed.'+error.message,
+        });
     } else {
         return res.status(500).send({error:`Invalid environment configuration`} );
     }
