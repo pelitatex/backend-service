@@ -15,8 +15,7 @@ const app = express();
 const PORT_GW = PORT_GATEWAY;
 const allowedCors = [];
 if (ENVIRONMENT === "development" || "testing") {
-    allowedCors.push(`http://localhost`);
-    allowedCors.push(FRONTEND_URL);
+    allowedCors.push('*');
 }else{
     allowedCors.push(`http://localhost:${PORT_GW}`);
 }
