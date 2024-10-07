@@ -3,6 +3,7 @@ services:
   app:
     build: .
     image: backend-test
+    restart: unless-stopped
     ports:
       - "3301-3304:3301-3304"
     command: ["node", "server.js"]
