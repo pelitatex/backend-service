@@ -51,7 +51,7 @@ const customerResolver = {
           limit_amount, limit_atas,
           img_link, npwp_link, ktp_link,
           contact_person, telepon, email, medsos_link,
-          jenis_perkerjaan, jenis_produk, 
+          jenis_pekerjaan, jenis_produk, 
           status_aktif 
 
         } = input;
@@ -62,7 +62,7 @@ const customerResolver = {
         limit_warning_type, limit_warning_amount, limit_amount, limit_atas,
         img_link, npwp_link, ktp_link,
         contact_person, telepon1, email, medsos_link,
-        jenis_perkerjaan, jenis_produk,
+        jenis_pekerjaan, jenis_produk,
         status_aktif
         ) VALUES ( ?, ?, ?, ?, ?, ?, ?,
          ?, ?, ?, ?, ?,
@@ -78,7 +78,7 @@ const customerResolver = {
           limit_amount, limit_atas, 
           img_link, npwp_link, ktp_link, 
           contact_person, telepon, email, medsos_link, 
-          jenis_perkerjaan, jenis_produk, 
+          jenis_pekerjaan, jenis_produk, 
           status_aktif]);
 
         queryLogger(pool, `nd_customer`, result.insertId, query, [tipe_company, nama, alamat, blok, no, rt, rw, 
@@ -88,7 +88,7 @@ const customerResolver = {
           limit_amount, limit_atas, 
           img_link, npwp_link, ktp_link, 
           contact_person, telepon, email, medsos_link, 
-          jenis_perkerjaan, jenis_produk, 
+          jenis_pekerjaan, jenis_produk, 
           status_aktif]);
 
         return { id: result.insertId, tipe_company, nama, alamat, blok, no, rt, rw,
@@ -97,7 +97,7 @@ const customerResolver = {
           limit_warning_type, limit_warning_amount, limit_amount, limit_atas,
           img_link, npwp_link, ktp_link,
           contact_person, telepon, email, medsos_link,
-          jenis_perkerjaan, jenis_produk,
+          jenis_pekerjaan, jenis_produk,
           status_aktif
         };
       } catch (error) {
@@ -122,7 +122,7 @@ const customerResolver = {
           limit_amount, limit_atas,
           img_link, npwp_link, ktp_link,
           contact_person, telepon, email, medsos_link,
-          jenis_perkerjaan, jenis_produk, 
+          jenis_pekerjaan, jenis_produk, 
           status_aktif 
 
         } = input;
@@ -135,7 +135,7 @@ const customerResolver = {
         limit_amount = ?, limit_atas = ?,
         img_link = ?, npwp_link = ?, ktp_link = ?,
         contact_person = ?, telepon1 = ?, email = ?, medsos_link = ?,
-        jenis_perkerjaan = ?, jenis_produk = ?,
+        jenis_pekerjaan = ?, jenis_produk = ?,
         status_aktif = ?
         WHERE id = ?`;
         const [result] = await pool.query(query, [tipe_company, nama, alamat, blok, no, rt, rw,
@@ -144,7 +144,7 @@ const customerResolver = {
           limit_warning_type, limit_warning_amount, limit_amount, limit_atas,
           img_link, npwp_link, ktp_link,
           contact_person, telepon, email, medsos_link,
-          jenis_perkerjaan, jenis_produk,
+          jenis_pekerjaan, jenis_produk,
           status_aktif, id]);
         
         if (result.affectedRows === 0) {
@@ -157,7 +157,7 @@ const customerResolver = {
           limit_warning_type, limit_warning_amount, limit_amount, limit_atas,
           img_link, npwp_link, ktp_link,
           contact_person, telepon, email, medsos_link,
-          jenis_perkerjaan, jenis_produk,
+          jenis_pekerjaan, jenis_produk,
           status_aktif, id]);
 
         return { id, tipe_company, nama, alamat, blok, no, rt, rw,
@@ -166,7 +166,7 @@ const customerResolver = {
           limit_warning_type, limit_warning_amount, limit_amount, limit_atas,
           img_link, npwp_link, ktp_link,
           contact_person, telepon, email, medsos_link,
-          jenis_perkerjaan, jenis_produk,
+          jenis_pekerjaan, jenis_produk,
           status_aktif
         };
       } catch (error) {
