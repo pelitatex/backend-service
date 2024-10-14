@@ -42,6 +42,10 @@ export const TRUSTED_ORIGINS = process.env.TRUSTED_ORIGINS;
 export const ALLOWED_IPS = process.env.ALLOWED_IPS;
 export const NODE2_URL = process.env.NODE2_URL;
 
+export const RABBITMQ_URL = process.env.RABBITMQ_URL;
+export const RABBITMQ_USER = process.env.RABBITMQ_USER;
+export const RABBITMQ_PASSWORD = process.env.RABBITMQ_PASSWORD;
+
 // Export the variables to be used in other modules
 if (envMain === 'development' || envMain === 'testing') {
   console.log('Development environment detected');

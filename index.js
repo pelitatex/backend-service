@@ -2,9 +2,12 @@ import {FRONTEND_URL, PORT_GATEWAY, ENVIRONMENT, ALLOWED_IPS, TRUSTED_ORIGINS, N
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
+import queryLogger from "./helpers/queryLogger.js";
+
 
 import { graphqlHTTP } from "express-graphql";
 import eSchema from "./graphql/index.js";
+import { publishExchange } from "./helpers/producers.js";
 
 // import { getPool } from "./config/db.js";
 import getPoolForRequest from "./config/mysqlCon.js";
@@ -78,6 +81,12 @@ app.get('/hello', (req, res) => {
     res.json({message: 'Request allowed'});
 });
 
+// Middleware to parse JSON bodies
+app.use(express.json());
+
+app.use(express.urlencoded({ extended: true }));
+
+
 app.get('/customers-legacy/:company_index', async (req, res) => { 
     const company_index = parseInt(req.params.company_index);
     console.log('company_index', company_index);
@@ -116,6 +125,140 @@ app.get('/customers-legacy/sudah_verifikasi_oleh_pajak', async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch data from other app' });
     }
+});
+
+app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => { 
+
+    let xTenant = "default";
+    if (req.headers['x-tenant']) {
+        xTenant = req.headers['x-tenant'];
+    }
+
+    const pool = await getPoolForRequest(xTenant);
+    const data = req.body;
+
+    const company_indexes = data.company_indexes;
+    const keyName = data.keyName;
+    const keyValue = data.keyValue;
+
+
+    if (!pool) {
+        console.log('context', pool);
+        throw new Error('Database pool not available in context.');
+      }
+    try {
+        const { 
+            id, 
+            tipe_company, nama,
+            alamat, blok, no, rt, rw,
+            kecamatan, kelurahan, kota, provinsi, kode_pos,
+            npwp, nik, 
+            tempo_kredit, warning_kredit,
+            limit_warning_type, limit_warning_amount,
+            limit_amount, limit_atas,
+            img_link, npwp_link, ktp_link,
+            contact_person, telepon, email, medsos_link,
+            jenis_pekerjaan, jenis_produk, 
+            status_aktif 
+
+        } = data.data_customer;
+
+        const queryCheck = `SELECT * FROM nd_customer WHERE npwp = ? or nik = ?`;
+        const [rows] = await pool.query(queryCheck, [npwp, nik]);
+        if (rows.length > 0) {
+            const ket = (keyName === 'npwp' ? `npwp: ` : `nik: `)+keyValue;
+            res.status(400).json({message: `Customer tidak diinput ke central, customer dengan ${ket} sudah terdaftar`, data: rows[0]});
+            const msg = {
+                id:rows[0].id, 
+                keyName: keyName,
+                keyValue: keyValue,
+                company_indexes: company_indexes,
+                nama:nama
+            };
+            
+            publishExchange('customer_legacy_events', 'customer.chosen' , Buffer.from(JSON.stringify(msg)));
+            return;
+        }
+        
+        const query = `INSERT INTO nd_customer (tipe_company, nama, alamat, blok, no, rt, rw,
+        kecamatan, kelurahan, kota, provinsi, kode_pos,
+        npwp, nik, tempo_kredit, warning_kredit,
+        limit_warning_type, limit_warning_amount, limit_amount, limit_atas,
+        img_link, npwp_link, ktp_link,
+        contact_person, telepon1, email, medsos_link,
+        jenis_pekerjaan, jenis_produk,
+        status_aktif
+        ) VALUES ( ?, ?, ?, ?, ?, ?, ?,
+         ?, ?, ?, ?, ?,
+         ?, ?, ?, ?,
+         ?, ?, ?, ?,
+         ?, ?, ?,
+         ?, ?, ?, ?,
+         ?, ?, ?)`;
+
+        const original_id = id;
+        const [result] = await pool.query(query, [tipe_company, nama, alamat, blok, no, rt, rw, 
+          kecamatan, kelurahan, kota, provinsi, kode_pos, 
+          npwp, nik, tempo_kredit, 
+          warning_kredit, limit_warning_type, limit_warning_amount, 
+          limit_amount, limit_atas, 
+          img_link, npwp_link, ktp_link, 
+          contact_person, telepon, email, medsos_link, 
+          jenis_pekerjaan, jenis_produk, 
+          status_aktif]);
+
+        queryLogger(pool, `nd_customer`, result.insertId, query, [tipe_company, nama, alamat, blok, no, rt, rw, 
+          kecamatan, kelurahan, kota, provinsi, kode_pos, 
+          npwp, nik, tempo_kredit, 
+          warning_kredit, limit_warning_type, limit_warning_amount, 
+          limit_amount, limit_atas, 
+          img_link, npwp_link, ktp_link, 
+          contact_person, telepon, email, medsos_link, 
+          jenis_pekerjaan, jenis_produk, 
+          status_aktif]);
+
+        res.status(200).json({message: 'Success Add Customer', data:{ id: result.insertId, tipe_company, nama, alamat, blok, no, rt, rw,
+            kecamatan, kelurahan, kota, provinsi, kode_pos,
+            npwp, nik, tempo_kredit, warning_kredit,
+            limit_warning_type, limit_warning_amount, limit_amount, limit_atas,
+            img_link, npwp_link, ktp_link,
+            contact_person, telepon, email, medsos_link,
+            jenis_pekerjaan, jenis_produk,
+            status_aktif
+        }});
+        
+        const msg = {
+            id:result.insertId, 
+            keyName: keyName,
+            keyValue: keyValue,
+            company_indexes: company_indexes,
+            nama:nama
+        };
+        publishExchange('customer_legacy_events', 'customer.chosen' , Buffer.from(JSON.stringify(msg)));
+
+        return;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Internal Server Error Add Customer');
+    }
+    
+
+    /* try {
+        const otherAppUrl = `${NODE2_URL}/customers/verifikasi_oleh_user`;
+
+        console.log(`Fetching data from other app: ${otherAppUrl}`);
+
+        axios.get(otherAppUrl)
+            .then(response => {
+                res.json(response.data);
+            })
+            .catch(error => {
+                console.error(`Error fetching data from other app: ${error.message}`);
+                res.status(500).json({ error: 'Failed to fetch data from other app' });
+            });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch data from other app' });
+    } */
 });
 
 app.get('/customers-legacy/:company_index/:id', async (req, res) => { 
