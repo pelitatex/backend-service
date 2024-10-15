@@ -86,28 +86,6 @@ app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
 
-
-app.get('/customers-legacy/:company_index', async (req, res) => { 
-    const company_index = parseInt(req.params.company_index);
-    console.log('company_index', company_index);
-    try {
-        const otherAppUrl = `${NODE2_URL}/customers/${company_index}`;
-
-        console.log(`Fetching data from other app: ${otherAppUrl}`);
-
-        axios.get(otherAppUrl)
-            .then(response => {
-                res.json(response.data);
-            })
-            .catch(error => {
-                console.error(`Error fetching data from other app: ${error.message}`);
-                res.status(500).json({ error: 'Failed to fetch data from other app' });
-            });
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch data from other app' });
-    }
-});
-
 app.get('/customers-legacy/sudah_verifikasi_oleh_pajak', async (req, res) => { 
     try {
         const otherAppUrl = `${NODE2_URL}/customers/sudah_verifikasi_oleh_pajak`;
@@ -282,6 +260,28 @@ app.get('/customers-legacy/:company_index/:id', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch data from other app' });
     }
 });
+
+app.get('/customers-legacy/:company_index', async (req, res) => { 
+    const company_index = parseInt(req.params.company_index);
+    console.log('company_index', company_index);
+    try {
+        const otherAppUrl = `${NODE2_URL}/customers/${company_index}`;
+
+        console.log(`Fetching data from other app: ${otherAppUrl}`);
+
+        axios.get(otherAppUrl)
+            .then(response => {
+                res.json(response.data);
+            })
+            .catch(error => {
+                console.error(`Error fetching data from other app: ${error.message}`);
+                res.status(500).json({ error: 'Failed to fetch data from other app' });
+            });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch data from other app' });
+    }
+});
+
 
 app.use(
     '/graphql',
