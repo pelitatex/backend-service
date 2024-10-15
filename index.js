@@ -136,7 +136,6 @@ app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => {
             limit_amount, limit_atas,
             img_link, npwp_link, ktp_link,
             contact_person, telepon, email, medsos_link,
-            jenis_pekerjaan, jenis_produk, 
             status_aktif 
 
         } = data.data_customer;
@@ -164,7 +163,6 @@ app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => {
         limit_warning_type, limit_warning_amount, limit_amount, limit_atas,
         img_link, npwp_link, ktp_link,
         contact_person, telepon1, email, medsos_link,
-        jenis_pekerjaan, jenis_produk,
         status_aktif
         ) VALUES ( ?, ?, ?, ?, ?, ?, ?,
          ?, ?, ?, ?, ?,
@@ -172,7 +170,7 @@ app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => {
          ?, ?, ?, ?,
          ?, ?, ?,
          ?, ?, ?, ?,
-         ?, ?, ?)`;
+         ?)`;
 
         const original_id = id;
         const [result] = await pool.query(query, [tipe_company, nama, alamat, blok, no, rt, rw, 
@@ -181,8 +179,7 @@ app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => {
           warning_kredit, limit_warning_type, limit_warning_amount, 
           limit_amount, limit_atas, 
           img_link, npwp_link, ktp_link, 
-          contact_person, telepon, email, medsos_link, 
-          jenis_pekerjaan, jenis_produk, 
+          contact_person, telepon, email, medsos_link,
           status_aktif]);
 
         queryLogger(pool, `nd_customer`, result.insertId, query, [tipe_company, nama, alamat, blok, no, rt, rw, 
@@ -192,7 +189,6 @@ app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => {
           limit_amount, limit_atas, 
           img_link, npwp_link, ktp_link, 
           contact_person, telepon, email, medsos_link, 
-          jenis_pekerjaan, jenis_produk, 
           status_aktif]);
 
         res.status(200).json({message: 'Success Add Customer', data:{ id: result.insertId, tipe_company, nama, alamat, blok, no, rt, rw,
@@ -201,7 +197,6 @@ app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => {
             limit_warning_type, limit_warning_amount, limit_amount, limit_atas,
             img_link, npwp_link, ktp_link,
             contact_person, telepon, email, medsos_link,
-            jenis_pekerjaan, jenis_produk,
             status_aktif
         }});
         
