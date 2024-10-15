@@ -92,7 +92,14 @@ app.get('/customers-legacy/sudah_verifikasi_oleh_pajak', async (req, res) => {
 
         console.log(`Fetching data from other app: ${otherAppUrl}`);
 
-        axios.get(otherAppUrl)
+        const tgl_awal = new Date('2023-10-09');
+        const customers = {};
+
+        const { page = 1, limit = 10 } = req.query; // Default to page 1 and limit 10
+        const pageNumber = parseInt(page, 10);
+        const pageSize = parseInt(limit, 10);
+
+        axios.get(otherAppUrl,{params: {page: pageNumber, limit: pageSize}})
             .then(response => {
                 res.json(response.data);
             })
