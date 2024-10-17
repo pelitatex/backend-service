@@ -149,7 +149,7 @@ app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => {
 
         const cond = (keyName === 'npwp' ? `npwp = ?` : `nik = ?`);
         const condValue = (keyName === 'npwp' ? npwp : nik);
-        const queryCheck = `SELECT * FROM nd_customer WHERE ${cond} = ?`;
+        const queryCheck = `SELECT * FROM nd_customer WHERE ${cond}`;
         const [rows] = await pool.query(queryCheck, [condValue]);
         if (rows.length > 0) {
             const ket = (keyName === 'npwp' ? `npwp: ` : `nik: `)+keyValue;
