@@ -147,8 +147,10 @@ app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => {
 
         } = data.data_customer;
 
-        const queryCheck = `SELECT * FROM nd_customer WHERE npwp = ? or nik = ?`;
-        const [rows] = await pool.query(queryCheck, [npwp, nik]);
+        const cond = (keyName === 'npwp' ? `npwp = ?` : `nik = ?`);
+        const condValue = (keyName === 'npwp' ? npwp : nik);
+        const queryCheck = `SELECT * FROM nd_customer WHERE ${cond} = ?`;
+        const [rows] = await pool.query(queryCheck, [condValue]);
         if (rows.length > 0) {
             const ket = (keyName === 'npwp' ? `npwp: ` : `nik: `)+keyValue;
             res.status(400).json({message: `Customer tidak diinput ke central, customer dengan ${ket} sudah terdaftar`, data: rows[0]});
