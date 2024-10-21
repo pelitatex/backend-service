@@ -20,7 +20,7 @@ const allowedCors = [];
 if (ENVIRONMENT === "development" || "testing") {
     allowedCors.push('*');
 }else{
-    allowedCors.push(`http://localhost:${PORT_GW}`);
+    allowedCors.push(FRONTEND_URL);
 }
 app.use(cors());
 
