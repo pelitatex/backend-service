@@ -35,6 +35,8 @@ if (ENVIRONMENT === "development") {
         credentials: true, 
     }
 
+    console.log('corsOptions', corsOptions);
+
     app.use(cors(corsOptions));
 }
 
@@ -57,11 +59,14 @@ app.use((req, res, next) => {
     console.log(`Mode: ${clientIP}, ${hostname}`);
 
 
+    res.header('Access-Control-Allow-Origin', FRONTEND_URL); // Ensure this header is set
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
     if (ENVIRONMENT === "development") {
         // In development, allow all access
         console.log(`Development Mode: Access granted to IP - ${clientIP}, Hostname - ${hostname}`);
         next();
     } else if (ENVIRONMENT === "testing") {
+    
         // In testing, restrict access only to allowed IPs
         if (allowedIPs.includes(clientIP) || hostname === "localhost") {
             console.log(`Testing Mode: Access granted to IP - ${clientIP}, Hostname - ${hostname} `);
