@@ -24,7 +24,7 @@ if (ENVIRONMENT === "development") {
     allowedCors.push(FRONTEND_URL);
     const corsOptions= {
         origin: function (origin, callback) {
-            if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            if (!origin || allowedCors.indexOf(origin) !== -1) {
                 callback(null, true); // Allow the request
             } else {
             callback(new Error('Not allowed by CORS')); // Reject the request
