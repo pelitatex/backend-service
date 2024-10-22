@@ -16,6 +16,7 @@ type Customer {
     npwp: String
     nik: String
     email: String
+    telepon: String
     contact_person: String
     tempo_kredit: Int
     warning_kredit: Int
