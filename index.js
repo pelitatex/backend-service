@@ -17,12 +17,29 @@ process.env.TZ = 'UTC';
 const app = express();
 const PORT_GW = PORT_GATEWAY;
 const allowedCors = [];
-if (ENVIRONMENT === "development" || "testing") {
+if (ENVIRONMENT === "development") {
     allowedCors.push('*');
+    app.use(cors());
 }else{
     allowedCors.push(FRONTEND_URL);
+    const corsOptions= {
+        origin: function (origin, callback) {
+            if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+                callback(null, true); // Allow the request
+            } else {
+            callback(new Error('Not allowed by CORS')); // Reject the request
+            }
+        },
+        methods: 'GET,POST,OPTIONS',
+        allowedHeaders: 'Content-Type,Authorization',
+        credentials: true, 
+    }
+
+    app.use(cors(corsOptions));
 }
-app.use(cors());
+
+
+
 
 app.use(morgan('dev'));
 app.use((req, res, next) => {
