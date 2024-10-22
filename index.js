@@ -31,7 +31,7 @@ if (ENVIRONMENT === "development") {
             }
         },
         methods: 'GET,POST,OPTIONS',
-        allowedHeaders: 'Content-Type,Authorization',
+        allowedHeaders: 'Content-Type, Authorization',
         credentials: true, 
     }
 
@@ -53,7 +53,7 @@ app.use((req, res, next) => {
     if (clientIP.startsWith('::ffff:')) {
         clientIP = clientIP.substring(7);
     }
-    const trustedOrigins = TRUSTED_ORIGINS.split(',');
+    const trustedOrigins = FRONTEND_URL.split(',');
     
     const hostname = req.headers.origin ? new URL(req.headers.origin).hostname : '';
     console.log(`Mode: ${clientIP}, ${hostname}`);
@@ -68,7 +68,7 @@ app.use((req, res, next) => {
     } else if (ENVIRONMENT === "testing") {
     
         // In testing, restrict access only to allowed IPs
-        if (allowedIPs.includes(clientIP) || hostname === "localhost") {
+        if (allowedIPs.includes(clientIP) || hostname === "localhost" || trustedOrigins.includes(req.headers.origin)) {
             console.log(`Testing Mode: Access granted to IP - ${clientIP}, Hostname - ${hostname} `);
             next();
         } else {
