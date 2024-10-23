@@ -171,6 +171,7 @@ app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => {
 
         const npwp = data.data_customer.npwp;
         const nik = data.data_customer.nik;
+        const nama = data.data_customer.nama;
         const cond = (keyName === 'npwp' ? `npwp = ?` : `nik = ?`);
         const condValue = (keyName === 'npwp' ? npwp : nik);
         const queryCheck = `SELECT * FROM nd_customer WHERE ${cond}`;
