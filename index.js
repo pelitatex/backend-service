@@ -162,7 +162,6 @@ app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => {
             tempo_kredit, warning_kredit,
             limit_warning_type, limit_warning_amount,
             limit_amount, limit_atas,
-            img_link, npwp_link, ktp_link,
             contact_person, telepon, email, medsos_link,
             status_aktif 
 
@@ -191,22 +190,19 @@ app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => {
         kecamatan, kelurahan, kota, provinsi, kode_pos,
         npwp, nik, tempo_kredit, warning_kredit,
         limit_warning_type, limit_warning_amount, limit_amount, limit_atas,
-        img_link, npwp_link, ktp_link,
         contact_person, telepon1, email, medsos_link,
         status_aktif
         ) VALUES ( ?, ?, ?, ?, ?, ?, ?,
          ?, ?, ?, ?, ?,
          ?, ?, ?, ?,
          ?, ?, ?, ?,
-         ?, ?, ?,
          ?, ?, ?, ?,
          ?)`;
 
-        const result = queryTransaction.insert(pool, `nd_customer`, query, [tipe_company, nama, alamat, blok, no, rt, rw,
+        const result = await queryTransaction.insert(pool, `nd_customer`, query, [tipe_company, nama, alamat, blok, no, rt, rw,
             kecamatan, kelurahan, kota, provinsi, kode_pos,
             npwp, nik, tempo_kredit, warning_kredit,
             limit_warning_type, limit_warning_amount, limit_amount, limit_atas,
-            img_link, npwp_link, ktp_link,
             contact_person, telepon, email, medsos_link,
             status_aktif]);
         
@@ -219,7 +215,7 @@ app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => {
             company_indexes: company_indexes,
             nama:nama
         };
-        publishExchange('customer_legacy_events', 'customer.chosen' , Buffer.from(JSON.stringify(msg)));
+        await publishExchange('customer_legacy_events', 'customer.chosen' , Buffer.from(JSON.stringify(msg)));
 
         return;
         
