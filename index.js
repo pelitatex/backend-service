@@ -154,8 +154,7 @@ app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => {
         throw new Error('Database pool not available in context.');
       }
     try {
-        /* const { 
-            id, 
+        const { 
             tipe_company, nama,
             alamat, blok, no, rt, rw,
             kecamatan, kelurahan, kota, provinsi, kode_pos,
@@ -167,11 +166,8 @@ app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => {
             contact_person, telepon, email, medsos_link,
             status_aktif 
 
-        } = data.data_customer; */
+        } = data.data_customer;
 
-        const npwp = data.data_customer.npwp;
-        const nik = data.data_customer.nik;
-        const nama = data.data_customer.nama;
         const cond = (keyName === 'npwp' ? `npwp = ?` : `nik = ?`);
         const condValue = (keyName === 'npwp' ? npwp : nik);
         const queryCheck = `SELECT * FROM nd_customer WHERE ${cond}`;
@@ -190,28 +186,32 @@ app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => {
             publishExchange('customer_legacy_events', 'customer.chosen' , Buffer.from(JSON.stringify(msg)));
             return;
         }
-
-        let columns = [];
-        let params = [];
-        let q = [];
         
-        for (const [key, value] of Object.entries(data.data_customer)) {
-            if(key !== 'company') 
-            {
-                columns.push(`${key}`);
-                params.push(value);
-                q.push('?');
-            };
-        }
+        const query = `INSERT INTO nd_customer (tipe_company, nama, alamat, blok, no, rt, rw,
+        kecamatan, kelurahan, kota, provinsi, kode_pos,
+        npwp, nik, tempo_kredit, warning_kredit,
+        limit_warning_type, limit_warning_amount, limit_amount, limit_atas,
+        img_link, npwp_link, ktp_link,
+        contact_person, telepon1, email, medsos_link,
+        status_aktif
+        ) VALUES ( ?, ?, ?, ?, ?, ?, ?,
+         ?, ?, ?, ?, ?,
+         ?, ?, ?, ?,
+         ?, ?, ?, ?,
+         ?, ?, ?,
+         ?, ?, ?, ?,
+         ?)`;
 
-        const query = `INSERT INTO nd_customer (${columns.join(', ')}
-        ) VALUES ( ${q.join(', ')} )`;
-
-        const result = queryTransaction.insert(pool, `nd_customer`, query, params);
-
-        res.status(200).json({message: 'Success Add Customer', data: result});
+        const result = queryTransaction.insert(pool, `nd_customer`, query, [tipe_company, nama, alamat, blok, no, rt, rw,
+            kecamatan, kelurahan, kota, provinsi, kode_pos,
+            npwp, nik, tempo_kredit, warning_kredit,
+            limit_warning_type, limit_warning_amount, limit_amount, limit_atas,
+            img_link, npwp_link, ktp_link,
+            contact_person, telepon, email, medsos_link,
+            status_aktif]);
         
-        console.log('data_respond', result);
+        res.status(200).json({message: 'Success Add Customer', data:result});
+        
         const msg = {
             id:result.id, 
             keyName: keyName,
@@ -222,6 +222,7 @@ app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => {
         publishExchange('customer_legacy_events', 'customer.chosen' , Buffer.from(JSON.stringify(msg)));
 
         return;
+        
         /* const [result] = await pool.query(query, [tipe_company, nama, alamat, blok, no, rt, rw, 
           kecamatan, kelurahan, kota, provinsi, kode_pos, 
           npwp, nik, tempo_kredit, 
