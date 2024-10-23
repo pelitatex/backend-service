@@ -196,9 +196,12 @@ app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => {
         let q = [];
         
         for (const [key, value] of Object.entries(data.data_customer)) {
-          columns.push(`${key}`);
-          params.push(value);
-          q.push('?');
+            if(key !== 'company') 
+            {
+                columns.push(`${key}`);
+                params.push(value);
+                q.push('?');
+            };
         }
 
         const query = `INSERT INTO nd_customer (${columns.join(', ')}
