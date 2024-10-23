@@ -2,7 +2,7 @@ import {FRONTEND_URL, PORT_GATEWAY, ENVIRONMENT, ALLOWED_IPS, TRUSTED_ORIGINS, N
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
-import queryLogger from "./helpers/queryLogger.js";
+import queryLogger from "./helpers/queryTransaction.js";
 
 
 import { graphqlHTTP } from "express-graphql";

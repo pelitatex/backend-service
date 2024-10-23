@@ -1,4 +1,5 @@
-import queryLogger from "../../helpers/queryLogger.js";
+import queryTransaction from "../../helpers/queryTransaction.js";
+import { publishExchange } from '../../helpers/producers.js';
 
 const customerResolver = {
   Query:{
@@ -37,69 +38,25 @@ const customerResolver = {
     addCustomer: async (_, {input}, context) => {
       const pool = context.pool;
       if (!pool) {
-        console.log('context', pool);
         throw new Error('Database pool not available in context.');
       }
       try {
-        const { 
-          tipe_company, nama,
-          alamat, blok, no, rt, rw,
-          kecamatan, kelurahan, kota, provinsi, kode_pos,
-          npwp, nik, 
-          tempo_kredit, warning_kredit,
-          limit_warning_type, limit_warning_amount,
-          limit_amount, limit_atas,
-          img_link, npwp_link, ktp_link,
-          contact_person, telepon, email, medsos_link,
-          jenis_pekerjaan, jenis_produk, 
-          status_aktif 
 
-        } = input;
+        let columns = [];
+        let params = [];
+        let q = [];
+        for (const [key, value] of Object.entries(input)) {
+          columns.push(key);
+          params.push(value);
+          q.push('?');
+        }
         
-        const query = `INSERT INTO nd_customer (tipe_company, nama, alamat, blok, no, rt, rw,
-        kecamatan, kelurahan, kota, provinsi, kode_pos,
-        npwp, nik, tempo_kredit, warning_kredit,
-        limit_warning_type, limit_warning_amount, limit_amount, limit_atas,
-        img_link, npwp_link, ktp_link,
-        contact_person, telepon1, email, medsos_link,
-        jenis_pekerjaan, jenis_produk,
-        status_aktif
-        ) VALUES ( ?, ?, ?, ?, ?, ?, ?,
-         ?, ?, ?, ?, ?,
-         ?, ?, ?, ?,
-         ?, ?, ?, ?,
-         ?, ?, ?,
-         ?, ?, ?, ?,
-         ?, ?, ?)`;
-        const [result] = await pool.query(query, [tipe_company, nama, alamat, blok, no, rt, rw, 
-          kecamatan, kelurahan, kota, provinsi, kode_pos, 
-          npwp, nik, tempo_kredit, 
-          warning_kredit, limit_warning_type, limit_warning_amount, 
-          limit_amount, limit_atas, 
-          img_link, npwp_link, ktp_link, 
-          contact_person, telepon, email, medsos_link, 
-          jenis_pekerjaan, jenis_produk, 
-          status_aktif]);
+        const query = `INSERT INTO nd_customer (${columns.join(', ')}) 
+        VALUES ( ${q.join(', ')} )`;
+         
+        const result = queryTransaction.insert(pool, `nd_customer`, query, params);
 
-        queryLogger(pool, `nd_customer`, result.insertId, query, [tipe_company, nama, alamat, blok, no, rt, rw, 
-          kecamatan, kelurahan, kota, provinsi, kode_pos, 
-          npwp, nik, tempo_kredit, 
-          warning_kredit, limit_warning_type, limit_warning_amount, 
-          limit_amount, limit_atas, 
-          img_link, npwp_link, ktp_link, 
-          contact_person, telepon, email, medsos_link, 
-          jenis_pekerjaan, jenis_produk, 
-          status_aktif]);
-
-        return { id: result.insertId, tipe_company, nama, alamat, blok, no, rt, rw,
-          kecamatan, kelurahan, kota, provinsi, kode_pos,
-          npwp, nik, tempo_kredit, warning_kredit,
-          limit_warning_type, limit_warning_amount, limit_amount, limit_atas,
-          img_link, npwp_link, ktp_link,
-          contact_person, telepon, email, medsos_link,
-          jenis_pekerjaan, jenis_produk,
-          status_aktif
-        };
+        return result;
       } catch (error) {
         console.error(error);
         throw new Error('Internal Server Error Add Customer');
@@ -112,63 +69,36 @@ const customerResolver = {
         throw new Error('Database pool not available in context.');
       }
       try {
-        const { 
-          tipe_company, nama,
-          alamat, blok, no, rt, rw,
-          kecamatan, kelurahan, kota, provinsi, kode_pos,
-          npwp, nik, 
-          tempo_kredit, warning_kredit,
-          limit_warning_type, limit_warning_amount,
-          limit_amount, limit_atas,
-          img_link, npwp_link, ktp_link,
-          contact_person, telepon, email, medsos_link,
-          jenis_pekerjaan, jenis_produk, 
-          status_aktif 
-
-        } = input;
-        const query = `UPDATE nd_customer SET 
-        tipe_company = ?, nama = ?, alamat = ?, blok = ?, no = ?, rt = ?, rw = ?,
-        kecamatan = ?, kelurahan = ?, kota = ?, provinsi = ?, kode_pos = ?,
-        npwp = ?, nik = ?,
-        tempo_kredit = ?, warning_kredit = ?,
-        limit_warning_type = ?, limit_warning_amount = ?,
-        limit_amount = ?, limit_atas = ?,
-        img_link = ?, npwp_link = ?, ktp_link = ?,
-        contact_person = ?, telepon1 = ?, email = ?, medsos_link = ?,
-        jenis_pekerjaan = ?, jenis_produk = ?,
-        status_aktif = ?
-        WHERE id = ?`;
-        const [result] = await pool.query(query, [tipe_company, nama, alamat, blok, no, rt, rw,
-          kecamatan, kelurahan, kota, provinsi, kode_pos,
-          npwp, nik, tempo_kredit, warning_kredit,
-          limit_warning_type, limit_warning_amount, limit_amount, limit_atas,
-          img_link, npwp_link, ktp_link,
-          contact_person, telepon, email, medsos_link,
-          jenis_pekerjaan, jenis_produk,
-          status_aktif, id]);
         
-        if (result.affectedRows === 0) {
-          throw new Error("Customer not found");
+        let columns = [];
+        let params = [];
+        let q = [];
+        let keyName = input.npwp ? 'npwp' : 'nik';
+        let keyValue = input.npwp ? input.npwp : input.nik;
+        for (const [key, value] of Object.entries(input)) {
+          columns.push(`${key} = ?`);
+          params.push(value);
         }
 
-        queryLogger(pool, `nd_customer`, result.insertId, query, [tipe_company, nama, alamat, blok, no, rt, rw,
-          kecamatan, kelurahan, kota, provinsi, kode_pos,
-          npwp, nik, tempo_kredit, warning_kredit,
-          limit_warning_type, limit_warning_amount, limit_amount, limit_atas,
-          img_link, npwp_link, ktp_link,
-          contact_person, telepon, email, medsos_link,
-          jenis_pekerjaan, jenis_produk,
-          status_aktif, id]);
+        params.push(id);
 
-        return { id, tipe_company, nama, alamat, blok, no, rt, rw,
-          kecamatan, kelurahan, kota, provinsi, kode_pos,
-          npwp, nik, tempo_kredit, warning_kredit,
-          limit_warning_type, limit_warning_amount, limit_amount, limit_atas,
-          img_link, npwp_link, ktp_link,
-          contact_person, telepon, email, medsos_link,
-          jenis_pekerjaan, jenis_produk,
-          status_aktif
+        const query = `UPDATE nd_customer SET 
+        ${columns.join(', ')}
+        WHERE id = ?`;
+
+        const result = queryTransaction.update(pool, `nd_customer`, id, query, params);
+
+        const msg = {
+          id: id,
+          keyName: keyName,
+          keyValue: keyValue
         };
+
+        publishExchange('customer_legacy_events', 'customer.master_updated' , Buffer.from(JSON.stringify(msg)));
+
+
+        return result;
+
       } catch (error) {
         console.error(error);
         throw new Error('Internal Server Error Update Customer');

@@ -129,6 +129,7 @@ input AddCustomerInput {
     kode_pos: String
     npwp: String
     nik: String
+    telepon: String
     email: String
     contact_person: String
     tempo_kredit: Int
@@ -164,6 +165,7 @@ input UpdateCustomerInput {
     npwp: String
     nik: String
     email: String
+    telepon: String
     contact_person: String
     tempo_kredit: Int
     warning_kredit: Int

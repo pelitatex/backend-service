@@ -1,4 +1,4 @@
-import queryLogger from "../../helpers/queryLogger.js";
+import queryLogger from "../../helpers/queryTransaction.js";
 
 const satuanResolver = {
   Query:{

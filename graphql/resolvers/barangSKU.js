@@ -1,5 +1,5 @@
 import {v4 as uuidv4} from 'uuid';
-import queryLogger from "../../helpers/queryLogger.js";
+import queryLogger from "../../helpers/queryTransaction.js";
 
 const barangSKUResolver = {
   Query:{
