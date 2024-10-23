@@ -207,7 +207,7 @@ app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => {
 
         res.status(200).json({message: 'Success Add Customer', data: result});
         
-        console.log('data_respond', data_respond);
+        console.log('data_respond', result);
         const msg = {
             id:result.id, 
             keyName: keyName,
