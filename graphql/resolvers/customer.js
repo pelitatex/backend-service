@@ -10,7 +10,7 @@ const customerResolver = {
         throw new Error('Database pool not available in context.');
       }
         try {
-            const query = `SELECT *, telepon1 as telepon FROM nd_customer WHERE id = ?`;
+            const query = `SELECT * FROM nd_customer WHERE id = ?`;
             const [rows] = await pool.query(query, [args.id]);
             return rows[0];
         } catch (error) {
@@ -25,7 +25,7 @@ const customerResolver = {
         throw new Error('Database pool not available in context.');
       }
       try {
-          const query = 'SELECT *, telepon1 as telepon FROM nd_customer';
+          const query = 'SELECT * FROM nd_customer';
           const [rows] = await pool.query(query);
           return rows;
         } catch (error) {
@@ -86,7 +86,7 @@ const customerResolver = {
         ${columns.join(', ')}
         WHERE id = ?`;
 
-        const result = queryTransaction.update(pool, `nd_customer`, id, query, params);
+        const result = await queryTransaction.update(pool, `nd_customer`, id, query, params);
 
         const msg = {
           id: id,

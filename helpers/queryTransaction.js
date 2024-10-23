@@ -25,7 +25,7 @@ const queryTransaction = {
         }
     },
     update: async (pool, table, affected_id, query, params) => {
-        console.log('paramsId', affected_id);
+        // console.log('paramsId', affected_id);
         try {
             await pool.query('START TRANSACTION');
             const [result] = await pool.query(query, params);
