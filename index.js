@@ -2,7 +2,7 @@ import {FRONTEND_URL, PORT_GATEWAY, ENVIRONMENT, ALLOWED_IPS, TRUSTED_ORIGINS, N
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
-import queryLogger from "./helpers/queryTransaction.js";
+import queryTransaction from "./helpers/queryTransaction.js";
 
 
 import { graphqlHTTP } from "express-graphql";
@@ -154,7 +154,7 @@ app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => {
         throw new Error('Database pool not available in context.');
       }
     try {
-        const { 
+        /* const { 
             id, 
             tipe_company, nama,
             alamat, blok, no, rt, rw,
@@ -167,7 +167,7 @@ app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => {
             contact_person, telepon, email, medsos_link,
             status_aktif 
 
-        } = data.data_customer;
+        } = data.data_customer; */
 
         const cond = (keyName === 'npwp' ? `npwp = ?` : `nik = ?`);
         const condValue = (keyName === 'npwp' ? npwp : nik);
@@ -187,24 +187,36 @@ app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => {
             publishExchange('customer_legacy_events', 'customer.chosen' , Buffer.from(JSON.stringify(msg)));
             return;
         }
-        
-        const query = `INSERT INTO nd_customer (tipe_company, nama, alamat, blok, no, rt, rw,
-        kecamatan, kelurahan, kota, provinsi, kode_pos,
-        npwp, nik, tempo_kredit, warning_kredit,
-        limit_warning_type, limit_warning_amount, limit_amount, limit_atas,
-        img_link, npwp_link, ktp_link,
-        contact_person, telepon1, email, medsos_link,
-        status_aktif
-        ) VALUES ( ?, ?, ?, ?, ?, ?, ?,
-         ?, ?, ?, ?, ?,
-         ?, ?, ?, ?,
-         ?, ?, ?, ?,
-         ?, ?, ?,
-         ?, ?, ?, ?,
-         ?)`;
 
-        const original_id = id;
-        const [result] = await pool.query(query, [tipe_company, nama, alamat, blok, no, rt, rw, 
+        let columns = [];
+        let params = [];
+        let q = [];
+        
+        for (const [key, value] of Object.entries(data.data_customer)) {
+          columns.push(`${key}`);
+          params.push(value);
+          q.push('?');
+        }
+
+        const query = `INSERT INTO nd_customer (${columns.join(', ')}
+        ) VALUES ( ${q.join(', ')} )`;
+
+        const result = queryTransaction.insert(pool, `nd_customer`, query, params);
+
+        res.status(200).json({message: 'Success Add Customer', data: result});
+        
+        console.log('data_respond', data_respond);
+        const msg = {
+            id:result.id, 
+            keyName: keyName,
+            keyValue: keyValue,
+            company_indexes: company_indexes,
+            nama:nama
+        };
+        publishExchange('customer_legacy_events', 'customer.chosen' , Buffer.from(JSON.stringify(msg)));
+
+        return;
+        /* const [result] = await pool.query(query, [tipe_company, nama, alamat, blok, no, rt, rw, 
           kecamatan, kelurahan, kota, provinsi, kode_pos, 
           npwp, nik, tempo_kredit, 
           warning_kredit, limit_warning_type, limit_warning_amount, 
@@ -240,7 +252,7 @@ app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => {
         };
         publishExchange('customer_legacy_events', 'customer.chosen' , Buffer.from(JSON.stringify(msg)));
 
-        return;
+        return; */
     } catch (error) {
         console.error(error);
         throw new Error('Internal Server Error Add Customer');
