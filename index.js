@@ -339,6 +339,8 @@ app.use(
             xUsername = req.headers['x-username'];
         }
 
+        console.log('headers', req.headers);
+
         return{
             schema:eSchema,
             graphiql: true,
