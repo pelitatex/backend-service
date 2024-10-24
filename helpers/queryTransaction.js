@@ -26,7 +26,7 @@ const queryTransaction = {
             console.error(error.message || "Error during insertion");
         }
     },
-    update: async (pool, table, affected_id, query, params) => {
+    update: async (context, table, affected_id, query, params) => {
         // console.log('paramsId', affected_id);
         const pool = context.pool;
         const username = context.username;
@@ -47,7 +47,7 @@ const queryTransaction = {
             console.error(error.message || "Error during update");
         }
     },
-    delete: async (pool, table, query, params) => {
+    delete: async (context, table, query, params) => {
         const pool = context.pool;
         const username = context.username;
         try {
