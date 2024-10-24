@@ -337,9 +337,9 @@ app.use(
 
         if(req.headers['x-username']){
             xUsername = req.headers['x-username'];
+            console.log('headers', req.headers);
         }
 
-        console.log('headers', req.headers);
 
         return{
             schema:eSchema,
