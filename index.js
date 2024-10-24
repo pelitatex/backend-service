@@ -141,13 +141,20 @@ app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => {
         xTenant = req.headers['x-tenant'];
     }
 
-    const pool = await getPoolForRequest(xTenant);
+    let xUsername = "";
+    if(req.headers['x-username']){
+        xUsername = req.headers['x-username'];
+        console.log('headers', req.headers);
+    }
+
+    const pool = await getPoolForRequest(xTenant); 
     const data = req.body;
 
     const company_indexes = data.company_indexes;
     const keyName = data.keyName;
     const keyValue = data.keyValue;
 
+    const context = {pool: pool, username: xUsername};
 
     if (!pool) {
         console.log('context', pool);
@@ -199,7 +206,7 @@ app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => {
          ?, ?, ?, ?,
          ?)`;
 
-        const result = await queryTransaction.insert(pool, `nd_customer`, query, [tipe_company, nama, alamat, blok, no, rt, rw,
+        const result = await queryTransaction.insert(context, `nd_customer`, query, [tipe_company, nama, alamat, blok, no, rt, rw,
             kecamatan, kelurahan, kota, provinsi, kode_pos,
             npwp, nik, tempo_kredit, warning_kredit,
             limit_warning_type, limit_warning_amount, limit_amount, limit_atas,
@@ -328,18 +335,17 @@ app.use(
     '/graphql',
     graphqlHTTP( async (req, res) => {
         let xTenant = "default";
-        let xUsername = "";
         if (req.headers['x-tenant']) {
             xTenant = req.headers['x-tenant'];
         }
         
         const pool = await getPoolForRequest(xTenant);
 
+        let xUsername = "";
         if(req.headers['x-username']){
             xUsername = req.headers['x-username'];
             console.log('headers', req.headers);
         }
-
 
         return{
             schema:eSchema,
