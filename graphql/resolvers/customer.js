@@ -54,7 +54,7 @@ const customerResolver = {
         const query = `INSERT INTO nd_customer (${columns.join(', ')}) 
         VALUES ( ${q.join(', ')} )`;
          
-        const result = queryTransaction.insert(pool, `nd_customer`, query, params);
+        const result = queryTransaction.insert(context, `nd_customer`, query, params);
 
         return result;
       } catch (error) {
@@ -86,7 +86,7 @@ const customerResolver = {
         ${columns.join(', ')}
         WHERE id = ?`;
 
-        const result = await queryTransaction.update(pool, `nd_customer`, id, query, params);
+        const result = await queryTransaction.update(context, `nd_customer`, id, query, params);
 
         const msg = {
           id: id,

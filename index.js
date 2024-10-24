@@ -31,7 +31,7 @@ if (ENVIRONMENT === "development") {
             }
         },
         methods: 'GET,POST,OPTIONS',
-        allowedHeaders: 'Content-Type, Authorization, x-tenant',
+        allowedHeaders: 'Content-Type, Authorization, x-tenant, x-username',
         credentials: true, 
     }
 
@@ -328,16 +328,21 @@ app.use(
     '/graphql',
     graphqlHTTP( async (req, res) => {
         let xTenant = "default";
+        let xUsername = "";
         if (req.headers['x-tenant']) {
             xTenant = req.headers['x-tenant'];
         }
         
         const pool = await getPoolForRequest(xTenant);
 
+        if(req.headers['x-username']){
+            xUsername = req.headers['x-username'];
+        }
+
         return{
             schema:eSchema,
             graphiql: true,
-            context: {pool: pool}
+            context: {pool: pool, username: xUsername}
         }
     })
 );
