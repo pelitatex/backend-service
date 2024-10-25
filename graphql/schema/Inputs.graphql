@@ -223,6 +223,7 @@ input UpdateBarangComponentInput {
 }
 
 input AddDocumentControlInput{
+    tipe_dokumen: TipeDokumen!
     department_id: Int!
     kode: String!
     nama: String!
@@ -231,6 +232,7 @@ input AddDocumentControlInput{
 }
 
 input UpdateDocumentControlInput{
+    tipe_dokumen: TipeDokumen!
     department_id: Int!
     kode: String!
     nama: String!
@@ -296,4 +298,30 @@ input UpdateGudangInput{
 
 input pinUserInput{
     pin: String!
+}
+
+input AddDocumentInput{
+    tipe_dokumen: TipeDokumen!
+    toko_id: Int!
+    document_control_id: Int!
+    no_surat: String!
+    tanggal: String!
+    kepada: String!
+    dari: String!
+    keterangan: String
+    penanggung_jawab: String!
+    status_aktif: Boolean!
+}
+
+input UpdateDocumentInput{
+    tipe_dokumen: TipeDokumen!
+    toko_id: Int!
+    document_control_id: Int!
+    no_surat: String!
+    tanggal: String!
+    kepada: String!
+    dari: String!
+    keterangan: String
+    penanggung_jawab: String!
+    status_aktif: Boolean!
 }

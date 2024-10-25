@@ -26,6 +26,8 @@ type Query{
     allGudang: [Gudang]
     documentControl(id: ID!): DocumentControl
     allDocumentControl: [DocumentControl]
+    document(id: ID!): Document
+    allDocument: [Document]
     department(id: ID!): Department
     allDepartment: [Department]
 }

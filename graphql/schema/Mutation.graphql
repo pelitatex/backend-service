@@ -31,4 +31,6 @@ type Mutation {
     updateBarangSKU(id: ID!, input: UpdateBarangSKUInput!): BarangSKU
     addGudang(input: AddGudangInput!): Gudang
     updateGudang(id: ID!, input: UpdateGudangInput!): Gudang
+    addDocument(input: AddDocumentInput!): Document
+    updateDocument(id: ID!, input: UpdateDocumentInput!): Document
 }

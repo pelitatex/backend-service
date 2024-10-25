@@ -1,6 +1,43 @@
+enum TipeDokumen{
+    """
+    - reset per *BULAN*
+    - hanya untuk dokumen transaksi
+    """
+    AUTO_GENERATE_MONTHLY
+    """
+    - reset per *TAHUN*
+    - hanya untuk dokumen transaksi
+    """
+    AUTO_GENERATE_YEARLY
+    """
+    - reset per *BULAN*
+    - digenerate otomatis setelah submit form dokumen
+    - Format : {kode_toko}:{kode_department}{kode_dokumen}/{yy}{mm}/XXXXX
+    """
+    GENERATE_BY_REQUEST_MONTHLY
+    """
+    - reset per *TAHUN*
+    - digenerate otomatis setelah submit form dokumen
+    - Format : {kode_toko}:{kode_department}{kode_dokumen}/{yyyy}/XXXXX
+    """
+    GENERATE_BY_REQUEST_YEARLY
+    """
+    - reset per *TAHUN*
+    - digenerate otomatis setelah submit form dokumen
+    - Format : {kode_toko}:{kode_department}{kode_dokumen}/{increment per 100}/XXXX
+    """
+    GENERATE_BY_REQUEST_9999
+    """
+    - no surat diinput manual oleh user
+    """
+    USER_GENERATE
+
+}
+
 type DocumentControl {
     id: ID!
     department_id: Int!
+    tipe_dokumen: TipeDokumen!
     kode: String!
     nama: String!
     keterangan: String
@@ -11,5 +48,20 @@ type Department {
     id: ID!
     kode: String!
     nama: String!
+    status_aktif: Boolean!
+}
+
+type Document{
+    id: ID!
+    toko_id: Int!
+    document_control_id: Int!
+    document_number_raw: Int!
+    document_number: String!
+    tanggal: String!
+    kepada: String!
+    dari: String!
+    keterangan: String
+    penanggung_jawab: String!
+    username: String!
     status_aktif: Boolean!
 }
