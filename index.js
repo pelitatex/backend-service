@@ -16,12 +16,11 @@ import axios from 'axios';
 process.env.TZ = 'UTC';
 const app = express();
 const PORT_GW = PORT_GATEWAY;
-const allowedCors = [];
+const allowedCors = FRONTEND_URL.split(',');
 if (ENVIRONMENT === "development") {
     allowedCors.push('*');
     app.use(cors());
 }else{
-    allowedCors.push(FRONTEND_URL);
     const corsOptions= {
         origin: function (origin, callback) {
             if (!origin || allowedCors.indexOf(origin) !== -1) {
