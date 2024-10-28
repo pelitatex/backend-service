@@ -301,27 +301,26 @@ input pinUserInput{
 }
 
 input AddDocumentInput{
-    tipe_dokumen: TipeDokumen!
     toko_id: Int!
     document_control_id: Int!
-    no_surat: String!
+    tipe_dokumen: TipeDokumen!
+    kode_toko: String!
+    kode_dokumen: String!
+    document_number: String!
     tanggal: String!
-    kepada: String!
     dari: String!
+    kepada: String!
     keterangan: String
     penanggung_jawab: String!
+    username: String!
     status_aktif: Boolean!
 }
 
 input UpdateDocumentInput{
-    tipe_dokumen: TipeDokumen!
-    toko_id: Int!
-    document_control_id: Int!
-    no_surat: String!
-    tanggal: String!
-    kepada: String!
     dari: String!
+    kepada: String!
     keterangan: String
     penanggung_jawab: String!
+    username: String!
     status_aktif: Boolean!
 }

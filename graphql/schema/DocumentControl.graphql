@@ -55,7 +55,7 @@ type Document{
     id: ID!
     toko_id: Int!
     document_control_id: Int!
-    document_number_raw: Int!
+    document_number_raw: Int
     document_number: String!
     tanggal: String!
     kepada: String!
