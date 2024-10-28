@@ -23,6 +23,8 @@ if (ENVIRONMENT === "development") {
 }else{
     const corsOptions= {
         origin: function (origin, callback) {
+            console.log('allowedCors', allowedCors);
+            console.log('origin', origin);
             if (!origin || allowedCors.indexOf(origin) !== -1) {
                 callback(null, true); // Allow the request
             } else {
