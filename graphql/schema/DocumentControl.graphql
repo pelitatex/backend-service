@@ -11,7 +11,9 @@ enum TipeDokumen{
     AUTO_GENERATE_YEARLY
     """
     - reset per *BULAN*
-    - digenerate otomatis setelah submit form dokumen
+    - digenerate otomatis setelah submit form dokumen 
+
+    
     - Format : {kode_toko}:{kode_department}{kode_dokumen}/{yy}{mm}/XXXXX
     """
     GENERATE_BY_REQUEST_MONTHLY
@@ -24,7 +26,7 @@ enum TipeDokumen{
     """
     - reset per *TAHUN*
     - digenerate otomatis setelah submit form dokumen
-    - Format : {kode_toko}:{kode_department}{kode_dokumen}/{increment per 100}/XXXX
+    - Format : {kode_toko}:{kode_department}{kode_dokumen}/{increment tiap 9999}/XXXX
     """
     GENERATE_BY_REQUEST_9999
     """

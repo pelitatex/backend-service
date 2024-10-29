@@ -1,4 +1,4 @@
-import {FRONTEND_URL, PORT_GATEWAY, ENVIRONMENT, ALLOWED_IPS, TRUSTED_ORIGINS, NODE2_URL} from "./config/loadEnv.js";
+import {FRONTEND_URL, PORT_GATEWAY, ENVIRONMENT, ALLOWED_IPS, NODE2_URL, TOKENSECRET} from "./config/loadEnv.js";
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
@@ -12,6 +12,7 @@ import { publishExchange } from "./helpers/producers.js";
 // import { getPool } from "./config/db.js";
 import getPoolForRequest from "./config/mysqlCon.js";
 import axios from 'axios';
+import { expressjwt } from "express-jwt";
 
 process.env.TZ = 'UTC';
 const app = express();
@@ -41,10 +42,16 @@ if (ENVIRONMENT === "development") {
     app.use(cors(corsOptions));
 }
 
-
-
-
 app.use(morgan('dev'));
+
+app.use(expressjwt({
+    secret:TOKENSECRET,
+    algorithms: ['HS256']
+})
+.unless({
+    path:['/login','/graphql','/websocket']
+}));
+
 app.use((req, res, next) => {
     const allowedIPs = ALLOWED_IPS.split(',');
     let clientIP = req.headers['x-forwarded-for'] 

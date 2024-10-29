@@ -114,14 +114,14 @@ const documentResolver = {
             const [lastDocument] = await pool.query(getLastDocumentQuery, [toko_id, document_control_id]);
             if (lastDocument.length > 0) {
               document_number_raw_new = parseFloat(lastDocument[0].document_number_raw) + 1;
-              document_number_raw_new = document_number_new > 9999 ? 1 : document_number_raw_new;
             }
 
-            let n = Math.trunc(document_number_raw_new/100);
+            let n = Math.trunc(document_number_raw_new/10000);
+            const no_dok = document_number_raw_new % 10000;
             document_number_new = kode_toko +':'+  
                                         kode_dokumen +'/'+
                                         n.toString().padStart(4,'0')+'/'+
-                                        document_number_raw_new.toString().padStart(4, '0');
+                                        no_dok.toString().padStart(4, '0');
             break;
           }
           case USER_GENERATE:{
