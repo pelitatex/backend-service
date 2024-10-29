@@ -2,17 +2,16 @@ import {FRONTEND_URL, PORT_GATEWAY, ENVIRONMENT, ALLOWED_IPS, NODE2_URL, TOKENSE
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
-import queryTransaction from "./helpers/queryTransaction.js";
-
-
-import { graphqlHTTP } from "express-graphql";
-import eSchema from "./graphql/index.js";
-import { publishExchange } from "./helpers/producers.js";
-
-// import { getPool } from "./config/db.js";
-import getPoolForRequest from "./config/mysqlCon.js";
 import axios from 'axios';
 import { expressjwt } from "express-jwt";
+import { graphqlHTTP } from "express-graphql";
+import helmet from "helmet";
+
+// built in modules
+import queryTransaction from "./helpers/queryTransaction.js";
+import eSchema from "./graphql/index.js";
+import { publishExchange } from "./helpers/producers.js";
+import getPoolForRequest from "./config/mysqlCon.js";
 
 process.env.TZ = 'UTC';
 const app = express();
@@ -43,6 +42,7 @@ if (ENVIRONMENT === "development") {
 }
 
 app.use(morgan('dev'));
+app.use(helmet());
 
 app.use(expressjwt({
     secret:TOKENSECRET,
