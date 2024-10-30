@@ -65,7 +65,7 @@ app.use((req, res, next) => {
     console.log(`Mode: ${clientIP}, ${hostname}`);
 
 
-    res.header('Access-Control-Allow-Origin', FRONTEND_URL); // Ensure this header is set
+    res.header('Access-Control-Allow-Origin', req.headers.origin); // Ensure this header is set
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
     if (ENVIRONMENT === "development") {
         // In development, allow all access
