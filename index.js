@@ -72,7 +72,6 @@ app.use((req, res, next) => {
         console.log(`Development Mode: Access granted to IP - ${clientIP}, Hostname - ${hostname}`);
         next();
     } else if (ENVIRONMENT === "testing") {
-    
         // In testing, restrict access only to allowed IPs
         if (allowedIPs.includes(clientIP) || hostname === "localhost" || trustedOrigins.includes(req.headers.origin)) {
             console.log(`Testing Mode: Access granted to IP - ${clientIP}, Hostname - ${hostname} `);
