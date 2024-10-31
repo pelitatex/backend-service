@@ -1,10 +1,24 @@
 type BarangSKU {
-        id: ID!
-        sku_id: String!
-        nama_barang: String!
-        nama_jual: String!
-        barang_id: Int!
-        warna_id: Int!
-        satuan_id: Int!
-        status_aktif: Boolean!
-    }
+    id: ID!
+    sku_id: String!
+    nama_barang: String!
+    nama_jual: String!
+    barang_id: Int!
+    warna_id: Int!
+    satuan_id: Int!
+    status_aktif: Boolean!
+}
+
+input AddBarangSKUInput{
+    nama_jual: String
+    barang_id: Int!
+    warna_id: Int!
+    satuan_id: Int!
+    status_aktif: Boolean!
+} 
+
+input UpdateBarangSKUInput{
+    nama_barang: String!
+    nama_jual: String
+    status_aktif: Boolean!
+}

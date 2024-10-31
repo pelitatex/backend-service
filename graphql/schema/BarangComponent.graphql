@@ -4,3 +4,13 @@ type BarangComponent {
     kode: String
     keterangan: String
 }
+
+input AddBarangComponentInput {
+    nama: String!
+    keterangan: String   
+}
+
+input UpdateBarangComponentInput {
+    nama: String!
+    keterangan: String
+}

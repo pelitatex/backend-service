@@ -3,3 +3,13 @@ type Satuan {
     nama: String!
     status_aktif: Boolean!
 }
+
+input AddSatuanInput{
+    nama: String!
+    status_aktif: Boolean!
+}
+
+input UpdateSatuanInput{
+    nama: String!
+    status_aktif: Boolean!
+}

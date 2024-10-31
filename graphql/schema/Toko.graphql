@@ -12,3 +12,32 @@ type Toko{
     nama_domain: String
     email_pajak: String
 }
+
+input AddTokoInput {
+    kode: String!
+    nama: String!
+    alamat: String
+    telepon: String
+    email: String
+    kota: String
+    kode_pos: String
+    npwp: String
+    kode_toko: String!
+    status_aktif: Boolean!
+    nama_domain: String
+    email_pajak: String
+}
+input UpdateTokoInput {
+    kode: String!
+    nama: String!
+    alamat: String
+    telepon: String
+    email: String
+    kota: String
+    kode_pos: String
+    npwp: String
+    kode_toko: String!
+    status_aktif: Boolean!
+    nama_domain: String
+    email_pajak: String
+}

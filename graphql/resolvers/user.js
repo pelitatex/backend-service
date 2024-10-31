@@ -1,7 +1,7 @@
 import {LIFETIME} from "../../config/loadEnv.js";
 import jwt from "../../helpers/jwt.js";
 import bcrypt from "bcrypt";
-import queryLogger from "../../helpers/queryTransaction.js";
+import queryTransaction from "../../helpers/queryTransaction.js";
 
 const userResolver = {
   Query : {
@@ -183,20 +183,15 @@ const userResolver = {
         VALUES (?, ?, ?, ?, ?,
         ?, ?, ?, ?, ?, ?,
         ?, ?, ?, ?, ?, ?, ?)`;
-        const [result] = await pool.query(query, [username, hashedPassword, posisi_id, time_start, time_end, status_aktif,
-          has_account, nama, alamat, telepon, jenis_kelamin,
-          kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp
-        ]);
 
-        queryLogger(pool, `nd_user`, result.insertId, query, [username, hashedPassword, posisi_id, time_start, time_end, status_aktif,
+        const params =[username, hashedPassword, posisi_id, time_start, time_end, status_aktif,
           has_account, nama, alamat, telepon, jenis_kelamin,
           kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp
-        ]);
+        ];
+
+        const result = await queryTransaction.insert(context, "nd_user", query, params);
         
-        return { id: result.insertId, username, password:hashedPassword, posisi_id, time_start, time_end, status_aktif,
-          has_account, nama, alamat, telepon, jenis_kelamin,
-          kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp
-         };
+        return { ...input, id: result.id };
       } catch (error) {
         console.error(error);
         throw new Error("Internal Server Error Insert User");
@@ -272,21 +267,13 @@ const userResolver = {
         has_account = ?, nama = ?, alamat = ?, telepon = ?, jenis_kelamin = ?,
         kota_lahir = ?, tgl_lahir = ?, status_perkawinan = ?, jumlah_anak = ?, agama = ?, nik = ?, npwp = ?
         WHERE id = ?`;
-        const [result] = await pool.query(query, [username, hashedPassword, posisi_id, time_start, time_end, status_aktif, 
-          has_account, nama, alamat, telepon, jenis_kelamin,
-          kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp, id]);
-        if (result.affectedRows === 0) {
-          throw new Error("User not found");
-        }
-        queryLogger(pool, `nd_user`, id, query, [username, hashedPassword, posisi_id, time_start, time_end, status_aktif, 
-          has_account, nama, alamat, telepon, jenis_kelamin,
-          kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp, id]);
-        
-        return { id, username, password, posisi_id, time_start, time_end, status_aktif,
-          has_account, nama, alamat, telepon, jenis_kelamin,
-          kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp
 
-         };
+        const params = [username, hashedPassword, posisi_id, time_start, time_end, status_aktif, 
+          has_account, nama, alamat, telepon, jenis_kelamin,
+          kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp, id];
+        const result = await  queryTransaction.update(context, "nd_user", id, query, params);
+
+        return {...input, id};
       } catch (error) {
         console.error(error);
         throw new Error(error.message);

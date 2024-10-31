@@ -14,3 +14,32 @@ type Supplier {
     status_aktif: Boolean!
     
 }  
+
+input AddSupplierInput {
+    kode: String!
+    nama: String!
+    alamat: String
+    telepon: String
+    fax: String
+    kota: String
+    kode_pos: String
+    nama_bank: String
+    no_rek_bank: String
+    email: String
+    website: String
+    status_aktif: Boolean!
+}
+input UpdateSupplierInput {
+    kode: String!
+    nama: String!
+    alamat: String
+    telepon: String
+    fax: String
+    kota: String
+    kode_pos: String
+    nama_bank: String
+    no_rek_bank: String
+    email: String
+    website: String
+    status_aktif: Boolean!
+}

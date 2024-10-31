@@ -67,3 +67,58 @@ type Document{
     username: String!
     status_aktif: Boolean!
 }
+
+input AddDocumentControlInput{
+    tipe_dokumen: TipeDokumen!
+    department_id: Int!
+    kode: String!
+    nama: String!
+    keterangan: String
+    status_aktif: Boolean!
+}
+
+input UpdateDocumentControlInput{
+    tipe_dokumen: TipeDokumen!
+    department_id: Int!
+    kode: String!
+    nama: String!
+    keterangan: String
+    status_aktif: Boolean!
+}
+
+input AddDepartmentInput{
+    kode: String!
+    nama: String!
+    status_aktif: Boolean!
+}
+
+input UpdateDepartmentInput{
+    kode: String!
+    nama: String!
+    status_aktif: Boolean!
+}   
+
+input AddDocumentInput{
+    toko_id: Int!
+    document_control_id: Int!
+    tipe_dokumen: TipeDokumen!
+    kode_toko: String!
+    kode_dokumen: String!
+    document_number: String!
+    tanggal: String!
+    dari: String!
+    kepada: String!
+    keterangan: String
+    penanggung_jawab: String!
+    username: String!
+    status_aktif: Boolean!
+}
+
+input UpdateDocumentInput{
+    dari: String!
+    kepada: String!
+    keterangan: String
+    penanggung_jawab: String!
+    username: String!
+    status_aktif: Boolean!
+}

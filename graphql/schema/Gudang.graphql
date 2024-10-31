@@ -8,3 +8,23 @@ type Gudang{
     urutan: Int
     status_aktif: Boolean!
 }
+
+input AddGudangInput{
+    nama: String!
+    lokasi: String
+    status_default: Boolean!
+    visible: Boolean!
+    gudang_group_id: Int
+    urutan: Int
+    status_aktif: Boolean!
+}
+
+input UpdateGudangInput{
+    nama: String!
+    lokasi: String
+    status_default: Boolean!
+    visible: Boolean!
+    gudang_group_id: Int
+    urutan: Int
+    status_aktif: Boolean!
+}

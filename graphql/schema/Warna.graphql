@@ -5,3 +5,17 @@ type Warna {
     kode_warna: String
     status_aktif: Boolean!
 }
+
+input AddWarnaInput {
+    warna_beli: String
+    warna_jual: String!
+    kode_warna: String
+    status_aktif: Boolean!
+}
+
+input UpdateWarnaInput {
+    warna_beli: String
+    warna_jual: String!
+    kode_warna: String
+    status_aktif: Boolean
+}

@@ -12,3 +12,31 @@ type Barang {
     deskripsi_info: String
     status_aktif: Boolean!
 }
+
+input AddBarangInput {
+    sku_id: Int
+    nama_jual: String!
+    satuan_id: Int
+    jenis_barang: String
+    grade: String
+    bahan: String
+    tipe: String
+    fitur: String
+    qty_warning: Int
+    deskripsi_info: String
+    status_aktif: Boolean!
+}
+
+input UpdateBarangInput {
+    sku_id: Int
+    nama_jual: String!
+    satuan_id: Int
+    jenis_barang: String
+    grade: String
+    bahan: String
+    tipe: String
+    fitur: String
+    qty_warning: Int
+    deskripsi_info: String
+    status_aktif: Boolean!
+}
