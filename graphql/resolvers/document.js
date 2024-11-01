@@ -11,7 +11,7 @@ const documentResolver = {
       }
 
       try {
-          const query = `SELECT * FROM nd_document_control WHERE id = ?`;
+          const query = `SELECT * FROM nd_document WHERE id = ?`;
           const [rows] = await pool.query(query, [args.id]);
           return rows[0];
       } catch (error) {
@@ -26,7 +26,7 @@ const documentResolver = {
           console.log('context', pool);
           throw new Error('Database pool not available in context.');
         }
-        const query = 'SELECT * FROM nd_document_control';
+        const query = 'SELECT * FROM nd_document';
         const [rows] = await pool.query(query);
         return rows;
       } catch (error) {
