@@ -163,8 +163,7 @@ const documentResolver = {
 
           const logQuery = `INSERT INTO query_log (table_name, affected_id, query, params, username) 
           VALUES (?, ?, ?, ?, ?)`;
-          await pool.query(logQuery, ["nd_document", result.insertId, query, JSON.stringify(params), username] ); 
-        await pool.query(``);
+          await pool.query(logQuery, ["nd_document", result.insertId, query, JSON.stringify(params), username] );
 
         return {id: result.insertId, toko_id, document_control_id, tanggal, document_number : document_number_new, dari, kepada, keterangan, penanggung_jawab, username, status_aktif};
         // return result;
