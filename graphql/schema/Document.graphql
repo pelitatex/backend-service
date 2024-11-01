@@ -1,0 +1,42 @@
+type Document{
+    id: ID!
+    toko_id: Int!
+    document_control_id: Int!
+    document_number_raw: Int
+    document_number: String!
+    tanggal: String!
+    judul: String!
+    kepada: String!
+    dari: String!
+    keterangan: String
+    penanggung_jawab: String!
+    username: String!
+    status_aktif: Boolean!
+}
+
+input AddDocumentInput{
+    toko_id: Int!
+    document_control_id: Int!
+    tipe_dokumen: TipeDokumen!
+    kode_toko: String!
+    kode_dokumen: String!
+    document_number: String!
+    tanggal: String!
+    judul: String!
+    dari: String!
+    kepada: String!
+    keterangan: String
+    penanggung_jawab: String!
+    username: String!
+    status_aktif: Boolean!
+}
+
+input UpdateDocumentInput{
+    judul: String!
+    dari: String!
+    kepada: String!
+    keterangan: String
+    penanggung_jawab: String!
+    username: String!
+    status_aktif: Boolean!
+}

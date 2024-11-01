@@ -52,6 +52,7 @@ const documentResolver = {
           kode_dokumen,
           document_number,
           tanggal,
+          judul,
           dari,
           kepada,
           keterangan,
@@ -138,11 +139,11 @@ const documentResolver = {
 
         const query = `INSERT INTO nd_document (toko_id, document_control_id, tanggal,
         document_number_raw, document_number, 
-        dari, kepada, keterangan, 
+        judul, dari, kepada, keterangan, 
         penanggung_jawab, username,
         status_aktif)
         VALUES (?, ?, ?, 
-        ?, ?, 
+        ?, ?, ?, 
         ?, ?, ?, 
         ?, ?, 
         ?)
@@ -150,7 +151,7 @@ const documentResolver = {
 
         const params = [toko_id, document_control_id, tanggal,
           document_number_raw_new, document_number_new,
-          dari, kepada, keterangan, 
+          judul, dari, kepada, keterangan, 
           penanggung_jawab, username, 
           status_aktif];
         const [result] = await pool.query(query, params);
@@ -184,6 +185,7 @@ const documentResolver = {
       try {
 
         const { 
+          judul,
           dari, 
           kepada, 
           keterangan,
@@ -191,7 +193,8 @@ const documentResolver = {
           username,
           status_aktif } = input 
 
-        const query = `UPDATE nd_document SET 
+        const query = `UPDATE nd_document SET
+          judul = ?, 
           dari = ?,
           kepada = ?,
           keterangan = ?,
@@ -199,7 +202,7 @@ const documentResolver = {
           username = ?,
           status_aktif = ?
           WHERE id = ?`;
-        const params = [dari, kepada, keterangan, penanggung_jawab, username, status_aktif, id];
+        const params = [judul, dari, kepada, keterangan, penanggung_jawab, username, status_aktif, id];
 
         await pool.query('START TRANSACTION;');
         const [result] = await pool.query(query, params);
