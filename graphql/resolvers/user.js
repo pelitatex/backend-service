@@ -65,6 +65,7 @@ const userResolver = {
             const payload = {
               id: user.id,
               username: user.username,
+              roles: user.roles,
               posisi_id: user.posisi_id,
               time_start: user.time_start,
               time_end: user.time_end
@@ -123,7 +124,7 @@ const userResolver = {
       }
     }
     ,addUser: async(_, {input}, context) => {
-      let { username, password, posisi_id, time_start, time_end, status_aktif,
+      let { username, password, posisi_id, roles, time_start, time_end, status_aktif,
         has_account, nama, alamat, telepon, jenis_kelamin, 
         kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp } = input;
 
@@ -152,6 +153,9 @@ const userResolver = {
         if (!password || password.trim() === '') {
           throw new Error('Password is required.');
         }
+        if (!roles || roles.trim() === '') {
+          throw new Error('Roles is required.');
+        }
 
         if (time_start == null || time_end == null || time_start=='' || time_end == '') {
           time_start="07:00:00";
@@ -177,14 +181,14 @@ const userResolver = {
 
       try {
         const query = `INSERT INTO nd_user 
-        (username, password, posisi_id, time_start, time_end,
+        (username, password, posisi_id, roles,time_start, time_end,
         status_aktif, has_account, nama, alamat, telepon, jenis_kelamin,
         kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp)
-        VALUES (?, ?, ?, ?, ?,
+        VALUES (?, ?, ?, ?, ?, ?,
         ?, ?, ?, ?, ?, ?,
         ?, ?, ?, ?, ?, ?, ?)`;
 
-        const params =[username, hashedPassword, posisi_id, time_start, time_end, status_aktif,
+        const params =[username, hashedPassword, posisi_id, roles, time_start, time_end, status_aktif,
           has_account, nama, alamat, telepon, jenis_kelamin,
           kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp
         ];
@@ -198,7 +202,7 @@ const userResolver = {
       }
     },
     updateUser: async(_, { id, input }, context) => {
-      let { username, password, posisi_id, time_start, time_end, status_aktif,
+      let { username, password, posisi_id, roles,time_start, time_end, status_aktif,
         has_account, nama, alamat, telepon, jenis_kelamin, 
         kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp
        } = input;
@@ -238,6 +242,9 @@ const userResolver = {
             password = passwordHistory;
           }
         }
+        if (!roles || roles.trim() === '') {
+          throw new Error('Roles is required.');
+        }
 
         if (time_start == null || time_end == null || time_start=='' || time_end == '') {
           time_start="07:00:00";
@@ -263,12 +270,12 @@ const userResolver = {
 
       try {
 
-        const query = `UPDATE nd_user SET username = ?, password = ?, posisi_id = ?, time_start = ?, time_end = ?, status_aktif = ?,
+        const query = `UPDATE nd_user SET username = ?, password = ?, posisi_id = ?, roles=?, time_start = ?, time_end = ?, status_aktif = ?,
         has_account = ?, nama = ?, alamat = ?, telepon = ?, jenis_kelamin = ?,
         kota_lahir = ?, tgl_lahir = ?, status_perkawinan = ?, jumlah_anak = ?, agama = ?, nik = ?, npwp = ?
         WHERE id = ?`;
 
-        const params = [username, hashedPassword, posisi_id, time_start, time_end, status_aktif, 
+        const params = [username, hashedPassword, posisi_id, roles,time_start, time_end, status_aktif, 
           has_account, nama, alamat, telepon, jenis_kelamin,
           kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp, id];
         const result = await  queryTransaction.update(context, "nd_user", id, query, params);

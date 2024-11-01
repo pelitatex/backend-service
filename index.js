@@ -113,6 +113,20 @@ app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
 
+app.get('/user/me', async (req, res) => { 
+    try {
+        
+        if (!req.auth) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }else{
+            res.status(200).json(req.auth);
+        }
+        
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to get user' });
+    }
+});
+
 app.get('/customers-legacy/sudah_verifikasi_oleh_pajak', async (req, res) => { 
     try {
         const otherAppUrl = `${NODE2_URL}/customers/sudah_verifikasi_oleh_pajak`;
