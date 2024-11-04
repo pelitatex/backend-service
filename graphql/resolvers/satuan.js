@@ -63,12 +63,15 @@ const satuanResolver = {
         }
         const { nama, status_aktif } = input;
         const query = 'UPDATE nd_satuan SET nama = ?, status_aktif = ? WHERE id = ?';
-        const [result] = await pool.query(query, [nama, status_aktif, id]);
+        const result = await queryTransaction.update(context, 'nd_satuan', query, [nama, status_aktif, id]);
+        return result;
+
+        /* const [result] = await pool.query(query, [nama, status_aktif, id]);
         if (result.affectedRows === 0) {
           throw new Error(`Satuan with id ${id} not found.`);
         }
         queryLogger(pool, 'nd_satuan' ,query, [nama, status_aktif,id]);
-        return { id : id, nama, status_aktif };
+        return { id : id, nama, status_aktif }; */
       } catch (error) {
         console.error(error);
         throw new Error(error.message || "Internal Server Error Update Satuan");
