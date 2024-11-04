@@ -144,12 +144,17 @@ const supplierResolver = {
           website = ?,
           status_aktif = ?
           WHERE id = ?`;
-        const [result] = await pool.query(query, [kode, nama, alamat, telepon, fax, kota, kode_pos, nama_bank, no_rek_bank, email, website, status_aktif, id]);
+
+        const params = [kode, nama, alamat, telepon, fax, kota, kode_pos, nama_bank, no_rek_bank, email, website, status_aktif, id];
+        const result = await queryTransaction.update(context, 'nd_supplier', id, query, params);
+        return result;
+
+        /* const [result] = await pool.query(query, [kode, nama, alamat, telepon, fax, kota, kode_pos, nama_bank, no_rek_bank, email, website, status_aktif, id]);
         if (result.affectedRows === 0) {
           throw new Error("Supplier not found");
         }
         queryLogger(pool, `nd_supplier`, id, query, [kode, nama, alamat, telepon, fax, kota, kode_pos, nama_bank, no_rek_bank, email, website, status_aktif]);
-        return { id, kode, nama, alamat, telepon, fax, kota, kode_pos, nama_bank, no_rek_bank, email, website, status_aktif };
+        return { id, kode, nama, alamat, telepon, fax, kota, kode_pos, nama_bank, no_rek_bank, email, website, status_aktif }; */
       } catch (error) {
         console.error(error);
         throw new Error("Internal Server Error Update Supplier");
