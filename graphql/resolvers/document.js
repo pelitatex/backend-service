@@ -167,7 +167,6 @@ const documentResolver = {
           await pool.query(logQuery, ["nd_document", result.insertId, query, JSON.stringify(params), username] );
 
         return {id: result.insertId, toko_id, document_control_id, tanggal, document_number : document_number_new, dari, kepada, keterangan, penanggung_jawab, username, status_aktif};
-        // return result;
 
       } catch (error) {
         await pool.query('ROLLBACK');

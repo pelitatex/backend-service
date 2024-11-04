@@ -116,28 +116,16 @@ const barangResolver = {
                                qty_warning = ?, deskripsi_info = ?, status_aktif = ? 
                                WHERE id = ?`;
                 
-                const [result] = await pool.query(query, [
+                const params = [
                     sku_id, nama_jual, satuan_id, jenis_barang, 
                     grade, bahan, tipe, fitur, 
                     qty_warning, deskripsi_info, status_aktif, 
                     id
-                ]);
+                ];
 
-                if (result.affectedRows === 0) {
-                    throw new Error(`Satuan with id ${id} not found.`);
-                }
+                // const [result] = await pool.query(query, params);
 
-                queryLogger(pool, 'nd_barang' ,query, [sku_id,
-                    nama_jual,
-                    satuan_id,
-                    jenis_barang,
-                    grade,
-                    bahan,
-                    tipe,
-                    fitur,
-                    qty_warning,
-                    deskripsi_info,
-                    status_aktif, id]);
+                const result = await queryTransaction.update(context, "nd_barang", id, query, params);
 
                 return {id,
                     sku_id,
