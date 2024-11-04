@@ -133,7 +133,7 @@ const addBarangComponent = async ({input}, table, context) => {
 
         const query = `INSERT INTO nd_barang_${table} (nama, kode, keterangan) VALUES (?, ?, ?)`;
 
-        const result = queryTransaction.insert(context, `nd_barang_${table}`, query, [nama.toUpperCase(), paddedKode, keterangan]);
+        const result = await queryTransaction.insert(context, `nd_barang_${table}`, query, [nama.toUpperCase(), paddedKode, keterangan]);
 
         // const [result] = await pool.query(query, [nama.toUpperCase(), paddedKode, keterangan]);
         // queryLogger(pool, `nd_barang_${table}`, result.insertId ,query, [nama.toUpperCase(), paddedKode, keterangan]);
@@ -163,15 +163,15 @@ const updateBarangComponent = async (input, id, table, context) => {
         }
 
         const query = `UPDATE nd_barang_${table} SET nama = ?, keterangan = ? WHERE id = ?`;
-        const [result] = await pool.query(query, [nama.toUpperCase(), keterangan, id]);
+
+        const result = await queryTransaction.update(context, `nd_barang_${table}`, id, query, [nama.toUpperCase(), keterangan, id]);
+        /* const [result] = await pool.query(query, [nama.toUpperCase(), keterangan, id]);
         if (result.affectedRows === 0) {
             throw new Error(`${table} with id ${id} not found.`);
         }
-        queryLogger(pool, `nd_barang_${table}`,'id', query, [nama.toUpperCase(), keterangan, id]);
+        queryLogger(pool, `nd_barang_${table}`,'id', query, [nama.toUpperCase(), keterangan, id]); */
 
-        const getUpdatedDataQuery = `SELECT * FROM nd_${table} WHERE id = ?`;
-        const [updatedRows] = await pool.query(getUpdatedDataQuery, [id]);
-        return updatedRows[0];
+        return result;
     }catch (error) {
         console.error(error);
         throw new Error(error.message || `Internal Server Error Update ${table}`);
