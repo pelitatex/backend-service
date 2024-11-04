@@ -1,4 +1,5 @@
-import queryLogger from "../../helpers/queryTransaction.js";
+// import queryLogger from "../../helpers/queryTransaction.js";
+import queryTransaction from "../../helpers/queryTransaction.js";
 
 const gudangResolver = {
   Query : {
@@ -52,10 +53,15 @@ const gudangResolver = {
 
       try {
         const query = 'INSERT INTO nd_gudang (nama, lokasi, status_default, urutan, visible, gudang_group_id, status_aktif ) VALUES (?, ?, ?, ?, ?, ?, ?)';
-        const [result] = await pool.query(query, [nama, lokasi, status_default, urutan, visible, gudang_group_id, status_aktif]);
+        const params = [nama, lokasi, status_default, urutan, visible, gudang_group_id, status_aktif];
+
+        const result = await queryTransaction.insert(context, 'nd_gudang', query, params);
+        
+        /* const [result] = await pool.query(query, [nama, lokasi, status_default, urutan, visible, gudang_group_id, status_aktif]);
         const insertedId = result.insertId;
         queryLogger(pool, `nd_gudang`, result.insertId, query, [
-          nama, lokasi, status_default, urutan, visible, gudang_group_id, status_aktif] );
+          nama, lokasi, status_default, urutan, visible, gudang_group_id, status_aktif] ); */
+
         return {id: insertedId, nama, lokasi, status_default, urutan, visible, gudang_group_id, status_aktif};
       } catch (error) {
         console.error(error);
