@@ -280,7 +280,7 @@ const userResolver = {
           kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp, id];
         const result = await  queryTransaction.update(context, "nd_user", id, query, params);
 
-        return {...input, id};
+        return result;
       } catch (error) {
         console.error(error);
         throw new Error(error.message);

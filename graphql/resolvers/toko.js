@@ -145,7 +145,6 @@ const tokoResolver = {
           status_aktif,
           nama_domain,
           email_pajak } = input;
-
           
         if (status_aktif == null) {
           status_aktif = true;
@@ -169,13 +168,13 @@ const tokoResolver = {
           kode_toko = ?, status_aktif = ?, nama_domain = ?, email_pajak = ? 
           WHERE id = ?`;
 
-          const params = [
-            nama, alamat, telepon, email,
-            kota, kode_pos, npwp, 
-            kode_toko, status_aktif, nama_domain, email_pajak, 
-            id];
-          const result = await queryTransaction.update(context, 'nd_toko', id, query, params);
-          return result;
+        const params = [
+          nama, alamat, telepon, email,
+          kota, kode_pos, npwp, 
+          kode_toko, status_aktif, nama_domain, email_pajak, 
+          id];
+        const result = await queryTransaction.update(context, 'nd_toko', id, query, params);
+        return result;
          /*const [result] = await pool.query(query, [
           nama, alamat, telepon, email,
           kota, kode_pos, npwp, 
