@@ -1,4 +1,5 @@
-import queryLogger from "../../helpers/queryLogger.js";
+// import queryLogger from "../../helpers/queryLogger.js";
+import queryTransaction from "../../helpers/queryTransaction";
 
 const barangResolver = {
     Query: {
@@ -55,9 +56,11 @@ const barangResolver = {
                     status_aktif
 
                 } = input;
+
                 const query = `INSERT INTO nd_barang (sku_id, nama_jual, satuan_id, jenis_barang, grade, bahan, tipe, fitur, qty_warning, deskripsi_info, status_aktif) 
                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-                const [result] = await pool.query(query, [
+
+                const params = [
                     sku_id,
                     nama_jual,
                     satuan_id,
@@ -69,19 +72,12 @@ const barangResolver = {
                     qty_warning,
                     deskripsi_info,
                     status_aktif
-                ]);
+                ];
 
-                queryLogger(pool, 'nd_barang' ,query, [sku_id,
-                    nama_jual,
-                    satuan_id,
-                    jenis_barang,
-                    grade,
-                    bahan,
-                    tipe,
-                    fitur,
-                    qty_warning,
-                    deskripsi_info,
-                    status_aktif]);
+                // const [result] = await pool.query(query, params);
+                
+                const result = await queryTransaction.insert(context, "nd_barang", query, params);                
+                
                 return {id: result.insertId,
                     sku_id,
                     nama_jual,

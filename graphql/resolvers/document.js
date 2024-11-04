@@ -219,7 +219,6 @@ const documentResolver = {
         const respond = {};
         Object.assign(respond, res[0][0]);
         
-
         return respond;
 
 
