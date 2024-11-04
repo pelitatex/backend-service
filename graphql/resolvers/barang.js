@@ -1,5 +1,5 @@
 // import queryLogger from "../../helpers/queryLogger.js";
-import queryTransaction from "../../helpers/queryTransaction";
+import queryTransaction from "../../helpers/queryTransaction.js";
 
 const barangResolver = {
     Query: {

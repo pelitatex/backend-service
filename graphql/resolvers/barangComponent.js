@@ -1,5 +1,5 @@
 // import queryLogger from "../../helpers/queryTransaction.js";
-import queryTransaction from "../../helpers/queryTransaction";
+import queryTransaction from "../../helpers/queryTransaction.js";
 
 const barangComponentResolver = {
     Query: {
