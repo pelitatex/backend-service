@@ -1,4 +1,5 @@
-import queryLogger from "../../helpers/queryTransaction.js";
+// import queryLogger from "../../helpers/queryTransaction.js";
+import queryTransaction from "../../helpers/queryTransaction";
 
 const supplierResolver = {
   Query:{
@@ -86,11 +87,14 @@ const supplierResolver = {
           website,
           status_aktif
         ) VALUES (?,?,?,?, ?,?,?,?, ?,?,?,?)`;
-        const [result] = await pool.query(query, [kode, nama, alamat, telepon, fax, kota, kode_pos, nama_bank, no_rek_bank, email, website, status_aktif]);
 
-        queryLogger(pool, `nd_supplier`, result.insertId, query, [kode, nama, alamat, telepon, fax, kota, kode_pos, nama_bank, no_rek_bank, email, website, status_aktif]);
+        const params = [kode, nama, alamat, telepon, fax, kota, kode_pos, nama_bank, no_rek_bank, email, website, status_aktif];
+        const result = await queryTransaction.insert(context, 'nd_supplier', query, params);
 
-        return { id: result.insertId, kode, nama, alamat, telepon, fax, kota, kode_pos, nama_bank, no_rek_bank, email, website, status_aktif };
+        /* const [result] = await pool.query(query, [kode, nama, alamat, telepon, fax, kota, kode_pos, nama_bank, no_rek_bank, email, website, status_aktif]);
+        queryLogger(pool, `nd_supplier`, result.insertId, query, [kode, nama, alamat, telepon, fax, kota, kode_pos, nama_bank, no_rek_bank, email, website, status_aktif]); */
+
+        return { id: result.id, kode, nama, alamat, telepon, fax, kota, kode_pos, nama_bank, no_rek_bank, email, website, status_aktif };
       } catch (error) {
         console.error(error);
         throw new Error("Internal Server Error Add Supplier");
