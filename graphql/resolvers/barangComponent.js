@@ -1,4 +1,5 @@
-import queryLogger from "../../helpers/queryTransaction.js";
+// import queryLogger from "../../helpers/queryTransaction.js";
+import queryTransaction from "../../helpers/queryTransaction";
 
 const barangComponentResolver = {
     Query: {
@@ -128,13 +129,14 @@ const addBarangComponent = async ({input}, table, context) => {
         if (lastInsertedKodeRows.length > 0) {
             const lastInsertedKode = lastInsertedKodeRows[0].kode;
             paddedKode = (parseInt(lastInsertedKode) + 1).toString().padStart(2, '0');
-        }
-        
+        }        
 
         const query = `INSERT INTO nd_barang_${table} (nama, kode, keterangan) VALUES (?, ?, ?)`;
-        const [result] = await pool.query(query, [nama.toUpperCase(), paddedKode, keterangan]);
 
-        queryLogger(pool, `nd_barang_${table}`, result.insertId ,query, [nama.toUpperCase(), paddedKode, keterangan]);
+        const result = queryTransaction.insert(context, `nd_barang_${table}`, query, [nama.toUpperCase(), paddedKode, keterangan]);
+
+        // const [result] = await pool.query(query, [nama.toUpperCase(), paddedKode, keterangan]);
+        // queryLogger(pool, `nd_barang_${table}`, result.insertId ,query, [nama.toUpperCase(), paddedKode, keterangan]);
 
         return { id: result.insertId, nama: nama.toUpperCase(), kode:paddedKode, keterangan };
     } catch (error) {
