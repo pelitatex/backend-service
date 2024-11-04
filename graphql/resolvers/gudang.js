@@ -86,13 +86,17 @@ const gudangResolver = {
         const query = `UPDATE nd_gudang SET nama = ?, lokasi = ?, status_default = ?,
         urutan = ?, visible = ?, gudang_group_id = ?, status_aktif = ?
         WHERE id = ?`;
-        const [result] = await pool.query(query, [nama, lokasi, status_default, urutan, visible, gudang_group_id, status_aktif, id]);
+        const params = [nama, lokasi, status_default, urutan, visible, gudang_group_id, status_aktif, id];
+        const result = await queryTransaction.update(context, 'nd_gudang', id, query, params);
+        return result;
+
+        /* const [result] = await pool.query(query, [nama, lokasi, status_default, urutan, visible, gudang_group_id, status_aktif, id]);
         if (result.affectedRows === 0) {
           throw new Error('Gudang not found');
         }
         queryLogger(pool, `nd_gudang`, id, query, [
-          nama, lokasi, status_default, urutan, visible, gudang_group_id, status_aktif, id] );
-        return {id, nama, lokasi, status_default, urutan, visible, gudang_group_id, status_aktif};
+          nama, lokasi, status_default, urutan, visible, gudang_group_id, status_aktif, id] ); 
+        return {id, nama, lokasi, status_default, urutan, visible, gudang_group_id, status_aktif};*/
       } catch (error) {
         console.error(error);
         throw new Error(error.message || 'Internal Server Error Update Gudang');
