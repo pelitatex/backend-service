@@ -62,7 +62,7 @@ const gudangResolver = {
         queryLogger(pool, `nd_gudang`, result.insertId, query, [
           nama, lokasi, status_default, urutan, visible, gudang_group_id, status_aktif] ); */
 
-        return {id: insertedId, nama, lokasi, status_default, urutan, visible, gudang_group_id, status_aktif};
+        return {id: result.id, nama, lokasi, status_default, urutan, visible, gudang_group_id, status_aktif};
       } catch (error) {
         console.error(error);
         throw new Error( error.message || 'Internal Server Error Add Gudang');

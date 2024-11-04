@@ -78,7 +78,7 @@ const barangResolver = {
                 
                 const result = await queryTransaction.insert(context, "nd_barang", query, params);                
                 
-                return {id: result.insertId,
+                return {id: result.id,
                     sku_id,
                     nama_jual,
                     satuan_id,

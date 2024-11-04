@@ -1,4 +1,5 @@
-import queryLogger from "../../helpers/queryTransaction.js";
+// import queryLogger from "../../helpers/queryTransaction.js";
+import queryTransaction from "../../helpers/queryTransaction";
 
 const satuanResolver = {
   Query:{
@@ -43,9 +44,11 @@ const satuanResolver = {
         }
         const { nama, status_aktif } = input;
         const query = 'INSERT INTO nd_satuan (nama, status_aktif) VALUES (?, ?)';
-        const [result] = await pool.query(query, [nama, status_aktif]);
-        queryLogger(pool, 'nd_satuan', result.insertId ,query, [nama, status_aktif]);
-        return { id: result.insertId, nama, status_aktif };
+
+        const result = await queryTransaction.insert(context, 'nd_satuan', query, [nama, status_aktif]);
+        /* const [result] = await pool.query(query, [nama, status_aktif]);
+        queryLogger(pool, 'nd_satuan', result.insertId ,query, [nama, status_aktif]); */
+        return { id: result.id, nama, status_aktif };
       } catch (error) {
         console.error(error);
         throw new Error(error.message || "Internal Server Error Add Satuan");

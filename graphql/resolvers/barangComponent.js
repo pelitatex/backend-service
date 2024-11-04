@@ -138,7 +138,7 @@ const addBarangComponent = async ({input}, table, context) => {
         // const [result] = await pool.query(query, [nama.toUpperCase(), paddedKode, keterangan]);
         // queryLogger(pool, `nd_barang_${table}`, result.insertId ,query, [nama.toUpperCase(), paddedKode, keterangan]);
 
-        return { id: result.insertId, nama: nama.toUpperCase(), kode:paddedKode, keterangan };
+        return { id: result.id, nama: nama.toUpperCase(), kode:paddedKode, keterangan };
     } catch (error) {
         console.error(error);
         throw new Error(error.message || `Internal Server Error Add ${table}`);
