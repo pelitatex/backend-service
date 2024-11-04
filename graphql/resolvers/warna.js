@@ -107,14 +107,17 @@ const warnaResolver = {
         }
 
         const query = 'UPDATE nd_warna SET warna_jual = ?, warna_beli = ?, kode_warna = ?, status_aktif = ? WHERE id = ?';
-        const [result] = await pool.query(query, [warna_jual, warna_beli, kode_warna, status_aktif, id]);
+        const params = [warna_jual, warna_beli, kode_warna, status_aktif, id];
+        const result = await queryTransaction.update(context, 'nd_warna', id, query, params);
+        return result;
+        /* const [result] = await pool.query(query, [warna_jual, warna_beli, kode_warna, status_aktif, id]);
         if (result.affectedRows === 0) {
           throw new Error('Warna not found');
         }
 
         queryLogger(pool, `nd_warna`, id, query, [warna_jual, warna_beli, kode_warna, status_aktif, id]);
 
-        return { id, warna_jual, warna_beli, kode_warna, status_aktif };
+        return { id, warna_jual, warna_beli, kode_warna, status_aktif }; */
 
       } catch (error) {
         console.error(error);
