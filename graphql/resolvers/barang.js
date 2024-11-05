@@ -136,6 +136,20 @@ const barangResolver = {
 
                 const result = await queryTransaction.update(context, "nd_barang", id, query, params);
 
+                if (nama_beli != '') {
+                    const checkBeli = `SELECT * FROM nd_barang_beli WHERE barang_id = ?`;
+                    const queryBeliCheck = await pool.query(checkBeli, [id]);
+                    const [rows] = queryBeliCheck;
+                    if (rows.length > 0) {
+                        const queryBeli = `UPDATE nd_barang_beli SET nama = ? WHERE barang_id = ?`;
+                        const resultBeli = await queryTransaction.update(context, "nd_barang_beli", id, queryBeli, [nama_beli, id]);
+                    } else {
+                        const queryBeli = `INSERT INTO nd_barang_beli (nama, barang_id, status_aktif ) VALUES (?, ?)`;
+                        const resultBeli = await queryTransaction.insert(context, "nd_barang_beli", queryBeli, [nama_beli, id, 1]);
+                    }
+                    
+                } 
+
                 return {id,
                     sku_id,
                     nama_jual,
