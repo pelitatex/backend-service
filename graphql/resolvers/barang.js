@@ -45,6 +45,7 @@ const barangResolver = {
                 const {
                     sku_id,
                     nama_jual,
+                    nama_beli,
                     satuan_id,
                     jenis_barang,
                     grade,
@@ -76,7 +77,13 @@ const barangResolver = {
 
                 // const [result] = await pool.query(query, params);
                 
-                const result = await queryTransaction.insert(context, "nd_barang", query, params);                
+                const result = await queryTransaction.insert(context, "nd_barang", query, params);
+
+                if (nama_beli != '') {
+                    const queryBeli = `INSERT INTO nd_barang_beli (nama, barang_id, status_aktif ) VALUES (?, ?)`;
+                    const resultBeli = await queryTransaction.insert(context, "nd_barang_beli", queryBeli, [nama_beli, result.id, 1]);
+                    
+                }                
                 
                 return {id: result.id,
                     sku_id,
@@ -105,7 +112,9 @@ const barangResolver = {
             try {
 
                 const {
-                    sku_id, nama_jual, satuan_id, jenis_barang,
+                    sku_id, nama_jual, 
+                    nama_beli,
+                    satuan_id, jenis_barang,
                     grade, bahan, tipe, fitur,
                     qty_warning, deskripsi_info, status_aktif
                 } = input;
