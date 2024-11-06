@@ -40,7 +40,7 @@ type DocumentControl {
     id: ID!
     department_id: Int!
     tipe_dokumen: TipeDokumen!
-    kode: String!
+    kode: String
     nama: String!
     keterangan: String
     status_aktif: Boolean!
@@ -71,7 +71,6 @@ type Document{
 input AddDocumentControlInput{
     tipe_dokumen: TipeDokumen!
     department_id: Int!
-    kode: String!
     nama: String!
     keterangan: String
     status_aktif: Boolean!
@@ -80,7 +79,6 @@ input AddDocumentControlInput{
 input UpdateDocumentControlInput{
     tipe_dokumen: TipeDokumen!
     department_id: Int!
-    kode: String!
     nama: String!
     keterangan: String
     status_aktif: Boolean!
