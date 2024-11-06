@@ -1,4 +1,5 @@
-import queryLogger from "../../helpers/queryTransaction.js";
+// import queryLogger from "../../helpers/queryTransaction.js";
+import queryTransaction from "../../helpers/queryTransaction";
 
 const documentControlResolver = {
   Query:{
@@ -77,7 +78,24 @@ const documentControlResolver = {
       if (kode.length > 4 || kode.length == 0) {
         throw new Error('Kode must be 4 characters');
       }
-      const paddedKode = kode.padStart(4, '0');
+
+      const queryLastCode = `SELECT no_kode, kode FROM nd_document_control WHERE department_id = ? AND status_aktif = 1 ORDER BY no_kode DESC LIMIT 1`;
+      const [lastCodeRows] = await pool.query(queryLastCode, [department_id]);
+      let paddedKode = '01';
+      let newCode = 1;
+
+      const queryGetDepartment = `SELECT * FROM nd_department WHERE id = ?`;
+      const [departmentRows] = await pool.query(queryGetDepartment, [department_id]);
+
+      const deptCode = departmentRows[0].kode;
+
+      if (lastCodeRows.length > 0) {
+        newKode = parseFloat(lastCodeRows[0].no_kode) + 1;
+        paddedKode = newKode.toString().padStart(2, '0');
+      }
+
+      const newPaddedCode = `${deptCode}${paddedKode}`;
+
 
       try {
 
@@ -87,11 +105,14 @@ const documentControlResolver = {
           throw new Error('Nama or kode already exists');
         }
 
-        const query = `INSERT INTO nd_document_control (department_id, nama, kode, keterangan, status_aktif) VALUES (?, ?, ?, ?, ?)`;
-        const [result] = await pool.query(query, [department_id, nama.toUpperCase(), paddedKode, keterangan, status_aktif]);
-        queryLogger(pool, `nd_document_control`, result.insertId, query, [department_id, nama.toUpperCase(), paddedKode, keterangan, status_aktif]);
+        const query = `INSERT INTO nd_document_control (department_id, nama, no_kode, kode, keterangan, status_aktif) VALUES (?, ?, ?, ?, ?, ?)`;
+        const params = [department_id, nama.toUpperCase(), newKode, newCode, newPaddedCode, keterangan, status_aktif];
+        const result = await queryTransaction.insert(context, "nd_document_control", query, params);
+        
+        /* const [result] = await pool.query(query, [department_id, nama.toUpperCase(), paddedKode, keterangan, status_aktif]);
+        queryLogger(pool, `nd_document_control`, result.insertId, query, [department_id, nama.toUpperCase(), paddedKode, keterangan, status_aktif]);*/
 
-        return { id: result.insertId, department_id, nama: nama.toUpperCase(), kode : paddedKode, keterangan, status_aktif };
+        return result; 
       } catch (error) {
         console.error(error);
         throw new Error(error.message || "Internal Server Error Add Document Control");

@@ -75,6 +75,8 @@ const barangResolver = {
                     status_aktif
                 ];
 
+                console.log('params', params);
+
                 // const [result] = await pool.query(query, params);
                 
                 const result = await queryTransaction.insert(context, "nd_barang", query, params);
@@ -83,7 +85,7 @@ const barangResolver = {
                     const queryBeli = `INSERT INTO nd_barang_beli (nama, barang_id, status_aktif ) VALUES (?, ?)`;
                     const resultBeli = await queryTransaction.insert(context, "nd_barang_beli", queryBeli, [nama_beli, result.id, 1]);
                     
-                }                
+                }
                 
                 return {id: result.id,
                     sku_id,
@@ -146,8 +148,7 @@ const barangResolver = {
                     } else {
                         const queryBeli = `INSERT INTO nd_barang_beli (nama, barang_id, status_aktif ) VALUES (?, ?)`;
                         const resultBeli = await queryTransaction.insert(context, "nd_barang_beli", queryBeli, [nama_beli, id, 1]);
-                    }
-                    
+                    }                    
                 } 
 
                 return {id,
