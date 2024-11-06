@@ -82,7 +82,7 @@ const documentControlResolver = {
       const queryLastCode = `SELECT no_kode, kode FROM nd_document_control WHERE department_id = ? AND status_aktif = 1 ORDER BY no_kode DESC LIMIT 1`;
       const [lastCodeRows] = await pool.query(queryLastCode, [department_id]);
       let paddedKode = '01';
-      let newCode = 1;
+      let newKode = 1;
 
       const queryGetDepartment = `SELECT * FROM nd_department WHERE id = ?`;
       const [departmentRows] = await pool.query(queryGetDepartment, [department_id]);
@@ -105,7 +105,7 @@ const documentControlResolver = {
         }
 
         const query = `INSERT INTO nd_document_control (department_id, nama, no_kode, kode, keterangan, status_aktif) VALUES (?, ?, ?, ?, ?, ?)`;
-        const params = [department_id, nama.toUpperCase(), newKode, newCode, newPaddedCode, keterangan, status_aktif];
+        const params = [department_id, nama.toUpperCase(), newKode, newPaddedCode, keterangan, status_aktif];
         const result = await queryTransaction.insert(context, "nd_document_control", query, params);
         
         /* const [result] = await pool.query(query, [department_id, nama.toUpperCase(), paddedKode, keterangan, status_aktif]);
