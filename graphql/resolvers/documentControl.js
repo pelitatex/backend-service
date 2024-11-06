@@ -74,7 +74,7 @@ const documentControlResolver = {
         throw new Error('Database pool not available in context.');
       }
 
-      const { department_id, nama, kode, keterangan, status_aktif } = input;
+      const { department_id, tipe_dokumen, nama, kode, keterangan, status_aktif } = input;
       /* if (kode.length > 4 || kode.length == 0) {
         throw new Error('Kode must be 4 characters');
       } */
@@ -104,8 +104,8 @@ const documentControlResolver = {
           throw new Error('Nama or kode already exists');
         }
 
-        const query = `INSERT INTO nd_document_control (department_id, nama, no_kode, kode, keterangan, status_aktif) VALUES (?, ?, ?, ?, ?, ?)`;
-        const params = [department_id, nama.toUpperCase(), newKode, newPaddedCode, keterangan, status_aktif];
+        const query = `INSERT INTO nd_document_control (department_id, tipe_dokumen, nama, no_kode, kode, keterangan, status_aktif) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+        const params = [department_id, tipe_dokumen, nama.toUpperCase(), newKode, newPaddedCode, keterangan, status_aktif];
         const result = await queryTransaction.insert(context, "nd_document_control", query, params);
         
         /* const [result] = await pool.query(query, [department_id, nama.toUpperCase(), paddedKode, keterangan, status_aktif]);
