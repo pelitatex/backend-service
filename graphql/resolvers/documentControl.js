@@ -214,13 +214,17 @@ const documentControlResolver = {
 
 
         const query = `UPDATE nd_department SET nama = ?, kode = ?, status_aktif = ? WHERE id = ?`;
-        const [result] = await pool.query(query, [nama.toUpperCase(), paddedKode, status_aktif, id]);
+        const params = [nama.toUpperCase(), paddedKode, status_aktif, id];
+        const result = await queryTransaction.update(context, "nd_department", id, query, params);
+        return result;
+
+        /* const [result] = await pool.query(query, [nama.toUpperCase(), paddedKode, status_aktif, id]);
         if (result.affectedRows === 0) {
           throw new Error("Department not found");
         }
         queryLogger(pool, `nd_department`, id, query,  [nama.toUpperCase(), paddedKode, status_aktif, id]);
 
-        return {id: id, nama : nama.toUpperCase(), kode: paddedKode, status_aktif};
+        return {id: id, nama : nama.toUpperCase(), kode: paddedKode, status_aktif}; */
       } catch (error) {
         console.error(error);
         throw new Error(error.message || "Internal Server Error Update Department");
