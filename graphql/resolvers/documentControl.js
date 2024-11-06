@@ -181,10 +181,13 @@ const documentControlResolver = {
         }
         
         const query = `INSERT INTO nd_department (nama, kode, status_aktif) VALUES (?, ?, ?)`;
-        const [result] = await pool.query(query, [nama.toUpperCase(), paddedKode, status_aktif]);
+        const params = [nama.toUpperCase(), paddedKode, status_aktif];
+        const result = await queryTransaction.insert(context, "nd_department", query, params);
+        return result;
+        /* const [result] = await pool.query(query, [nama.toUpperCase(), paddedKode, status_aktif]);
         queryLogger(pool, `nd_department`, result.insertId, query, [nama.toUpperCase(), paddedKode, status_aktif]);
 
-        return { id: result.insertId, nama: nama.toUpperCase(), kode : paddedKode, status_aktif };
+        return { id: result.insertId, nama: nama.toUpperCase(), kode : paddedKode, status_aktif }; */
       } catch (error) {
         console.error(error);
         throw new Error(error.message || "Internal Server Error Add Department");
