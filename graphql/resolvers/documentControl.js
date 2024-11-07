@@ -92,7 +92,7 @@ const documentControlResolver = {
 
       if (lastCodeRows[0].length > 0) {
         newKode = parseFloat(lastCodeRows[0].no_kode) + 1;
-        console.log('no added', newKode); )
+        console.log('no added', newKode); 
         paddedKode = newKode.toString().padStart(2, '0');
       }
 
