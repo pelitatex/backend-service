@@ -84,6 +84,7 @@ const documentControlResolver = {
 
       const queryLastCode = `SELECT no_kode, kode FROM nd_document_control WHERE department_id = ? AND status_aktif = 1 ORDER BY no_kode DESC LIMIT 1`;
       const [lastCodeRows] = await pool.query(queryLastCode, [department_id]);
+      console.log('last kode', lastCodeRows); 
 
       const queryGetDepartment = `SELECT * FROM nd_department WHERE id = ?`;
       const [departmentRows] = await pool.query(queryGetDepartment, [department_id]);
@@ -92,7 +93,6 @@ const documentControlResolver = {
 
       if (lastCodeRows[0].length > 0) {
         newKode = parseFloat(lastCodeRows[0].no_kode) + 1;
-        console.log('no added', newKode); 
         paddedKode = newKode.toString().padStart(2, '0');
       }
 
