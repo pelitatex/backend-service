@@ -120,7 +120,11 @@ const barangSKUResolver = {
         }
 
         const query = 'UPDATE nd_barang_sku SET nama_barang = ?, nama_jual = ?, status_aktif = ? WHERE id = ?';
-        const [result] = await pool.query(query, [nama_barang.toUpperCase(), nama_jual.toUpperCase(), status_aktif, id]);
+        const params = [nama_barang.toUpperCase(), nama_jual.toUpperCase(), status_aktif, id];
+        const result = await queryTransaction.update(context, "nd_barang_sku", id, query, params);
+        return result;
+
+        /* const [result] = await pool.query(query, [nama_barang.toUpperCase(), nama_jual.toUpperCase(), status_aktif, id]);
         if (result.affectedRows === 0) {
           throw new Error('Barang SKU not found');
         }
@@ -128,7 +132,7 @@ const barangSKUResolver = {
 
         const updatedQuery = `SELECT * FROM nd_barang_sku WHERE id = ?`;
         const [rows] = await pool.query(updatedQuery, [id]);
-        return rows[0];
+        return rows[0]; */
 
       } catch (error) {
         console.error(error);
