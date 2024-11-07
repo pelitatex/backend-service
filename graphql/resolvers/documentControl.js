@@ -106,6 +106,7 @@ const documentControlResolver = {
 
         const query = `INSERT INTO nd_document_control (department_id, tipe_dokumen, nama, no_kode, kode, keterangan, status_aktif) VALUES (?, ?, ?, ?, ?, ?, ?)`;
         const params = [department_id, tipe_dokumen, nama.toUpperCase(), newKode, newPaddedCode, keterangan, status_aktif];
+        console.log('paramns',params);
         const result = await queryTransaction.insert(context, "nd_document_control", query, params);
         
         /* const [result] = await pool.query(query, [department_id, nama.toUpperCase(), paddedKode, keterangan, status_aktif]);
