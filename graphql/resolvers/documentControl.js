@@ -89,7 +89,7 @@ const documentControlResolver = {
 
       const deptCode = departmentRows[0].kode;
 
-      if (lastCodeRows.length > 0) {
+      if (lastCodeRows[0].length > 0) {
         newKode = parseFloat(lastCodeRows[0].no_kode) + 1;
         paddedKode = newKode.toString().padStart(2, '0');
       }
