@@ -1,5 +1,6 @@
 import {v4 as uuidv4} from 'uuid';
-import queryLogger from "../../helpers/queryTransaction.js";
+// import queryLogger from "../../helpers/queryTransaction.js";
+import queryTransaction from '../../helpers/queryTransaction';
 
 const barangSKUResolver = {
   Query:{
@@ -76,11 +77,16 @@ const barangSKUResolver = {
       try {
         const sku_id = sixDigitIdentifier +'-'+ kode;
         const query = 'INSERT INTO nd_barang_sku (sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif) VALUES (?, ?, ?, ?, ?, ?, ?)';
-        const [result] = await pool.query(query, [sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif]);
+
+        const params = [sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif];
+        const result = await queryTransaction.insert(context, "nd_barang_sku", query, params);
+        return result;
+
+        /* const [result] = await pool.query(query, [sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif]);
         const insertedId = result.insertId;
         queryLogger(pool, `nd_barang_sku`, result.insertId, query, [sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif]);
         return {id: insertedId, sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif};
-      } catch (error) {
+      } catch (error) { */
         console.error(error);
         throw new Error('Internal Server Error Add Barang');
       }

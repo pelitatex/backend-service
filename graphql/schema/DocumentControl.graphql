@@ -77,8 +77,6 @@ input AddDocumentControlInput{
 }
 
 input UpdateDocumentControlInput{
-    tipe_dokumen: TipeDokumen!
-    department_id: Int!
     nama: String!
     keterangan: String
     status_aktif: Boolean!

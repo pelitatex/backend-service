@@ -124,7 +124,7 @@ const documentControlResolver = {
         throw new Error('Database pool not available in context.');
       }
 
-      const { department_id, nama, keterangan, status_aktif } = input;
+      const { nama, keterangan, status_aktif } = input;
       /* if (kode.length > 4 || kode.length == 0) {
         throw new Error('Kode must be 4 characters');
       }
