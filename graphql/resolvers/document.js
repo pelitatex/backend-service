@@ -95,7 +95,6 @@ const documentResolver = {
                           kode_dokumen +'/'+
                           year.toString().slice(-2) + month.toString().padStart(2,'0') +'/'+
                           document_number_raw_new.toString().padStart(4, '0');
-            console.log('select last document');
             break;
           }
           case GENERATE_BY_REQUEST_YEARLY:{
@@ -137,14 +136,17 @@ const documentResolver = {
             console.log("bingung  tipe_dokumen");
         }
 
+        console.log('new document raw number', document_number_raw_new);
+        console.log('new document number', document_number_new);
+
         const query = `INSERT INTO nd_document (toko_id, document_control_id, tanggal,
         document_number_raw, document_number, 
         judul, dari, kepada, keterangan, 
         penanggung_jawab, username,
         status_aktif)
         VALUES (?, ?, ?, 
-        ?, ?, ?, 
-        ?, ?, ?, 
+        ?, ?,  
+        ?, ?, ?, ?, 
         ?, ?, 
         ?)
         `;

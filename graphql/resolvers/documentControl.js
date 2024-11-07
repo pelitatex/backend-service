@@ -93,8 +93,6 @@ const documentControlResolver = {
       if (lastCodeRows.length > 0) {
         newKode = parseFloat(lastCodeRows[0].no_kode) + 1;
         paddedKode = newKode.toString().padStart(2, '0');
-        console.log('last kode', lastCodeRows); 
-        console.log('newKode kode', newKode); 
       }
 
       const newPaddedCode = `${deptCode}${paddedKode}`;
