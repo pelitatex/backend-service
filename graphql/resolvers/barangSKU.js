@@ -1,6 +1,6 @@
 import {v4 as uuidv4} from 'uuid';
 // import queryLogger from "../../helpers/queryTransaction.js";
-import queryTransaction from '../../helpers/queryTransaction';
+import queryTransaction from '../../helpers/queryTransaction.js';
 
 const barangSKUResolver = {
   Query:{
