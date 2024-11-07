@@ -85,8 +85,8 @@ const barangSKUResolver = {
         /* const [result] = await pool.query(query, [sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif]);
         const insertedId = result.insertId;
         queryLogger(pool, `nd_barang_sku`, result.insertId, query, [sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif]);
-        return {id: insertedId, sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif};
-      } catch (error) { */
+        return {id: insertedId, sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif};*/
+      } catch (error) { 
         console.error(error);
         throw new Error('Internal Server Error Add Barang');
       }
