@@ -200,6 +200,10 @@ const documentResolver = {
           username,
           status_aktif } = input 
 
+        if(keterangan.length > 2000) {
+          throw new Error('Keterangan must be less than 2000 characters');
+        }
+
         const query = `UPDATE nd_document SET
           judul = ?, 
           dari = ?,
@@ -220,7 +224,9 @@ const documentResolver = {
         const logQuery = `INSERT INTO query_log (table_name, affected_id, query, params, username) 
           VALUES (?, ?, ?, ?, ?)`;
 
-        await pool.query(logQuery, ["nd_document", id, query, JSON.stringify(params), username] ); 
+        const ketCompress = zlib.gzipSync(keterangan);
+        const paramsLogger = [toko_id, document_control_id, tanggal, document_number_raw_new, document_number_new, judul, dari, kepada, ketCompress, penanggung_jawab, username, status_aktif];
+        await pool.query(logQuery, ["nd_document", id, query, JSON.stringify(paramsLogger), username] ); 
         const res = await pool.query(`SELECT * FROM nd_document WHERE id = ?`, [id]);
         await pool.query('COMMIT;');
         const respond = {};
