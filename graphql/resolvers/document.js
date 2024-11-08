@@ -67,7 +67,10 @@ const documentResolver = {
         
         if (kode_dokumen.length > 4 || kode_dokumen.length == 0) {
           throw new Error('Kode Dokumen must be 4 characters');
-          
+        }
+
+        if(keterangan.length > 2000) {
+          throw new Error('Keterangan must be less than 2000 characters');
         }
 
         const month = new Date(tanggal).getMonth() + 1;
