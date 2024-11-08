@@ -49,6 +49,8 @@ const documentResolver = {
           query = `SELECT * FROM nd_document WHERE document_number LIKE ? LIMIT ?, ?`;
           params = [`%${search}%`, offset, limitQuery];
         }
+
+        query = `SELECT * FROM nd_document`;
         const [rows] = await pool.query(query, params);
         const response = rows.map(row => {
           const keterangan = zlib.gunzipSync(row.keterangan).toString();
