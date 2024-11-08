@@ -1,5 +1,6 @@
-import queryLogger from "../../helpers/queryTransaction.js";
+// import queryLogger from "../../helpers/queryTransaction.js";
 import queryTransaction from "../../helpers/queryTransaction.js";
+const MAX_LIMIT = 100;
 
 const documentResolver = {
   Query:{
@@ -13,22 +14,53 @@ const documentResolver = {
       try {
           const query = `SELECT * FROM nd_document WHERE id = ?`;
           const [rows] = await pool.query(query, [args.id]);
+          const response = {
+            id: rows[0].id,
+            toko_id: rows[0].toko_id,
+            document_control_id: rows[0].document_control_id,
+            tanggal: rows[0].tanggal,
+            document_number: rows[0].document_number,
+            judul: rows[0].judul,
+            dari: rows[0].dari,
+            kepada: rows[0].kepada,
+            keterangan: zlib.gunzipSync(rows[0].keterangan).toString(),
+            penanggung_jawab: rows[0].penanggung_jawab,
+            username: rows[0].username,
+            status_aktif: rows[0].status_aktif
+          }
           return rows[0];
       } catch (error) {
         console.error(error);
         throw new Error("Internal Server Error Document Control Single");
       }
     },
-    allDocument: async(_,args, context)=>{
+    allDocument: async(_,{offset=0, limit = 10}, context)=>{
+      const limitQuery = limit > MAX_LIMIT ? MAX_LIMIT : limit;
       try {
         const pool = context.pool;
         if (!pool) {
           console.log('context', pool);
           throw new Error('Database pool not available in context.');
         }
-        const query = 'SELECT * FROM nd_document';
-        const [rows] = await pool.query(query);
-        return rows;
+        const query = `SELECT * FROM nd_document LIMIT ?, ?`;
+        const [rows] = await pool.query(query, [offset, limitQuery]);
+        const response = rows.map(row => {
+          return {
+            id: row.id,
+            toko_id: row.toko_id,
+            document_control_id: row.document_control_id,
+            tanggal: row.tanggal,
+            document_number: row.document_number,
+            judul: row.judul,
+            dari: row.dari,
+            kepada: row.kepada,
+            keterangan: zlib.gunzipSync(row.keterangan).toString(),
+            penanggung_jawab: row.penanggung_jawab,
+            username: row.username,
+            status_aktif: row.status_aktif
+          }
+        });
+        return response;
       } catch (error) {
         console.error(error);
         throw new Error("Internal Server Error Document Control All");
@@ -69,8 +101,8 @@ const documentResolver = {
           throw new Error('Kode Dokumen must be 4 characters');
         }
 
-        if(keterangan.length > 2000) {
-          throw new Error('Keterangan must be less than 2000 characters');
+        if(keterangan.length > 3000) {
+          throw new Error('Keterangan must be less than 3000 characters');
         }
 
         const month = new Date(tanggal).getMonth() + 1;
@@ -154,9 +186,11 @@ const documentResolver = {
         ?)
         `;
 
+        const ketCompress = zlib.gzipSync(keterangan);
+
         const params = [toko_id, document_control_id, tanggal,
           document_number_raw_new, document_number_new,
-          judul, dari, kepada, keterangan, 
+          judul, dari, kepada, ketCompress, 
           penanggung_jawab, username, 
           status_aktif];
         const [result] = await pool.query(query, params);
@@ -170,7 +204,6 @@ const documentResolver = {
           const logQuery = `INSERT INTO query_log (table_name, affected_id, query, params, username) 
           VALUES (?, ?, ?, ?, ?)`;
 
-          const ketCompress = zlib.gzipSync(keterangan);
           const paramsLogger = [toko_id, document_control_id, tanggal, document_number_raw_new, document_number_new, judul, dari, kepada, ketCompress, penanggung_jawab, username, status_aktif];
           await pool.query(logQuery, ["nd_document", result.insertId, query, JSON.stringify(paramsLogger), username] );
 
@@ -213,7 +246,9 @@ const documentResolver = {
           username = ?,
           status_aktif = ?
           WHERE id = ?`;
-        const params = [judul, dari, kepada, keterangan, penanggung_jawab, username, status_aktif, id];
+        const ketCompress = zlib.gzipSync(keterangan);
+
+        const params = [judul, dari, kepada, ketCompress, penanggung_jawab, username, status_aktif, id];
 
         await pool.query('START TRANSACTION;');
         const [result] = await pool.query(query, params);
@@ -224,7 +259,6 @@ const documentResolver = {
         const logQuery = `INSERT INTO query_log (table_name, affected_id, query, params, username) 
           VALUES (?, ?, ?, ?, ?)`;
 
-        const ketCompress = zlib.gzipSync(keterangan);
         const paramsLogger = [toko_id, document_control_id, tanggal, document_number_raw_new, document_number_new, judul, dari, kepada, ketCompress, penanggung_jawab, username, status_aktif];
         await pool.query(logQuery, ["nd_document", id, query, JSON.stringify(paramsLogger), username] ); 
         const res = await pool.query(`SELECT * FROM nd_document WHERE id = ?`, [id]);
