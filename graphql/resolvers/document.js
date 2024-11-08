@@ -45,6 +45,7 @@ const documentResolver = {
         const query = `SELECT * FROM nd_document LIMIT ?, ?`;
         const [rows] = await pool.query(query, [offset, limitQuery]);
         const response = rows.map(row => {
+          const keterangan = zlib.gunzipSync(row.keterangan).toString();
           return {
             id: row.id,
             toko_id: row.toko_id,
@@ -54,7 +55,7 @@ const documentResolver = {
             judul: row.judul,
             dari: row.dari,
             kepada: row.kepada,
-            keterangan: zlib.gunzipSync(row.keterangan).toString(),
+            keterangan: keterangan.substring(0, 100),
             penanggung_jawab: row.penanggung_jawab,
             username: row.username,
             status_aktif: row.status_aktif
