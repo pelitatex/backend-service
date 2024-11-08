@@ -166,7 +166,10 @@ const documentResolver = {
 
           const logQuery = `INSERT INTO query_log (table_name, affected_id, query, params, username) 
           VALUES (?, ?, ?, ?, ?)`;
-          await pool.query(logQuery, ["nd_document", result.insertId, query, JSON.stringify(params), username] );
+
+          const ketCompress = zlib.gzipSync(keterangan);
+          const paramsLogger = [toko_id, document_control_id, tanggal, document_number_raw_new, document_number_new, judul, dari, kepada, ketCompress, penanggung_jawab, username, status_aktif];
+          await pool.query(logQuery, ["nd_document", result.insertId, query, JSON.stringify(paramsLogger), username] );
 
         return {id: result.insertId, toko_id, document_control_id, tanggal, document_number : document_number_new, dari, kepada, keterangan, penanggung_jawab, username, status_aktif};
 
