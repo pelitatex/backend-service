@@ -1,5 +1,5 @@
 // import queryLogger from "../../helpers/queryTransaction.js";
-import queryTransaction from "../../helpers/queryTransaction.js";
+// import queryTransaction from "../../helpers/queryTransaction.js";
 const MAX_LIMIT = 100;
 
 const documentResolver = {
@@ -34,7 +34,7 @@ const documentResolver = {
         throw new Error("Internal Server Error Document Control Single");
       }
     },
-    allDocument: async(_,{offset=0, limit = 10}, context)=>{
+    allDocument: async(_,{offset=0, limit = 10, search=""}, context)=>{
       const limitQuery = limit > MAX_LIMIT ? MAX_LIMIT : limit;
       try {
         const pool = context.pool;
@@ -42,8 +42,14 @@ const documentResolver = {
           console.log('context', pool);
           throw new Error('Database pool not available in context.');
         }
-        const query = `SELECT * FROM nd_document LIMIT ?, ?`;
-        const [rows] = await pool.query(query, [offset, limitQuery]);
+
+        let query = `SELECT * FROM nd_document LIMIT ?, ?`;
+        let params = [offset, limitQuery];
+        if (search.length > 0) {
+          query = `SELECT * FROM nd_document WHERE document_number LIKE ? LIMIT ?, ?`;
+          params = [`%${search}%`, offset, limitQuery];
+        }
+        const [rows] = await pool.query(query, params);
         const response = rows.map(row => {
           const keterangan = zlib.gunzipSync(row.keterangan).toString();
           return {
