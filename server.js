@@ -1,6 +1,6 @@
 // const app = require('./api-gateway');
 // const port = process.env.PORT || 3000;
-import gateway from './api-gateway.js';
+// import gateway from './api-gateway.js';
 import app from './index.js';
 import { PORT_GATEWAY, PORT_APP } from './config/loadEnv.js';
 

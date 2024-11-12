@@ -53,7 +53,7 @@ const documentResolver = {
         query = `SELECT * FROM nd_document`;
         const [rows] = await pool.query(query, params);
         const response = rows.map(row => {
-          const keterangan = zlib.gunzipSync(row.keterangan).toString();
+        const keterangan = zlib.gunzipSync(row.keterangan).toString();
           return {
             id: row.id,
             toko_id: row.toko_id,

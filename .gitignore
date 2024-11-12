@@ -35,3 +35,6 @@ data/db/
 #docker
 Dockerfile
 docker-compose.yml
+
+#image
+uploads/

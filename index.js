@@ -12,6 +12,10 @@ import queryTransaction from "./helpers/queryTransaction.js";
 import eSchema from "./graphql/index.js";
 import { publishExchange } from "./helpers/producers.js";
 import getPoolForRequest from "./config/mysqlCon.js";
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+import sharp from "sharp";
 
 process.env.TZ = 'UTC';
 const app = express();
@@ -349,6 +353,75 @@ app.get('/customers-legacy/:company_index', async (req, res) => {
     }
 });
 
+app.post('upload-image/temp', (req, res) => {
+    const storage = multer.diskStorage({
+        destination: (req, file, cb) => {
+            let uploadPath = 'uploads/temp/';
+            cb(null, uploadPath); // Directory to save the uploaded files
+        },
+        filename: (req, file, cb) => {
+            cb(null, `${Date.now()}-${file.originalname}`);
+        }
+    });
+
+    const upload = multer({ storage: storage });
+
+    upload.single('image')(req, res, async (err) => {
+        if (err) {
+            return res.status(500).json({ error: 'Failed to upload image' });
+        }
+        
+        const file = req.image;
+        const maxSize = 400 * 1024; // 400KB in bytes
+
+        try {
+            if(file.size > maxSize){
+                const compressedImagePath = path.join('uploads/temp/', `compressed-${Date.now()}-${file.originalname}.jpg`);
+                await sharp(file.path)
+                    .jpeg({ quality: 70 })
+                    .toFile(compressedImage);
+
+                fs.unlinkSync(file.path);
+
+                res.status(200).json({ message: 'Image uploaded successfully', path: compressedImagePath });
+                
+            }else{
+                res.status(200).json({ message: 'Image uploaded successfully', path: file.path });
+            }
+        } catch (error) {
+            res.status(500).send({ error: error.message });
+        }
+    
+    });
+
+});
+
+// Endpoint to handle image upload
+app.post('/upload-image/customer/:type', upload.single('image'), (req, res) => {
+    const storage = multer.diskStorage({
+        destination: (req, file, cb) => {
+            let uploadPath = 'uploads/';
+
+            cb(null, 'uploads/'); // Directory to save the uploaded files
+        },
+        filename: (req, file, cb) => {
+            cb(null, `${Date.now()}-${file.originalname}`);
+        }
+    });
+
+    // Initialize upload
+    const upload = multer({ storage: storage });
+
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
+        res.status(200).json({ message: 'Image uploaded successfully', file: req.file });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to upload image' });
+    }
+});
 
 app.use(
     '/graphql',
