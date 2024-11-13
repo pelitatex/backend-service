@@ -3,8 +3,11 @@ import fs from "fs";
 
 async function compressImage(fileInput, outputPath) {
     let quality = 70;
+    console.log(fileInput);
 
-    if (fileInput.size > 10000 * 1024) {
+    if (fileInput.size > 20000 * 1024) {
+        quality = 10;
+    }else if(fileInput.size > 10000 * 1024) {
         quality = 15;
     } else if (fileInput.size > 7000 * 1024) {
         quality = 20;

@@ -388,20 +388,44 @@ app.post('/upload-image/temp', async (req, res) => {
         const file = await uploadFile(req, res, "temp/");
         const maxSize = 400 * 1024; 
         console.log('upload success');
+        console.log(file);
 
         if(file.size > maxSize){
             console.log('Compressing image...');
-            const compressedImagePath = path.join('uploads/temp/', `c-${Date.now()}-${Math.random().toString(36).substring(2, 10)}.jpg`);
+            const filename = `c-${Date.now()}-${Math.random().toString(36).substring(2, 10)}.jpg`;
+            const compressedImagePath = path.join('uploads/temp/', filename);
             await compressImage(file, compressedImagePath);
-            res.status(200).json({ message: 'Image uploaded successfully', path: compressedImagePath });
+            res.status(200).json({ message: 'Image uploaded successfully', imageName: filename });
             
         }else{
-            res.status(200).json({ message: 'Image uploaded successfully', path: file.path });
+            res.status(200).json({ message: 'Image uploaded successfully', imageName: file.filename });
         }
     } catch (error) {
         res.status(500).send({ error: error.message });
-    } 
+    }
+});
 
+app.post('/upload-image/customer_ids', async (req, res) => {
+    const data = req.body;
+    const image_url = data.image_url;
+    const customer_id = data.customer_id;
+    
+    try {
+        if (!image_url || !customer_id) {
+            return res.status(400).json({ error: 'Invalid request' });
+        }
+
+        const tempFilePath = path.join('uploads/temp/', imageName);
+        const finalFilePath = path.join('uploads/customers/ids', imageName);
+        await fs.rename(tempFilePath, finalFilePath);
+
+        const query = `UPDATE nd_customer SET img_link = ? WHERE id = ?`;
+        const result = await queryTransaction.update(context, `nd_customer`, query, [finalFilePath, customer_id]);
+        res.status(200).json({ message: 'Image uploaded successfully', data: result });
+         
+    } catch (error) {
+        res.status(500).send({ error: error.message });
+    }
 });
 
 // Endpoint to handle image upload
