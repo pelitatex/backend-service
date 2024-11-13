@@ -16,6 +16,7 @@ import getPoolForRequest from "./config/mysqlCon.js";
 import compressImage from "./helpers/image_compress.js";
 import path from 'path';
 import fs from 'fs';
+import fsPromises from 'fs/promises';
 import util from 'util';
 
 process.env.TZ = 'UTC';
@@ -429,7 +430,7 @@ app.post('/upload-image/customer_ids', async (req, res) => {
 
         const tempFilePath = path.join('uploads/temp/', image_name);
         const finalFilePath = path.join('uploads/customers/ids', image_name);
-        await fs.rename(tempFilePath, finalFilePath);
+        await fsPromises.rename(tempFilePath, finalFilePath);
 
         /* const query = `UPDATE nd_customer SET img_link = ? WHERE id = ?`;
         const [result] = pool.query(query, [image_name, customer_id]);
