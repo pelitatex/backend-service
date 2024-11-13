@@ -429,7 +429,7 @@ app.post('/upload-image/customer_ids', async (req, res) => {
         }
 
         const tempFilePath = path.join('uploads/temp/', image_name);
-        const finalFilePath = path.join('uploads/customers/ids', image_name);
+        const finalFilePath = path.join('uploads/customer/ids', image_name);
         await fsPromises.rename(tempFilePath, finalFilePath);
 
         /* const query = `UPDATE nd_customer SET img_link = ? WHERE id = ?`;
