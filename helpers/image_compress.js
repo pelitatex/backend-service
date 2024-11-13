@@ -24,13 +24,11 @@ async function compressImage(fileInput, outputPath) {
                     console.error('Error compressing image:', err);
                 }
 
-                setTimeout(() => {
-                    fs.unlinkSync(fileInput.path, (err) => {
-                        if (err) {
-                            console.error('Error deleting original image:', err);
-                        }
-                    });
-                }, 5000);
+                fs.unlinkSync(fileInput.path, (err) => {
+                    if (err) {
+                        console.error('Error deleting original image:', err);
+                    }
+                });
             });
         console.log('Image compressed successfully');
     } catch (error) {
