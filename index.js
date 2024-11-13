@@ -407,16 +407,16 @@ app.post('/upload-image/temp', async (req, res) => {
 
 app.post('/upload-image/customer_ids', async (req, res) => {
     const data = req.body;
-    const image_url = data.image_url;
+    const image_name = data.image_name;
     const customer_id = data.customer_id;
     
     try {
-        if (!image_url || !customer_id) {
+        if (!image_name || !customer_id) {
             return res.status(400).json({ error: 'Invalid request' });
         }
 
-        const tempFilePath = path.join('uploads/temp/', imageName);
-        const finalFilePath = path.join('uploads/customers/ids', imageName);
+        const tempFilePath = path.join('uploads/temp/', image_name);
+        const finalFilePath = path.join('uploads/customers/ids', image_name);
         await fs.rename(tempFilePath, finalFilePath);
 
         const query = `UPDATE nd_customer SET img_link = ? WHERE id = ?`;
