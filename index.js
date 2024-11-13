@@ -432,10 +432,11 @@ app.post('/upload-image/customer_ids', async (req, res) => {
         const finalFilePath = path.join('uploads/customer/ids', image_name);
         await fsPromises.rename(tempFilePath, finalFilePath);
 
-        /* const query = `UPDATE nd_customer SET img_link = ? WHERE id = ?`;
-        const [result] = pool.query(query, [image_name, customer_id]);
-        res.status(200).json({ message: 'Image uploaded successfully', data: result }); */
-        res.status(200).json({ message: 'Image uploaded successfully'}); 
+        const query = `UPDATE nd_customer SET img_link = ? WHERE id = ?`;
+        await pool.query(query, [finalFilePath, customer_id]);
+        const queryLog = `INSERT INTO query_log (table_name, affected_id, query, params, username) VALUES (?, ?, ?, ?, ?)`;
+        await pool.query(queryLog, ['nd_customer', customer_id, query, JSON.stringify([finalFilePath, customer_id]), xUsername]);
+        res.status(200).json({ message: 'Image uploaded successfully'});
          
     } catch (error) {
         res.status(500).send({ error: error.message });
