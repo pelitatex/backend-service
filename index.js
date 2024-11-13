@@ -383,18 +383,6 @@ function uploadFile(req, res, additionalPath) {
 
 
 app.post('/upload-image/temp', async (req, res) => {
-
-    let uploadInProgress = true;
-
-    req.on('data', (chunk) => {
-        console.log('Uploading...');
-    });
-
-    req.on('end', () => {
-        uploadInProgress = false;
-        console.log('Upload finished');
-    });
-
     
     try {
         const file = await uploadFile(req, res, "temp/");
@@ -405,7 +393,6 @@ app.post('/upload-image/temp', async (req, res) => {
             console.log('Compressing image...');
             const compressedImagePath = path.join('uploads/temp/', `c-${Date.now()}-${Math.random().toString(36).substring(2, 10)}.jpg`);
             await compressImage(file, compressedImagePath);
-
             res.status(200).json({ message: 'Image uploaded successfully', path: compressedImagePath });
             
         }else{
