@@ -409,6 +409,18 @@ app.post('/upload-image/customer_ids', async (req, res) => {
     const data = req.body;
     const image_name = data.image_name;
     const customer_id = data.customer_id;
+
+    let xTenant = "default";
+    if (req.headers['x-tenant']) {
+        xTenant = req.headers['x-tenant'];
+    }
+
+    let xUsername = "";
+    if(req.headers['x-username']){
+        xUsername = req.headers['x-username'];
+        console.log('headers', req.headers);
+    }
+    const pool = await getPoolForRequest(xTenant); 
     
     try {
         if (!image_name || !customer_id) {
@@ -419,9 +431,10 @@ app.post('/upload-image/customer_ids', async (req, res) => {
         const finalFilePath = path.join('uploads/customers/ids', image_name);
         await fs.rename(tempFilePath, finalFilePath);
 
-        const query = `UPDATE nd_customer SET img_link = ? WHERE id = ?`;
-        const result = await queryTransaction.update(context, `nd_customer`, query, [finalFilePath, customer_id]);
-        res.status(200).json({ message: 'Image uploaded successfully', data: result });
+        /* const query = `UPDATE nd_customer SET img_link = ? WHERE id = ?`;
+        const [result] = pool.query(query, [image_name, customer_id]);
+        res.status(200).json({ message: 'Image uploaded successfully', data: result }); */
+        res.status(200).json({ message: 'Image uploaded successfully'}); 
          
     } catch (error) {
         res.status(500).send({ error: error.message });
