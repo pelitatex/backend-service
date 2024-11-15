@@ -114,7 +114,7 @@ app.get('/uploads/customer/ids/:filename', (req, res) => {
     const filename = req.params.filename;
     const filePath = path.join('uploads/customer/ids', filename);
     const fullUrl = `${req.protocol}://${req.get('host')}/${filePath}`;
-    console.log('filePath', fullUrl);
+    console.log('filePaths', fullUrl);
     res.sendFile(fullUrl, (err) => {
         if (err) {
             res.status(404).json({ error: 'File not found' });
