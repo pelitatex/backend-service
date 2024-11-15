@@ -110,6 +110,17 @@ app.use((req, res, next) => {
     }
 });
 
+app.get('/uploads/customer/ids/:filename', (req, res) => {
+    const filename = req.params.filename;
+    const filePath = path.join('uploads/customer/ids', filename);
+    res.sendFile
+    (filePath, (err) => {
+        if (err) {
+            res.status(404).json({ error: 'File not found' });
+        }
+    });
+});
+
 app.get('/hello', (req, res) => {
     res.json({message: 'Request allowed'});
 });
