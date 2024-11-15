@@ -205,7 +205,7 @@ app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => {
         const [rows] = await pool.query(queryCheck, [condValue]);
         if (rows.length > 0) {
             const ket = (keyName === 'npwp' ? `npwp: ` : `nik: `)+keyValue;
-            res.status(400).json({message: `Customer tidak diinput ke central, customer dengan ${ket} sudah terdaftar`, data: rows[0]});
+            res.status(200).json({message: `Customer tidak diinput ke central, customer dengan ${ket} sudah terdaftar`, data: rows[0]});
             const msg = {
                 id:rows[0].id, 
                 keyName: keyName,
@@ -230,6 +230,8 @@ app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => {
          ?, ?, ?, ?,
          ?, ?, ?, ?,
          ?)`;
+
+        tipe_company_edit = tipe_company ? tipe_company : '';
 
         const result = await queryTransaction.insert(context, `nd_customer`, query, [tipe_company, nama, alamat, blok, no, rt, rw,
             kecamatan, kelurahan, kota, provinsi, kode_pos,
