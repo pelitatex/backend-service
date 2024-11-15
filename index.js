@@ -231,9 +231,9 @@ app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => {
          ?, ?, ?, ?,
          ?)`;
 
-        tipe_company_edit = tipe_company ? tipe_company : '';
+        const tipe_company_edit = tipe_company ? tipe_company : '';
 
-        const result = await queryTransaction.insert(context, `nd_customer`, query, [tipe_company, nama, alamat, blok, no, rt, rw,
+        const result = await queryTransaction.insert(context, `nd_customer`, query, [tipe_company_edit, nama, alamat, blok, no, rt, rw,
             kecamatan, kelurahan, kota, provinsi, kode_pos,
             npwp, nik, tempo_kredit, warning_kredit,
             limit_warning_type, limit_warning_amount, limit_amount, limit_atas,
