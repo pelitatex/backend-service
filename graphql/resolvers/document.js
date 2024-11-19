@@ -17,6 +17,7 @@ const documentResolver = {
       try {
           const query = `SELECT * FROM nd_document WHERE id = ?`;
           const [rows] = await pool.query(query, [args.id]);
+
           const response = {
             id: rows[0].id,
             toko_id: rows[0].toko_id,
@@ -26,8 +27,8 @@ const documentResolver = {
             judul: rows[0].judul,
             dari: rows[0].dari,
             kepada: rows[0].kepada,
-            keterangan: zlib.gunzipSync(rows[0].keterangan).toString(),
-            penanggung_jawab: rows[0].penanggung_jawab,
+            keterangan: rows[0].keterangan,
+            penanggung_jawab: rows[0].keterangan,
             username: rows[0].username,
             status_aktif: rows[0].status_aktif
           }
@@ -56,7 +57,6 @@ const documentResolver = {
         query = `SELECT * FROM nd_document`;
         const [rows] = await pool.query(query, params);
         const response = rows.map(row => {
-          const keterangan = zlib.gunzipSync(row.keterangan).toString();
           return {
             id: row.id,
             toko_id: row.toko_id,
@@ -198,12 +198,12 @@ const documentResolver = {
         ?)
         `;
 
-        let ketCompress = zlib.gzipSync(keterangan);
-        ketCompress = ketCompress.toString('base64');
+        /* const ketCompress = zlib.deflateSync(keterangan).toString('base64');
+        const ketCompressBase64 = Buffer.from(ketCompress); */
 
         const params = [toko_id, document_control_id, tanggal,
           document_number_raw_new, document_number_new,
-          judul, dari, kepada, ketCompress, 
+          judul, dari, kepada, keterangan, 
           penanggung_jawab, username, 
           status_aktif];
         const [result] = await pool.query(query, params);
@@ -217,7 +217,7 @@ const documentResolver = {
           const logQuery = `INSERT INTO query_log (table_name, affected_id, query, params, username) 
           VALUES (?, ?, ?, ?, ?)`;
 
-          const paramsLogger = [toko_id, document_control_id, tanggal, document_number_raw_new, document_number_new, judul, dari, kepada, ketCompress, penanggung_jawab, username, status_aktif];
+          const paramsLogger = [toko_id, document_control_id, tanggal, document_number_raw_new, document_number_new, judul, dari, kepada, keterangan, penanggung_jawab, username, status_aktif];
           await pool.query(logQuery, ["nd_document", result.insertId, query, JSON.stringify(paramsLogger), username] );
 
         return {id: result.insertId, toko_id, document_control_id, tanggal, document_number : document_number_new, judul, dari, kepada, keterangan, penanggung_jawab, username, status_aktif};
