@@ -198,7 +198,8 @@ const documentResolver = {
         ?)
         `;
 
-        const ketCompress = zlib.gzipSync(keterangan);
+        let ketCompress = zlib.gzipSync(keterangan);
+        ketCompress = ketCompress.toString('base64');
 
         const params = [toko_id, document_control_id, tanggal,
           document_number_raw_new, document_number_new,
