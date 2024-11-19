@@ -1,6 +1,9 @@
+import zlib from 'zlib';
+
 // import queryLogger from "../../helpers/queryTransaction.js";
 // import queryTransaction from "../../helpers/queryTransaction.js";
 const MAX_LIMIT = 100;
+
 
 const documentResolver = {
   Query:{
