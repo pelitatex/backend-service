@@ -15,6 +15,7 @@ import barangComponentResolver from './resolvers/barangComponent.js';
 import documentControlResolver from './resolvers/documentControl.js';
 import documentResolver from './resolvers/document.js';
 
+import barangResolver from './resolvers/barang.js';
 import barangSKUResolver from './resolvers/barangSKU.js';
 import gudangResolver from './resolvers/gudang.js';
 
@@ -31,6 +32,7 @@ const resolvers = _.merge(
     barangComponentResolver,
     documentControlResolver,
     documentResolver,
+    barangResolver,
     barangSKUResolver,
     gudangResolver
 );
