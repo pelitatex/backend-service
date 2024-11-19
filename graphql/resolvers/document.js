@@ -219,7 +219,7 @@ const documentResolver = {
           const paramsLogger = [toko_id, document_control_id, tanggal, document_number_raw_new, document_number_new, judul, dari, kepada, ketCompress, penanggung_jawab, username, status_aktif];
           await pool.query(logQuery, ["nd_document", result.insertId, query, JSON.stringify(paramsLogger), username] );
 
-        return {id: result.insertId, toko_id, document_control_id, tanggal, document_number : document_number_new, dari, kepada, keterangan, penanggung_jawab, username, status_aktif};
+        return {id: result.insertId, toko_id, document_control_id, tanggal, document_number : document_number_new, judul, dari, kepada, keterangan, penanggung_jawab, username, status_aktif};
 
       } catch (error) {
         await pool.query('ROLLBACK');
