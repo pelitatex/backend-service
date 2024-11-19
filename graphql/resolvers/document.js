@@ -66,7 +66,7 @@ const documentResolver = {
             judul: row.judul,
             dari: row.dari,
             kepada: row.kepada,
-            keterangan: keterangan.substring(0, 100),
+            keterangan: row.keterangan.substring(0, 100),
             penanggung_jawab: row.penanggung_jawab,
             username: row.username,
             status_aktif: row.status_aktif
