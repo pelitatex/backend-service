@@ -12,6 +12,8 @@ type Query{
     allTipe: [BarangComponent]
     barangSKU(id: ID!): BarangSKU
     allBarangSKU: [BarangSKU]
+    barang(id: ID!): Barang
+    allBarang: [Barang]
     warna(id: ID!): Warna
     allWarna: [Warna]
     satuan(id: ID!): Satuan

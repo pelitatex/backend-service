@@ -27,7 +27,9 @@ const allowedCors = FRONTEND_URL.split(',');
 const corsOptions= {
     origin: function (origin, callback) {
         if (ENVIRONMENT === "development") {
-            allowedCors.push('*');
+            if (allowedCors.indexOf('*') === -1) {
+                allowedCors.push('*');   
+            }
         }
         console.log('allowedCors', allowedCors);
         console.log('origin', origin);
@@ -43,8 +45,7 @@ const corsOptions= {
 }
 
 // app.use(cors());
-app.use(cors(corsOptions));
-
+app.use(cors(corsOptions)); 
 app.use(morgan('dev'));
 app.use(helmet());
 
