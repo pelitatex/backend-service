@@ -198,12 +198,13 @@ const documentResolver = {
         ?)
         `;
 
-        /* const ketCompress = zlib.deflateSync(keterangan).toString('base64');
-        const ketCompressBase64 = Buffer.from(ketCompress); */
+        const text = "123456789ABCDEF";
+        const ketCompress = zlib.deflateSync(text).toString('base64');
+        const ketCompressBase64 = Buffer.from(ketCompress); 
 
         const params = [toko_id, document_control_id, tanggal,
           document_number_raw_new, document_number_new,
-          judul, dari, kepada, keterangan, 
+          judul, dari, kepada, ketCompressBase64, 
           penanggung_jawab, username, 
           status_aktif];
         const [result] = await pool.query(query, params);
@@ -224,8 +225,9 @@ const documentResolver = {
 
       } catch (error) {
         await pool.query('ROLLBACK');
+        console.log('error', error);
         console.error(error);
-        throw new Error(error.message || "Internal Server Error Add Document");
+        throw new Error("Internal Server Error Add Document");
       }
     },
     updateDocument: async (_, {id, input}, context) => {

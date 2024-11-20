@@ -3,9 +3,10 @@ import { DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT } from "../config/loadEnv.j
 
 var pool = {};
 
-function createPoolForTenant() {
+async function createPoolForTenant() {
 
-    const poolGet = mysql.createPool({
+  try {
+    const poolGet = await mysql.createPool({
         host: DB_HOST,
         user: DB_USER,
         password: DB_PASS ,
@@ -16,10 +17,18 @@ function createPoolForTenant() {
         queueLimit: 0
     });
 
+    // Test the connection
+    await poolGet.query('SELECT 1');
+    
     return poolGet;
+  } catch (error) {
+    console.error('Error creating pool for tenant', error);
+    return null;
+  }
+
 }
 
-function getPoolForRequest(tenant) {
+async function getPoolForRequest(tenant) {
   const tenantFromHeader = tenant;
 
   if (!tenantFromHeader) {
@@ -27,7 +36,8 @@ function getPoolForRequest(tenant) {
   }
 
   if (typeof pool[tenantFromHeader] === 'undefined') {
-    pool[tenantFromHeader] = createPoolForTenant();
+    pool[tenantFromHeader] = await createPoolForTenant();
+    console.log('creating pool for tenant', tenantFromHeader);
   }
   
   return pool[tenantFromHeader];
