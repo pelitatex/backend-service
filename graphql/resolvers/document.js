@@ -223,7 +223,7 @@ const documentResolver = {
           const logQuery = `INSERT INTO query_log (table_name, affected_id, query, params, username) 
           VALUES (?, ?, ?, ?, ?)`;
 
-          const paramsLogger = [toko_id, document_control_id, tanggal, document_number_raw_new, document_number_new, judul, dari, kepada, keterangan, penanggung_jawab, username, status_aktif];
+          const paramsLogger = [toko_id, document_control_id, tanggal, document_number_raw_new, document_number_new, judul, dari, kepada, ketCompress, penanggung_jawab, username, status_aktif];
           await pool.query(logQuery, ["nd_document", result.insertId, query, JSON.stringify(paramsLogger), username] );
 
         return {id: result.insertId, toko_id, document_control_id, tanggal, document_number : document_number_new, judul, dari, kepada, keterangan, penanggung_jawab, username, status_aktif};
@@ -253,6 +253,15 @@ const documentResolver = {
           username,
           status_aktif } = input 
 
+        /* const queryGet = "SELECT * FROM nd_document WHERE id = ?";
+        const [rows] = await pool.query(queryGet, [id]);
+        const toko_id = rows[0].toko_id;
+        const document_control_id = rows[0].document_control_id;
+        const tanggal = rows[0].tanggal;
+        const document_number_raw = rows[0].document_number_raw;
+        const document_number = rows[0].document_number; */
+
+
         if(keterangan.length > 2000) {
           throw new Error('Keterangan must be less than 2000 characters');
         }
@@ -266,7 +275,9 @@ const documentResolver = {
           username = ?,
           status_aktif = ?
           WHERE id = ?`;
-        const ketCompress = zlib.gzipSync(keterangan);
+          
+        const text = keterangan;
+        const ketCompress = zlib.deflateSync(text).toString('base64');
 
         const params = [judul, dari, kepada, ketCompress, penanggung_jawab, username, status_aktif, id];
 
@@ -279,7 +290,7 @@ const documentResolver = {
         const logQuery = `INSERT INTO query_log (table_name, affected_id, query, params, username) 
           VALUES (?, ?, ?, ?, ?)`;
 
-        const paramsLogger = [toko_id, document_control_id, tanggal, document_number_raw_new, document_number_new, judul, dari, kepada, ketCompress, penanggung_jawab, username, status_aktif];
+        const paramsLogger = [judul, dari, kepada, ketCompress, penanggung_jawab, username, status_aktif];
         await pool.query(logQuery, ["nd_document", id, query, JSON.stringify(paramsLogger), username] ); 
         const res = await pool.query(`SELECT * FROM nd_document WHERE id = ?`, [id]);
         await pool.query('COMMIT;');
