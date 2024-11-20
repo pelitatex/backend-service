@@ -18,6 +18,10 @@ const documentResolver = {
           const query = `SELECT * FROM nd_document WHERE id = ?`;
           const [rows] = await pool.query(query, [args.id]);
 
+          /* const text = "123456789ABCDEF";
+          const ketCompress = zlib.deflateSync(text).toString('base64'); */
+          const text = zlib.inflateSync(Buffer.from(rows[0].keterangan, 'base64')).toString();
+
           const response = {
             id: rows[0].id,
             toko_id: rows[0].toko_id,
@@ -27,12 +31,12 @@ const documentResolver = {
             judul: rows[0].judul,
             dari: rows[0].dari,
             kepada: rows[0].kepada,
-            keterangan: rows[0].keterangan,
-            penanggung_jawab: rows[0].keterangan,
+            keterangan: text,
+            penanggung_jawab: rows[0].penanggung_jawab,
             username: rows[0].username,
             status_aktif: rows[0].status_aktif
           }
-          return rows[0];
+          return response;
       } catch (error) {
         console.error(error);
         throw new Error("Internal Server Error Document Control Single");
@@ -57,6 +61,8 @@ const documentResolver = {
         query = `SELECT * FROM nd_document`;
         const [rows] = await pool.query(query, params);
         const response = rows.map(row => {
+
+          const text = zlib.inflateSync(Buffer.from(row.keterangan, 'base64')).toString().substring(0, 50);
           return {
             id: row.id,
             toko_id: row.toko_id,
@@ -66,7 +72,7 @@ const documentResolver = {
             judul: row.judul,
             dari: row.dari,
             kepada: row.kepada,
-            keterangan: row.keterangan.substring(0, 100),
+            keterangan: text,
             penanggung_jawab: row.penanggung_jawab,
             username: row.username,
             status_aktif: row.status_aktif
@@ -198,13 +204,12 @@ const documentResolver = {
         ?)
         `;
 
-        const text = "123456789ABCDEF";
+        const text = keterangan;
         const ketCompress = zlib.deflateSync(text).toString('base64');
-        const ketCompressBase64 = Buffer.from(ketCompress); 
 
         const params = [toko_id, document_control_id, tanggal,
           document_number_raw_new, document_number_new,
-          judul, dari, kepada, ketCompressBase64, 
+          judul, dari, kepada, ketCompress, 
           penanggung_jawab, username, 
           status_aktif];
         const [result] = await pool.query(query, params);
