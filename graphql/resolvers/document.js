@@ -27,6 +27,7 @@ const documentResolver = {
             toko_id: rows[0].toko_id,
             document_control_id: rows[0].document_control_id,
             tanggal: rows[0].tanggal,
+            document_number_raw: rows[0].document_number_raw,
             document_number: rows[0].document_number,
             judul: rows[0].judul,
             dari: rows[0].dari,
