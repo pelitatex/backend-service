@@ -7,7 +7,7 @@ const MAX_LIMIT = 100;
 
 const documentResolver = {
   Query:{
-    document: async(_,args, context)=>{
+    document: async(_,args, context, info)=>{
       const pool = context.pool;
       if (!pool) {
         console.log('context', pool);
@@ -84,6 +84,28 @@ const documentResolver = {
       } catch (error) {
         console.error(error);
         throw new Error("Internal Server Error Document Control All");
+      }
+    },
+  },
+  Document: {
+    document_control: async(parent,args,context)=> {
+
+      const pool = context.pool;
+      if (!pool) {
+        console.log('context', pool);
+        throw new Error('Database pool not available in context.');
+      }
+
+      try {
+        const query = `SELECT * FROM nd_document_control WHERE id = ?`;
+        const [rows] = await pool.query(query, [parent.document_control_id]);
+        const response = rows[0];
+
+        console.log(response);
+        return response;
+      } catch (error) {
+        console.error(error);
+        throw new Error("Internal Server Error Document Control From Document Single");
       }
     },
   },

@@ -233,6 +233,25 @@ const documentControlResolver = {
       }
     },
   },
+  DocumentControl: {
+    department: async (parent, args, context) => {
+      
+      const pool = context.pool;
+      if (!pool) {
+        console.log('context', pool);
+        throw new Error('Database pool not available in context.');
+      }
+
+      try {
+        const query = `SELECT * FROM nd_department WHERE id = ?`;
+        const [rows] = await pool.query(query, [parent.department_id]);
+        return rows[0];
+      } catch (error) {
+        console.error(error);
+        throw new Error("Internal Server Error Document Control Department");
+      }
+    }
+  }
 }
 
 export default documentControlResolver;

@@ -44,6 +44,7 @@ type DocumentControl {
     nama: String!
     keterangan: String
     status_aktif: Boolean!
+    department: Department
 }
 
 type Department {
