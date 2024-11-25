@@ -1,4 +1,4 @@
-enum statusDokumen{
+enum DocumentStatus{
     """
     - untuk dokumen dalam status DRAFT, nomor belum di generate
     """
@@ -28,6 +28,7 @@ type Document{
     document_control: DocumentControl
     document_number_raw: Int
     document_number: String!
+    document_status: DocumentStatus!
     tanggal: String!
     judul: String!
     kepada: String!
@@ -44,6 +45,7 @@ input AddDocumentInput{
     tipe_dokumen: TipeDokumen!
     kode_toko: String!
     kode_dokumen: String!
+    document_status: DocumentStatus!
     document_number: String!
     tanggal: String!
     judul: String!
@@ -56,6 +58,7 @@ input AddDocumentInput{
 }
 
 input UpdateDocumentInput{
+    document_status: DocumentStatus!
     judul: String!
     dari: String!
     kepada: String!
