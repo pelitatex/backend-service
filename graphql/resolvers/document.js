@@ -124,6 +124,7 @@ const documentResolver = {
           tipe_dokumen,
           kode_toko,
           kode_dokumen,
+          document_status,
           document_number,
           tanggal,
           judul,
@@ -217,7 +218,7 @@ const documentResolver = {
         console.log('new document number', document_number_new);
 
         const query = `INSERT INTO nd_document (toko_id, document_control_id, tanggal,
-        document_number_raw, document_number, 
+        document_number_raw, document_number, document_status,
         judul, dari, kepada, keterangan, 
         penanggung_jawab, username,
         status_aktif)
@@ -232,7 +233,7 @@ const documentResolver = {
         const ketCompress = zlib.deflateSync(text).toString('base64');
 
         const params = [toko_id, document_control_id, tanggal,
-          document_number_raw_new, document_number_new,
+          document_number_raw_new, document_number_new, document_status,
           judul, dari, kepada, ketCompress, 
           penanggung_jawab, username, 
           status_aktif];
@@ -247,10 +248,10 @@ const documentResolver = {
           const logQuery = `INSERT INTO query_log (table_name, affected_id, query, params, username) 
           VALUES (?, ?, ?, ?, ?)`;
 
-          const paramsLogger = [toko_id, document_control_id, tanggal, document_number_raw_new, document_number_new, judul, dari, kepada, ketCompress, penanggung_jawab, username, status_aktif];
+          const paramsLogger = [toko_id, document_control_id, tanggal, document_number_raw_new, document_number_new, document_status, judul, dari, kepada, ketCompress, penanggung_jawab, username, status_aktif];
           await pool.query(logQuery, ["nd_document", result.insertId, query, JSON.stringify(paramsLogger), username] );
 
-        return {id: result.insertId, toko_id, document_control_id, tanggal, document_number : document_number_new, judul, dari, kepada, keterangan, penanggung_jawab, username, status_aktif};
+        return {id: result.insertId, toko_id, document_control_id, tanggal, document_number : document_number_new, document_status, judul, dari, kepada, keterangan, penanggung_jawab, username, status_aktif};
 
       } catch (error) {
         await pool.query('ROLLBACK');
@@ -269,6 +270,7 @@ const documentResolver = {
       try {
 
         const { 
+          document_status,
           judul,
           dari, 
           kepada, 
