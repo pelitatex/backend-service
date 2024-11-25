@@ -241,7 +241,7 @@ const documentControlResolver = {
         console.log('context', pool);
         throw new Error('Database pool not available in context.');
       }
-
+      
       try {
         const query = `SELECT * FROM nd_department WHERE id = ?`;
         const [rows] = await pool.query(query, [parent.department_id]);
@@ -250,7 +250,7 @@ const documentControlResolver = {
         console.error(error);
         throw new Error("Internal Server Error Document Control Department");
       }
-    }
+    } 
   }
 }
 

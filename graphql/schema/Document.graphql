@@ -1,3 +1,26 @@
+enum statusDokumen{
+    """
+    - untuk dokumen dalam status DRAFT, nomor belum di generate
+    """
+    DRAFT
+    """
+    - untuk WAITING FOR REVIEW, dokumen belum bisa di print, nomor sudah di generate
+    """
+    WAITING_FOR_REVIEW
+    """
+    - untuk APPROVED, dokumen sudah bisa di print, nomor sudah di generate
+    """
+    APPROVED
+    """
+    - untuk REJECTED, dokumen hanya bisa di baca, tidak dapat di print dan tidak dapat di kembalikan ke status sebelumnya
+    """
+    REJECTED
+    """
+    - untuk CANCELLED, dokumen hanya bisa di baca, tidak dapat di kembalikan ke status sebelumnya
+    """
+    CANCELLED
+}
+
 type Document{
     id: ID!
     toko_id: Int!
