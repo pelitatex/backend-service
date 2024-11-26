@@ -54,21 +54,6 @@ type Department {
     status_aktif: Boolean!
 }
 
-type Document{
-    id: ID!
-    toko_id: Int!
-    document_control_id: Int!
-    document_number_raw: Int
-    document_number: String!
-    tanggal: String!
-    kepada: String!
-    dari: String!
-    keterangan: String
-    penanggung_jawab: String!
-    username: String!
-    status_aktif: Boolean!
-}
-
 input AddDocumentControlInput{
     tipe_dokumen: TipeDokumen!
     department_id: Int!

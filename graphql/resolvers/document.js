@@ -18,6 +18,9 @@ const documentResolver = {
           const query = `SELECT * FROM nd_document WHERE id = ?`;
           const [rows] = await pool.query(query, [args.id]);
 
+          if (rows.length === 0) {
+            throw new Error("Document not found");
+          }
           /* const text = "123456789ABCDEF";
           const ketCompress = zlib.deflateSync(text).toString('base64'); */
           const text = zlib.inflateSync(Buffer.from(rows[0].keterangan, 'base64')).toString();
@@ -41,7 +44,7 @@ const documentResolver = {
           return response;
       } catch (error) {
         console.error(error);
-        throw new Error("Internal Server Error Document Control Single");
+        throw new Error(error.message || "Internal Server Error Document Control Single");
       }
     },
     allDocument: async(_,{offset=0, limit = 10, search=""}, context)=>{

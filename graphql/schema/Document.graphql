@@ -27,7 +27,7 @@ type Document{
     document_control_id: Int!
     document_control: DocumentControl
     document_number_raw: Int
-    document_number: String!
+    document_number: String
     document_status: DocumentStatus!
     tanggal: String!
     judul: String!
