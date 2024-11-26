@@ -280,8 +280,15 @@ const documentResolver = {
 
       try {
 
-        const { 
+        let {
+          toko_id,
+          document_control_id,
+          tipe_dokumen,
+          kode_toko,
+          kode_dokumen,
           document_status,
+          document_number,
+          tanggal,
           judul,
           dari, 
           kepada, 
@@ -299,11 +306,100 @@ const documentResolver = {
         const document_number = rows[0].document_number; */
 
 
-        if(keterangan.length > 2000) {
+        if(keterangan.length > 3000) {
           throw new Error('Keterangan must be less than 2000 characters');
         }
 
+        if(document_status == 'APPROVED') {
+
+          const queryGet = "SELECT * FROM nd_document WHERE id = ?";
+          const [rows] = await pool.query(queryGet, [id]);
+
+          const document_number_awal = rows[0].document_status;
+          const document_control_id_awal = rows[0].document_control_id;
+          const toko_id_awal = rows[0].toko_id;
+          const tanggal = rows[0].tanggal;
+
+          const month = new Date(tanggal).getMonth() + 1;
+          const year = new Date(tanggal).getFullYear();
+
+          
+          const queryDocumentControl = "SELECT * FROM nd_document_control WHERE id = ?";
+          const [rowsControl] = await pool.query(queryDocumentControl, [document_control_id]);
+          const tipe_dokumen = rowsControl[0].tipe_dokumen;
+
+          if (document_control_id_awal != document_control_id) {
+            throw new Error('Jenis Dokumen tidak boleh diubah');
+          }
+
+          if (toko_id_awal != toko_id) {
+            throw new Error('Toko tidak boleh diubah');
+          }
+
+          let toko_id = toko_id_awal;
+          let document_control_id = document_control_id_awal;
+
+          switch (tipe_dokumen) {
+            case 'AUTO_GENERATE_MONTHLY' || 'AUTO_GENERATE_YEARLY':{
+              throw new Error('surat AUTO GENERATE hanya untuk transaksi.');
+            }
+            case 'GENERATE_BY_REQUEST_MONTHLY':{
+              const getLastDocumentQuery = `SELECT * FROM nd_document WHERE toko_id = ? AND document_control_id = ? AND MONTH(tanggal) = ? AND YEAR(tanggal) = ?  AND status_aktif = 1 ORDER BY document_number_raw DESC LIMIT 1`;
+              const [lastDocument] = await pool.query(getLastDocumentQuery, [toko_id, document_control_id, month, year]);
+              if (lastDocument.length > 0) {
+                document_number_raw_new = parseFloat(lastDocument[0].document_number_raw) + 1;
+              } 
+              document_number_new = kode_toko +':'+  
+                            kode_dokumen +'/'+
+                            year.toString().slice(-2) + month.toString().padStart(2,'0') +'/'+
+                            document_number_raw_new.toString().padStart(4, '0');
+              break;
+            }
+            case 'GENERATE_BY_REQUEST_YEARLY':{
+              const getLastDocumentQuery = `SELECT * FROM nd_document WHERE toko_id = ? AND document_control_id = ? AND YEAR(tanggal) = ? AND status_aktif = 1 ORDER BY document_number_raw DESC LIMIT 1`;
+              const [lastDocument] = await pool.query(getLastDocumentQuery, [toko_id, document_control_id, year]);
+              if (lastDocument.length > 0) {
+                document_number_raw_new = parseFloat(lastDocument[0].document_number_raw) + 1;
+              }
+              document_number_new = kode_toko +':'+  
+                                          kode_dokumen +'/'+
+                                          year.toString()+'/'+
+                                          document_number_raw_new.toString().padStart(4, '0');
+              break;
+            }
+            case 'GENERATE_BY_REQUEST_9999':{
+              const getLastDocumentQuery = `SELECT * FROM nd_document WHERE toko_id = ? AND document_control_id = ? AND status_aktif = 1 ORDER BY id DESC LIMIT 1`;
+              const [lastDocument] = await pool.query(getLastDocumentQuery, [toko_id, document_control_id]);
+              if (lastDocument.length > 0) {
+                document_number_raw_new = parseFloat(lastDocument[0].document_number_raw) + 1;
+              }
+
+              let n = Math.trunc(document_number_raw_new/10000);
+              const no_dok = document_number_raw_new % 10000;
+              document_number_new = kode_toko +':'+  
+                                          kode_dokumen +'/'+
+                                          n.toString().padStart(4,'0')+'/'+
+                                          no_dok.toString().padStart(4, '0');
+              break;
+            }
+            case 'USER_GENERATE':{
+              const checkQuery = `SELECT * FROM nd_document WHERE toko_id = ? AND document_number = ? AND document_control_id = ? AND status_aktif = 1`;
+              const [existingRows] = await pool.query(checkQuery, [toko_id, document_number_new, document_control_id]);
+              if (existingRows.length > 0) {
+                throw new Error('No Surat sudah pernah digunakan');
+              }
+              break;
+            }
+            default:
+              console.log("tipe_dokumen is not allowed to stored this way");
+          }
+        }else{
+          document_number_raw_new = null;
+          document_number_new = null;
+        }
+
         const query = `UPDATE nd_document SET
+          document_status = ?,
           judul = ?, 
           dari = ?,
           kepada = ?,
@@ -316,7 +412,7 @@ const documentResolver = {
         const text = keterangan;
         const ketCompress = zlib.deflateSync(text).toString('base64');
 
-        const params = [judul, dari, kepada, ketCompress, penanggung_jawab, username, status_aktif, id];
+        const params = [document_status, judul, dari, kepada, ketCompress, penanggung_jawab, username, status_aktif, id];
 
         await pool.query('START TRANSACTION;');
         const [result] = await pool.query(query, params);
@@ -327,7 +423,7 @@ const documentResolver = {
         const logQuery = `INSERT INTO query_log (table_name, affected_id, query, params, username) 
           VALUES (?, ?, ?, ?, ?)`;
 
-        const paramsLogger = [judul, dari, kepada, ketCompress, penanggung_jawab, username, status_aktif];
+        const paramsLogger = [document_status, judul, dari, kepada, ketCompress, penanggung_jawab, username, status_aktif];
         await pool.query(logQuery, ["nd_document", id, query, JSON.stringify(paramsLogger), username] ); 
         const res = await pool.query(`SELECT * FROM nd_document WHERE id = ?`, [id]);
         await pool.query('COMMIT;');
