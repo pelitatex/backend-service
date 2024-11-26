@@ -438,7 +438,8 @@ app.post('/upload-image/customer_ids', async (req, res) => {
         xUsername = req.headers['x-username'];
         console.log('headers', req.headers);
     }
-    const pool = await getPoolForRequest(xTenant); 
+    
+    const pool = await getPoolForRequest(xTenant);
     
     try {
         if (!image_name || !customer_id) {
@@ -487,6 +488,7 @@ app.post('/upload-image/customer_ids', async (req, res) => {
     }
 }); */
 
+const MAX_RETRIES = 3;
 app.use(
     '/graphql',
     graphqlHTTP( async (req, res) => {
@@ -495,7 +497,18 @@ app.use(
             xTenant = req.headers['x-tenant'];
         }
         
-        const pool = await getPoolForRequest(xTenant);
+        let pool = await getPoolForRequest(xTenant);
+        let retries = 0;
+
+        while (!pool && retries < MAX_RETRIES) {
+            console.warn(`Pool is null, retrying connection... (${retries + 1}/${MAX_RETRIES})`);
+            pool = await getPoolForRequest(xTenant);
+            retries++;
+        }
+
+        if (!pool) {
+            throw new Error('Failed to establish database connection');
+        }
 
         let xUsername = "";
         if(req.headers['x-username']){

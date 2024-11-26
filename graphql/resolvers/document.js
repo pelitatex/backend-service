@@ -29,6 +29,7 @@ const documentResolver = {
             tanggal: rows[0].tanggal,
             document_number_raw: rows[0].document_number_raw,
             document_number: rows[0].document_number,
+            document_status: rows[0].document_status,
             judul: rows[0].judul,
             dari: rows[0].dari,
             kepada: rows[0].kepada,
@@ -159,63 +160,65 @@ const documentResolver = {
         console.log('start transaction');
         console.log('lock tables');
 
-        switch (tipe_dokumen) {
-          case 'AUTO_GENERATE_MONTHLY' || 'AUTO_GENERATE_YEARLY':{
-            throw new Error('surat AUTO GENERATE hanya untuk transaksi.');
-          }
-          case 'GENERATE_BY_REQUEST_MONTHLY':{
-            const getLastDocumentQuery = `SELECT * FROM nd_document WHERE toko_id = ? AND document_control_id = ? AND MONTH(tanggal) = ? AND YEAR(tanggal) = ?  AND status_aktif = 1 ORDER BY document_number_raw DESC LIMIT 1`;
-            const [lastDocument] = await pool.query(getLastDocumentQuery, [toko_id, document_control_id, month, year]);
-            if (lastDocument.length > 0) {
-              document_number_raw_new = parseFloat(lastDocument[0].document_number_raw) + 1;
-            } 
-            document_number_new = kode_toko +':'+  
-                          kode_dokumen +'/'+
-                          year.toString().slice(-2) + month.toString().padStart(2,'0') +'/'+
-                          document_number_raw_new.toString().padStart(4, '0');
-            break;
-          }
-          case GENERATE_BY_REQUEST_YEARLY:{
-            const getLastDocumentQuery = `SELECT * FROM nd_document WHERE toko_id = ? AND document_control_id = ? AND YEAR(tanggal) = ? AND status_aktif = 1 ORDER BY document_number_raw DESC LIMIT 1`;
-            const [lastDocument] = await pool.query(getLastDocumentQuery, [toko_id, document_control_id, year]);
-            if (lastDocument.length > 0) {
-              document_number_raw_new = parseFloat(lastDocument[0].document_number_raw) + 1;
+        if(document_status == 'APPROVED') {
+          switch (tipe_dokumen) {
+            case 'AUTO_GENERATE_MONTHLY' || 'AUTO_GENERATE_YEARLY':{
+              throw new Error('surat AUTO GENERATE hanya untuk transaksi.');
             }
-            document_number_new = kode_toko +':'+  
-                                        kode_dokumen +'/'+
-                                        year.toString()+'/'+
-                                        document_number_raw_new.toString().padStart(4, '0');
-            break;
-          }
-          case GENERATE_BY_REQUEST_9999:{
-            const getLastDocumentQuery = `SELECT * FROM nd_document WHERE toko_id = ? AND document_control_id = ? AND status_aktif = 1 ORDER BY id DESC LIMIT 1`;
-            const [lastDocument] = await pool.query(getLastDocumentQuery, [toko_id, document_control_id]);
-            if (lastDocument.length > 0) {
-              document_number_raw_new = parseFloat(lastDocument[0].document_number_raw) + 1;
+            case 'GENERATE_BY_REQUEST_MONTHLY':{
+              const getLastDocumentQuery = `SELECT * FROM nd_document WHERE toko_id = ? AND document_control_id = ? AND MONTH(tanggal) = ? AND YEAR(tanggal) = ?  AND status_aktif = 1 ORDER BY document_number_raw DESC LIMIT 1`;
+              const [lastDocument] = await pool.query(getLastDocumentQuery, [toko_id, document_control_id, month, year]);
+              if (lastDocument.length > 0) {
+                document_number_raw_new = parseFloat(lastDocument[0].document_number_raw) + 1;
+              } 
+              document_number_new = kode_toko +':'+  
+                            kode_dokumen +'/'+
+                            year.toString().slice(-2) + month.toString().padStart(2,'0') +'/'+
+                            document_number_raw_new.toString().padStart(4, '0');
+              break;
             }
+            case 'GENERATE_BY_REQUEST_YEARLY':{
+              const getLastDocumentQuery = `SELECT * FROM nd_document WHERE toko_id = ? AND document_control_id = ? AND YEAR(tanggal) = ? AND status_aktif = 1 ORDER BY document_number_raw DESC LIMIT 1`;
+              const [lastDocument] = await pool.query(getLastDocumentQuery, [toko_id, document_control_id, year]);
+              if (lastDocument.length > 0) {
+                document_number_raw_new = parseFloat(lastDocument[0].document_number_raw) + 1;
+              }
+              document_number_new = kode_toko +':'+  
+                                          kode_dokumen +'/'+
+                                          year.toString()+'/'+
+                                          document_number_raw_new.toString().padStart(4, '0');
+              break;
+            }
+            case 'GENERATE_BY_REQUEST_9999':{
+              const getLastDocumentQuery = `SELECT * FROM nd_document WHERE toko_id = ? AND document_control_id = ? AND status_aktif = 1 ORDER BY id DESC LIMIT 1`;
+              const [lastDocument] = await pool.query(getLastDocumentQuery, [toko_id, document_control_id]);
+              if (lastDocument.length > 0) {
+                document_number_raw_new = parseFloat(lastDocument[0].document_number_raw) + 1;
+              }
 
-            let n = Math.trunc(document_number_raw_new/10000);
-            const no_dok = document_number_raw_new % 10000;
-            document_number_new = kode_toko +':'+  
-                                        kode_dokumen +'/'+
-                                        n.toString().padStart(4,'0')+'/'+
-                                        no_dok.toString().padStart(4, '0');
-            break;
-          }
-          case USER_GENERATE:{
-            const checkQuery = `SELECT * FROM nd_document WHERE toko_id = ? AND document_number = ? AND document_control_id = ? AND status_aktif = 1`;
-            const [existingRows] = await pool.query(checkQuery, [toko_id, document_number_new, document_control_id]);
-            if (existingRows.length > 0) {
-              throw new Error('No Surat sudah pernah digunakan');
+              let n = Math.trunc(document_number_raw_new/10000);
+              const no_dok = document_number_raw_new % 10000;
+              document_number_new = kode_toko +':'+  
+                                          kode_dokumen +'/'+
+                                          n.toString().padStart(4,'0')+'/'+
+                                          no_dok.toString().padStart(4, '0');
+              break;
             }
-            break;
+            case 'USER_GENERATE':{
+              const checkQuery = `SELECT * FROM nd_document WHERE toko_id = ? AND document_number = ? AND document_control_id = ? AND status_aktif = 1`;
+              const [existingRows] = await pool.query(checkQuery, [toko_id, document_number_new, document_control_id]);
+              if (existingRows.length > 0) {
+                throw new Error('No Surat sudah pernah digunakan');
+              }
+              break;
+            }
+            default:
+              console.log("tipe_dokumen is not allowed to stored thgis way");
           }
-          default:
-            console.log("bingung  tipe_dokumen");
+        }else{
+          document_number_raw_new = null;
+          document_number_new = null;
         }
-
-        console.log('new document raw number', document_number_raw_new);
-        console.log('new document number', document_number_new);
 
         const query = `INSERT INTO nd_document (toko_id, document_control_id, tanggal,
         document_number_raw, document_number, document_status,
@@ -223,7 +226,7 @@ const documentResolver = {
         penanggung_jawab, username,
         status_aktif)
         VALUES (?, ?, ?, 
-        ?, ?,  
+        ?, ?, ?,
         ?, ?, ?, ?, 
         ?, ?, 
         ?)
@@ -237,6 +240,7 @@ const documentResolver = {
           judul, dari, kepada, ketCompress, 
           penanggung_jawab, username, 
           status_aktif];
+        console.log('params', params);
         const [result] = await pool.query(query, params);
 
           console.log('inserted document');
@@ -254,8 +258,11 @@ const documentResolver = {
         return {id: result.insertId, toko_id, document_control_id, tanggal, document_number : document_number_new, document_status, judul, dari, kepada, keterangan, penanggung_jawab, username, status_aktif};
 
       } catch (error) {
+        console.log('failed transaction');
+        console.log('unlocked tables');
+
+        await pool.query('UNLOCK TABLES;');
         await pool.query('ROLLBACK');
-        console.log('error', error);
         console.error(error);
         throw new Error("Internal Server Error Add Document");
       }
