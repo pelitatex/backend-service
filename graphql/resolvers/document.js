@@ -72,6 +72,7 @@ const documentResolver = {
             tanggal: row.tanggal,
             document_number_raw: row.document_number_raw,
             document_number: row.document_number,
+            document_status: row.document_status,
             judul: row.judul,
             dari: row.dari,
             kepada: row.kepada,
