@@ -58,6 +58,11 @@ input AddDocumentInput{
 }
 
 input UpdateDocumentInput{
+    toko_id: Int!
+    document_control_id: Int!
+    tipe_dokumen: TipeDokumen!
+    kode_toko: String!
+    kode_dokumen: String!
     document_status: DocumentStatus!
     judul: String!
     dari: String!

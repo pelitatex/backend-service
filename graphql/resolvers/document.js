@@ -310,34 +310,40 @@ const documentResolver = {
           throw new Error('Keterangan must be less than 2000 characters');
         }
 
-        if(document_status == 'APPROVED') {
+        const month = new Date(tanggal).getMonth() + 1;
+        const year = new Date(tanggal).getFullYear();
 
-          const queryGet = "SELECT * FROM nd_document WHERE id = ?";
-          const [rows] = await pool.query(queryGet, [id]);
+        const queryGet = "SELECT * FROM nd_document WHERE id = ?";
+        const [rows] = await pool.query(queryGet, [id]);
 
-          const document_number_awal = rows[0].document_status;
-          const document_control_id_awal = rows[0].document_control_id;
-          const toko_id_awal = rows[0].toko_id;
-          const tanggal = rows[0].tanggal;
+        const document_number_awal = (rows[0].document_number == null) ? '' : rows[0].document_number;
+        const document_control_id_awal = rows[0].document_control_id;
+        const toko_id_awal = rows[0].toko_id;
 
-          const month = new Date(tanggal).getMonth() + 1;
-          const year = new Date(tanggal).getFullYear();
-
-          
-          const queryDocumentControl = "SELECT * FROM nd_document_control WHERE id = ?";
-          const [rowsControl] = await pool.query(queryDocumentControl, [document_control_id]);
-          const tipe_dokumen = rowsControl[0].tipe_dokumen;
+        if (document_number_awal !== '' && tipe_dokumen !== 'USER_GENERATE') {
 
           if (document_control_id_awal != document_control_id) {
-            throw new Error('Jenis Dokumen tidak boleh diubah');
+            throw new Error('No Surat sudah di register, jenis Dokumen tidak boleh diubah');
           }
 
           if (toko_id_awal != toko_id) {
-            throw new Error('Toko tidak boleh diubah');
+            throw new Error('No Surat sudah di register, Toko tidak boleh diubah');
           }
 
-          let toko_id = toko_id_awal;
-          let document_control_id = document_control_id_awal;
+          const tanggal_awal = rows[0].tanggal;
+  
+          const month_awal = new Date(tanggal_awal).getMonth() + 1;
+          const year_awal = new Date(tanggal_awal).getFullYear();
+
+          if(month_awal != month || year_awal != year) {
+            throw new Error('No Surat sudah di register, Bulan dan tahun tidak boleh diubah');
+          }
+          
+          document_number = document_number_awal;
+          document_number_raw = rows[0].document_number_raw;
+        }
+
+        if(document_status == 'APPROVED' &&  document_number_awal == "") {
 
           switch (tipe_dokumen) {
             case 'AUTO_GENERATE_MONTHLY' || 'AUTO_GENERATE_YEARLY':{
@@ -382,20 +388,17 @@ const documentResolver = {
                                           no_dok.toString().padStart(4, '0');
               break;
             }
-            case 'USER_GENERATE':{
-              const checkQuery = `SELECT * FROM nd_document WHERE toko_id = ? AND document_number = ? AND document_control_id = ? AND status_aktif = 1`;
-              const [existingRows] = await pool.query(checkQuery, [toko_id, document_number_new, document_control_id]);
-              if (existingRows.length > 0) {
-                throw new Error('No Surat sudah pernah digunakan');
-              }
-              break;
-            }
             default:
               console.log("tipe_dokumen is not allowed to stored this way");
           }
-        }else{
-          document_number_raw_new = null;
-          document_number_new = null;
+        }else if(tipe_dokumen == 'USER_GENERATE' && document_status == 'APPROVED') {
+          const document_number_new = document_number;
+
+          const checkQuery = `SELECT * FROM nd_document WHERE toko_id = ? AND document_number = ? AND document_control_id = ? AND status_aktif = 1`;
+          const [existingRows] = await pool.query(checkQuery, [toko_id, document_number_new, document_control_id]);
+          if (existingRows.length > 0) {
+            throw new Error('No Surat sudah pernah digunakan');
+          }
         }
 
         const query = `UPDATE nd_document SET
