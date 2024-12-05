@@ -48,6 +48,6 @@ export const RABBITMQ_PASSWORD = process.env.RABBITMQ_PASSWORD;
 
 // Export the variables to be used in other modules
 console.log(envMain+' environment detected');
-console.log(LIFETIME, TOKENSECRET, FRONTEND_URL, PORT_APP, PORT_GATEWAY, ENVIRONMENT);
+// console.log(LIFETIME, TOKENSECRET, FRONTEND_URL, PORT_APP, PORT_GATEWAY, ENVIRONMENT);
 
 
