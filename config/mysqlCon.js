@@ -37,7 +37,7 @@ async function getPoolForRequest(tenant) {
 
   if (typeof pool[tenantFromHeader] === 'undefined' || pool[tenantFromHeader] === null) {
     pool[tenantFromHeader] = await createPoolForTenant();
-    console.log('creating pool for tenant', tenantFromHeader);
+    console.log('creating pool for tenant', tenantFromHeader, (pool[tenantFromHeader] == null ? "failed" : 'success'));
   }
   
   return pool[tenantFromHeader];
