@@ -5,20 +5,22 @@ var pool = {};
 
 async function createPoolForTenant() {
 
+  const dbConfig = {
+    host: DB_HOST,
+    user: DB_USER,
+    password: DB_PASS ,
+    database: DB_NAME,
+    port: DB_PORT,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+  };
+
   try {
-    const poolGet = await mysql.createPool({
-        host: DB_HOST,
-        user: DB_USER,
-        password: DB_PASS ,
-        database: DB_NAME,
-        port: DB_PORT,
-        waitForConnections: true,
-        connectionLimit: 10,
-        queueLimit: 0
-    });
+    const poolGet = await mysql.createPool(dbConfig);
 
     // Test the connection
-    console.log('poolGet', poolGet);
+    console.log('dbConfig', dbConfig);
     await poolGet.query('SELECT 1');
     
     return poolGet;
