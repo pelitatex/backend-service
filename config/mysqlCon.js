@@ -18,6 +18,7 @@ async function createPoolForTenant() {
     });
 
     // Test the connection
+    console.log('poolGet', poolGet);
     await poolGet.query('SELECT 1');
     
     return poolGet;
