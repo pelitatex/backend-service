@@ -99,6 +99,7 @@ app.use((req, res, next) => {
             next();
         } else {
             console.error(`Production Mode: Access denied to IP - ${clientIP}, Origin - ${req.headers.origin}`);
+            
             // return res.status(403).json({ error: 'Forbidden: Access denied in production environment' });
             return res.status(403).send({error:`Request blocked`});
         }
@@ -267,44 +268,6 @@ app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => {
         await publishExchange('customer_legacy_events', 'customer.chosen' , Buffer.from(JSON.stringify(msg)));
 
         return;
-        
-        /* const [result] = await pool.query(query, [tipe_company, nama, alamat, blok, no, rt, rw, 
-          kecamatan, kelurahan, kota, provinsi, kode_pos, 
-          npwp, nik, tempo_kredit, 
-          warning_kredit, limit_warning_type, limit_warning_amount, 
-          limit_amount, limit_atas, 
-          img_link, npwp_link, ktp_link, 
-          contact_person, telepon, email, medsos_link,
-          status_aktif]);
-
-        queryLogger(pool, `nd_customer`, result.insertId, query, [tipe_company, nama, alamat, blok, no, rt, rw, 
-          kecamatan, kelurahan, kota, provinsi, kode_pos, 
-          npwp, nik, tempo_kredit, 
-          warning_kredit, limit_warning_type, limit_warning_amount, 
-          limit_amount, limit_atas, 
-          img_link, npwp_link, ktp_link, 
-          contact_person, telepon, email, medsos_link, 
-          status_aktif]);
-
-        res.status(200).json({message: 'Success Add Customer', data:{ id: result.insertId, tipe_company, nama, alamat, blok, no, rt, rw,
-            kecamatan, kelurahan, kota, provinsi, kode_pos,
-            npwp, nik, tempo_kredit, warning_kredit,
-            limit_warning_type, limit_warning_amount, limit_amount, limit_atas,
-            img_link, npwp_link, ktp_link,
-            contact_person, telepon, email, medsos_link,
-            status_aktif
-        }});
-        
-        const msg = {
-            id:result.insertId, 
-            keyName: keyName,
-            keyValue: keyValue,
-            company_indexes: company_indexes,
-            nama:nama
-        };
-        publishExchange('customer_legacy_events', 'customer.chosen' , Buffer.from(JSON.stringify(msg)));
-
-        return; */
     } catch (error) {
         console.error(error);
         throw new Error('Internal Server Error Add Customer');

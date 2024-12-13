@@ -440,7 +440,88 @@ const documentResolver = {
         console.error(error);
         throw new Error(error.message || "Internal Server Error Update Document");
       }
-    }
+    },
+    uploadDocument: async (_, {id, input}, context) => {
+      const pool = context.pool;
+      if (!pool) {
+        console.log('context', pool);
+        throw new Error('Database pool not available in context.');
+      }
+
+      const {
+        toko_id,
+        document_control_id,
+        kode_toko,
+        kode_dokumen,
+        username,
+        data
+      } = input;
+
+      if (!data) {
+        throw new Error("File is required");
+      }
+
+      if (!toko_id) {
+        throw new Error("Toko is required");
+      }
+
+      if(document_control_id == null) {
+        throw new Error("Jenis Control is required");
+      }
+
+      try {
+
+        const queryCheck = `SELECT nd_document_control WHERE id = ${document_control_id}`;
+        const [resultCheck] = await pool.query(queryCheck, [file, id]);
+        if (resultCheck.affectedRows === 0) {
+          throw new Error("Jenis Document not found");
+        }
+
+        const tipe_dokumen = resultCheck[0].tipe_dokumen;
+        if(tipe_dokumen != 'USER_GENERATE') {
+          throw new Error("Jenis Document not allowed to upload file");
+        }else{
+          const newData = data.map((item) => {
+            let tanggal = item.tanggal;
+            let judul = item.judul;
+            let keterangan = item.keterangan;
+            let document_number = item.document_number;
+            let document_number_raw = item.document_number;
+
+            if (item.tanggal == null || item.tanggal == "") {
+              throw new Error("Tanggal is required");              
+            }
+            if (item.judul == null || item.judul == "") {
+              throw new Error("Judul is required");              
+            }
+
+            if(item.document_number == null || item.document_number == "") {
+              throw new Error("Document Number is required");
+            }
+            
+            
+            return {
+              tanggal: tanggal,
+              judul: judul,
+              keterangan: keterangan,
+              document_number: document_number,
+              document_number_raw: document_number_raw,
+              document_status: 'APPROVED',
+              toko_id: toko_id,
+              document_control_id: document_control_id,
+              kode_dokumen: kode_dokumen,
+              kode_toko: kode_toko,
+              username: username
+            }
+          });
+        }
+
+        return newData;
+      } catch (error) {
+        console.error(error);
+        throw new Error(error.message || "Internal Server Error Upload Document");
+      }
+    },
   },
 }
 
