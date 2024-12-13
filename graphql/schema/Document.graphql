@@ -72,3 +72,20 @@ input UpdateDocumentInput{
     username: String!
     status_aktif: Boolean!
 }
+
+type DocumentCSV{
+    tanggal: String!
+    judul: String!
+    keterangan: String
+    nomor_dokumen: String
+}
+
+input UploadDocumentInput{
+    toko_id: Int!
+    document_control_id: Int!
+    tipe_dokumen: TipeDokumen!
+    kode_toko: String!
+    kode_dokumen: String!
+    username: String!
+    data:[DocumentCSV]!
+}
