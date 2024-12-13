@@ -34,4 +34,5 @@ type Mutation {
     updateGudang(id: ID!, input: UpdateGudangInput!): Gudang
     addDocument(input: AddDocumentInput!): Document
     updateDocument(id: ID!, input: UpdateDocumentInput!): Document
+    uploadDocument(input: UploadDocumentInput!): Document
 }
