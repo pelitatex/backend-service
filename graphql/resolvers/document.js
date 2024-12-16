@@ -472,7 +472,7 @@ const documentResolver = {
 
       try {
 
-        const queryCheck = `SELECT nd_document_control WHERE id = ${document_control_id}`;
+        const queryCheck = `SELECT * FROM nd_document_control WHERE id = ${document_control_id}`;
         const [resultCheck] = await pool.query(queryCheck, id);
         if (resultCheck.affectedRows === 0) {
           throw new Error("Jenis Document not found");
