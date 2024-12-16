@@ -73,11 +73,11 @@ input UpdateDocumentInput{
     status_aktif: Boolean!
 }
 
-type DocumentCSV{
+input DocumentUpload{
     tanggal: String!
     judul: String!
     keterangan: String
-    nomor_dokumen: String
+    document_number: String
 }
 
 input UploadDocumentInput{
@@ -87,5 +87,5 @@ input UploadDocumentInput{
     kode_toko: String!
     kode_dokumen: String!
     username: String!
-    data:[DocumentCSV]!
+    data:[DocumentUpload]!
 }

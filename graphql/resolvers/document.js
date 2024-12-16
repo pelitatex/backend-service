@@ -1,3 +1,4 @@
+import { stat } from 'fs';
 import zlib from 'zlib';
 
 // import queryLogger from "../../helpers/queryTransaction.js";
@@ -481,6 +482,11 @@ const documentResolver = {
         if(tipe_dokumen != 'USER_GENERATE') {
           throw new Error("Jenis Document not allowed to upload file");
         }else{
+
+          const all_number = data.map((item) => {
+            return item.document_number;
+          });
+
           const newData = data.map((item) => {
             let tanggal = item.tanggal;
             let judul = item.judul;
@@ -491,6 +497,7 @@ const documentResolver = {
             if (item.tanggal == null || item.tanggal == "") {
               throw new Error("Tanggal is required");              
             }
+
             if (item.judul == null || item.judul == "") {
               throw new Error("Judul is required");              
             }
@@ -499,22 +506,36 @@ const documentResolver = {
               throw new Error("Document Number is required");
             }
             
-            
             return {
-              tanggal: tanggal,
-              judul: judul,
-              keterangan: keterangan,
-              document_number: document_number,
-              document_number_raw: document_number_raw,
-              document_status: 'APPROVED',
               toko_id: toko_id,
               document_control_id: document_control_id,
-              kode_dokumen: kode_dokumen,
-              kode_toko: kode_toko,
-              username: username
+              document_number_raw: document_number_raw,
+              document_number: document_number,
+              tanggal: tanggal,
+              judul: judul,
+              dari: "",
+              kepada: "",
+              penanggung_jawab: "",
+              username: username,
+              status_aktif: 1,
+              document_status: 'APPROVED',
+              keterangan: keterangan,
             }
           });
         }
+
+        await pool.query('START TRANSACTION;');
+        const query = `INSERT INTO nd_document (toko_id, document_control_id, tanggal,
+        document_number_raw, document_number, document_status,
+        judul, dari, kepada, keterangan, 
+        penanggung_jawab, username,
+        status_aktif)
+        VALUES (?, ?, ?, 
+        ?, ?, ?,
+        ?, ?, ?, ?, 
+        ?, ?, 
+        ?)
+        `;
 
         return newData;
       } catch (error) {
