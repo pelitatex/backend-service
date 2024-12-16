@@ -488,7 +488,7 @@ const documentResolver = {
             return item.document_number;
           });
 
-          newData = data.map((item) => {
+          data.forEach((item) => {
             let tanggal = item.tanggal;
             let judul = item.judul;
             let keterangan = item.keterangan;
@@ -506,8 +506,13 @@ const documentResolver = {
             if(item.document_number == null || item.document_number == "") {
               throw new Error("Document Number is required");
             }
+
+            newData.push(toko_id, document_control_id, tanggal,
+              document_number_raw, document_number, 'APPROVED',
+              judul, "", "", keterangan,
+              penanggung_jawab, username, 1);
             
-            return {
+            /* return {
               toko_id: toko_id,
               document_control_id: document_control_id,
               document_number_raw: document_number_raw,
@@ -521,7 +526,7 @@ const documentResolver = {
               status_aktif: 1,
               document_status: 'APPROVED',
               keterangan: keterangan,
-            }
+            } */
           });
         }
 
@@ -536,7 +541,7 @@ const documentResolver = {
         VALUES ${placeholders}
         `;
 
-        const [result] = await pool.query(query, newData.flat());
+        const [result] = await pool.query(query, newData);
 
         console.log('result', result);
         // console.info('newData', newData);
