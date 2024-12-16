@@ -507,7 +507,7 @@ const documentResolver = {
               throw new Error("Document Number is required");
             }
 
-            const text = zlib.deflateSync(Buffer.from(keterangan, 'base64')).toString();
+            const text = zlib.deflateSync(keterangan).toString('base64');
             newData.push(toko_id, document_control_id, tanggal, document_number_raw, document_number, 'APPROVED', judul, "", "", text, "", username, 1);
             // console.log('newData'+index, newData);
             
