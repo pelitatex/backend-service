@@ -470,6 +470,7 @@ const documentResolver = {
         throw new Error("Jenis Control is required");
       }
 
+      let newData = null;
       try {
 
         const queryCheck = `SELECT * FROM nd_document_control WHERE id = ${document_control_id}`;
@@ -487,7 +488,7 @@ const documentResolver = {
             return item.document_number;
           });
 
-          const newData = data.map((item) => {
+          newData = data.map((item) => {
             let tanggal = item.tanggal;
             let judul = item.judul;
             let keterangan = item.keterangan;
@@ -536,6 +537,22 @@ const documentResolver = {
         ?, ?, 
         ?)
         `;
+
+        let params = [];
+        for (let i = 0; i < newData.length; i++) {
+          const text = newData[i].keterangan;
+          const ketCompress = zlib.deflateSync(text).toString('base64');
+          params.push([newData[i].toko_id, newData[i].document_control_id, newData[i].tanggal,
+            newData[i].document_number_raw, newData[i].document_number, newData[i].document_status,
+            newData[i].judul, newData[i].dari, newData[i].kepada, ketCompress, 
+            newData[i].penanggung_jawab, newData[i].username, 
+            newData[i].status_aktif]);
+          // console.log('params', params);
+          // await pool.query(query, params);
+        }
+
+        console.log('paramsJoin', params.join(',') );
+        // console.info('newData', newData);
 
         return newData;
       } catch (error) {
