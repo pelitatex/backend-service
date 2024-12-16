@@ -525,36 +525,23 @@ const documentResolver = {
           });
         }
 
+        const placeholders = newData.map(() => '(?,?,?,?,?,?,?,?,?,?,?,?,?,?)').join(','); 
+
         await pool.query('START TRANSACTION;');
         const query = `INSERT INTO nd_document (toko_id, document_control_id, tanggal,
         document_number_raw, document_number, document_status,
         judul, dari, kepada, keterangan, 
         penanggung_jawab, username,
         status_aktif)
-        VALUES (?, ?, ?, 
-        ?, ?, ?,
-        ?, ?, ?, ?, 
-        ?, ?, 
-        ?)
+        VALUES ${placeholders}
         `;
 
-        let params = [];
-        for (let i = 0; i < newData.length; i++) {
-          const text = newData[i].keterangan;
-          const ketCompress = zlib.deflateSync(text).toString('base64');
-          params.push([newData[i].toko_id, newData[i].document_control_id, newData[i].tanggal,
-            newData[i].document_number_raw, newData[i].document_number, newData[i].document_status,
-            newData[i].judul, newData[i].dari, newData[i].kepada, ketCompress, 
-            newData[i].penanggung_jawab, newData[i].username, 
-            newData[i].status_aktif]);
-          // console.log('params', params);
-          // await pool.query(query, params);
-        }
+        const [result] = await pool.query(query, newData.flat());
 
-        console.log('paramsJoin', params.join(',') );
+        console.log('result', result);
         // console.info('newData', newData);
 
-        return newData;
+        return result;
       } catch (error) {
         console.error(error);
         throw new Error(error.message || "Internal Server Error Upload Document");
