@@ -506,8 +506,8 @@ const documentResolver = {
             if(item.document_number == null || item.document_number == "") {
               throw new Error("Document Number is required");
             }
-            
-            const text = zlib.inflateSync(Buffer.from(rows[0].keterangan, 'base64')).toString();
+
+            const text = zlib.inflateSync(Buffer.from(keterangan, 'base64')).toString();
             newData.push(toko_id, document_control_id, tanggal, document_number_raw, document_number, 'APPROVED', judul, "", "", text, "", username, 1);
             // console.log('newData'+index, newData);
             
