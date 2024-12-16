@@ -470,7 +470,7 @@ const documentResolver = {
         throw new Error("Jenis Control is required");
       }
 
-      let newData = null;
+      let newData = [];
       try {
 
         const queryCheck = `SELECT * FROM nd_document_control WHERE id = ${document_control_id}`;
@@ -488,7 +488,7 @@ const documentResolver = {
             return item.document_number;
           });
 
-          data.forEach((item) => {
+          data.forEach( (item, index) => {
             let tanggal = item.tanggal;
             let judul = item.judul;
             let keterangan = item.keterangan;
@@ -506,11 +506,10 @@ const documentResolver = {
             if(item.document_number == null || item.document_number == "") {
               throw new Error("Document Number is required");
             }
-
-            newData.push(toko_id, document_control_id, tanggal,
-              document_number_raw, document_number, 'APPROVED',
-              judul, "", "", keterangan,
-              penanggung_jawab, username, 1);
+            
+            const text = zlib.inflateSync(Buffer.from(rows[0].keterangan, 'base64')).toString();
+            newData.push(toko_id, document_control_id, tanggal, document_number_raw, document_number, 'APPROVED', judul, "", "", text, "", username, 1);
+            // console.log('newData'+index, newData);
             
             /* return {
               toko_id: toko_id,
@@ -530,7 +529,7 @@ const documentResolver = {
           });
         }
 
-        const placeholders = newData.map(() => '(?,?,?,?,?,?,?,?,?,?,?,?,?,?)').join(','); 
+        const placeholders = data.map(() => `(?,?,?,?,?,?,?,?,?,?,?,?,?)`).join(','); 
 
         await pool.query('START TRANSACTION;');
         const query = `INSERT INTO nd_document (toko_id, document_control_id, tanggal,
@@ -543,11 +542,11 @@ const documentResolver = {
 
         const [result] = await pool.query(query, newData);
 
-        console.log('result', result);
-        // console.info('newData', newData);
+        await pool.query('COMMIT;');
 
         return result;
       } catch (error) {
+        await pool.query('ROLLBACK');
         console.error(error);
         throw new Error(error.message || "Internal Server Error Upload Document");
       }
