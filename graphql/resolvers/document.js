@@ -491,7 +491,10 @@ const documentResolver = {
           const queryNumberCheck = `SELECT * FROM nd_document where document_number IN (?) AND toko_id = ? AND status_aktif = 1`;
           const [resultNumberCheck] = await pool.query(queryNumberCheck, [all_number, toko_id]);
           if (resultNumberCheck.length > 0) {
-            throw new Error("Document Number already exist");
+            const existing_number = resultNumberCheck.map((item) => {
+              return item.document_number;
+            });
+            throw new Error(`Document Number ${existing_number.join(',')} already exist`);
           }else{
             console.log(all_number.join(','), toko_id);
           }
