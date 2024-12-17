@@ -485,7 +485,7 @@ const documentResolver = {
         }else{
 
           const all_number = data.map((item) => {
-            return item.document_number;
+            return item.document_number.toString().trim();
           });
 
           const queryNumberCheck = `SELECT * FROM nd_document where document_number IN (?) AND toko_id = ? AND status_aktif = 1`;
