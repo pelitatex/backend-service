@@ -496,7 +496,7 @@ const documentResolver = {
             });
             throw new Error(`Document Number ${existing_number.join(',')} already exist`);
           }else{
-            console.log(all_number.join(','), toko_id);
+            // console.log(all_number.join(','), toko_id);
           }
 
           data.forEach( (item, index) => {
@@ -504,7 +504,7 @@ const documentResolver = {
             let judul = item.judul;
             let keterangan = item.keterangan;
             let document_number = item.document_number;
-            let document_number_raw = item.document_number;
+            let document_number_raw = item.document_number.toString().trim();
 
             if (item.tanggal == null || item.tanggal == "") {
               throw new Error("Tanggal is required");              
@@ -540,7 +540,7 @@ const documentResolver = {
           });
         }
 
-        /* const placeholders = data.map(() => `(?,?,?,?,?,?,?,?,?,?,?,?,?)`).join(','); 
+        const placeholders = data.map(() => `(?,?,?,?,?,?,?,?,?,?,?,?,?)`).join(','); 
 
         await pool.query('START TRANSACTION;');
         const query = `INSERT INTO nd_document (toko_id, document_control_id, tanggal,
@@ -552,10 +552,16 @@ const documentResolver = {
         `;
 
         const [result] = await pool.query(query, newData);
-
+        
+        const firstId = result.insertId;
+        const rowsAffected = result.affectedRows;
         await pool.query('COMMIT;');
 
-        return result; */
+        const [newRows] = await pool.query(`SELECT * FROM nd_document WHERE id >= ? AND id < ?`, [firstId, firstId + rowsAffected]);
+        console.log('result', newRows);
+
+        return newRows;
+
       } catch (error) {
         await pool.query('ROLLBACK');
         console.error(error);
