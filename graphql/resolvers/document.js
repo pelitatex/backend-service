@@ -558,9 +558,27 @@ const documentResolver = {
         await pool.query('COMMIT;');
 
         const [newRows] = await pool.query(`SELECT * FROM nd_document WHERE id >= ? AND id < ?`, [firstId, firstId + rowsAffected]);
-        console.log('result', newRows);
+        const response = newRows.map(row => {
 
-        return newRows;
+          const text = zlib.inflateSync(Buffer.from(row.keterangan, 'base64')).toString().substring(0, 50);
+          return {
+            id: row.id,
+            toko_id: row.toko_id,
+            document_control_id: row.document_control_id,
+            tanggal: row.tanggal,
+            document_number_raw: row.document_number_raw,
+            document_number: row.document_number,
+            document_status: row.document_status,
+            judul: row.judul,
+            dari: row.dari,
+            kepada: row.kepada,
+            keterangan: text,
+            penanggung_jawab: row.penanggung_jawab,
+            username: row.username,
+            status_aktif: row.status_aktif
+          }
+        });
+        return response;
 
       } catch (error) {
         await pool.query('ROLLBACK');
