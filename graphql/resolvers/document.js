@@ -488,6 +488,14 @@ const documentResolver = {
             return item.document_number;
           });
 
+          const queryNumberCheck = `SELECT * FROM nd_document where document_number IN (?) AND toko_id = ? AND status_aktif = 1`;
+          const [resultNumberCheck] = await pool.query(queryNumberCheck, [all_number, toko_id]);
+          if (resultNumberCheck.length > 0) {
+            throw new Error("Document Number already exist");
+          }else{
+            console.log(all_number.join(','), toko_id);
+          }
+
           data.forEach( (item, index) => {
             let tanggal = item.tanggal;
             let judul = item.judul;
@@ -529,7 +537,7 @@ const documentResolver = {
           });
         }
 
-        const placeholders = data.map(() => `(?,?,?,?,?,?,?,?,?,?,?,?,?)`).join(','); 
+        /* const placeholders = data.map(() => `(?,?,?,?,?,?,?,?,?,?,?,?,?)`).join(','); 
 
         await pool.query('START TRANSACTION;');
         const query = `INSERT INTO nd_document (toko_id, document_control_id, tanggal,
@@ -544,7 +552,7 @@ const documentResolver = {
 
         await pool.query('COMMIT;');
 
-        return result;
+        return result; */
       } catch (error) {
         await pool.query('ROLLBACK');
         console.error(error);
