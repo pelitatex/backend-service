@@ -53,7 +53,7 @@ let pathJwtAllowed = [];
 if(ENVIRONMENT === 'development'){
     pathJwtAllowed = ['/login','/graphql','/websocket'];
 }else if(ENVIRONMENT === 'production'){
-    pathJwtAllowed = ['/login'];
+    pathJwtAllowed = ['/login', '/graphql'];
 }
 
 app.use(expressjwt({
