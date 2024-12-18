@@ -49,20 +49,15 @@ app.use(cors(corsOptions));
 app.use(morgan('dev'));
 app.use(helmet());
 
-let pathJwtAllowed = [];
-if(ENVIRONMENT === 'development'){
-    pathJwtAllowed = ['/login','/graphql','/websocket'];
-}else if(ENVIRONMENT === 'production'){
-    pathJwtAllowed = ['/login', '/graphql'];
-}
-
 app.use(expressjwt({
     secret:TOKENSECRET,
     algorithms: ['HS256']
 })
 .unless({
-    path:pathJwtAllowed
+    path:['/login','/graphql','/websocket']
 }));
+
+let isAccessFromOffice = false;
 
 app.use((req, res, next) => {
     const allowedIPs = ALLOWED_IPS.split(',');
@@ -103,6 +98,7 @@ app.use((req, res, next) => {
         // In production, restrict to allowed IPs and trusted origins
         if (allowedIPs.includes(clientIP) || trustedOrigins.includes(req.headers.origin)) {
             console.log(`Production Mode: Access granted to IP - ${clientIP}, Origin - ${req.headers.origin}`);
+            isAccessFromOffice = true;
             next();
         } else {
             console.error(`Production Mode: Access denied to IP - ${clientIP}, Origin - ${req.headers.origin}`);
@@ -486,9 +482,11 @@ app.use(
             console.log('headers', req.headers);
         }
 
+        const graphiql = (isAccessFromOffice || ENVIRONMENT === "development" || ENVIRONMENT === 'testing' ? true : false);
+
         return{
             schema:eSchema,
-            graphiql: true,
+            graphiql: graphiql,
             context: {pool: pool, username: xUsername}
         }
     })
