@@ -49,12 +49,19 @@ app.use(cors(corsOptions));
 app.use(morgan('dev'));
 app.use(helmet());
 
+let pathJwtAllowed = [];
+if(ENVIRONMENT === 'development'){
+    pathJwtAllowed = ['/login','/graphql','/websocket'];
+}else if(ENVIRONMENT === 'production'){
+    pathJwtAllowed = ['/login'];
+}
+
 app.use(expressjwt({
     secret:TOKENSECRET,
     algorithms: ['HS256']
 })
 .unless({
-    path:['/login','/graphql','/websocket']
+    path:pathJwtAllowed
 }));
 
 app.use((req, res, next) => {
