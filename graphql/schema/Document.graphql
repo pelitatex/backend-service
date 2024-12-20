@@ -58,6 +58,8 @@ input AddDocumentInput{
 }
 
 input UpdateDocumentInput{
+    tanggal: String,
+    document_number: String,
     toko_id: Int!
     document_control_id: Int!
     tipe_dokumen: TipeDokumen!
