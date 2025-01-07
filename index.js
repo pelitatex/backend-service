@@ -233,7 +233,8 @@ app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => {
                 nama:nama
             };
             
-            publishExchange('customer_legacy_events', 'customer.chosen' , Buffer.from(JSON.stringify(msg)));
+            // ini coba kdu di cek manual artinya ada penambahan data di toko 
+            // publishExchange('customer_legacy_events', 'customer.chosen' , Buffer.from(JSON.stringify(msg)));
             return;
         }
         

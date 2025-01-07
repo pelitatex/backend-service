@@ -5,7 +5,6 @@ import zlib from 'zlib';
 // import queryTransaction from "../../helpers/queryTransaction.js";
 const MAX_LIMIT = 100;
 
-
 const documentResolver = {
   Query:{
     document: async(_,args, context, info)=>{
@@ -48,8 +47,10 @@ const documentResolver = {
         throw new Error(error.message || "Internal Server Error Document Control Single");
       }
     },
-    allDocument: async(_,{offset=0, limit = 10, search=""}, context)=>{
+    allDocument: async(_,{offset=0, limit = 10, search="", toko_id = 0, departemen_id = 0 }, context)=>{
       const limitQuery = limit > MAX_LIMIT ? MAX_LIMIT : limit;
+      const toko_id_filter = toko_id;
+      const departemen_id_filter = departemen_id;
       try {
         const pool = context.pool;
         if (!pool) {
@@ -57,17 +58,64 @@ const documentResolver = {
           throw new Error('Database pool not available in context.');
         }
 
-        let query = `SELECT * FROM nd_document LIMIT ?, ?`;
-        let params = [offset, limitQuery];
-        if (search.length > 0) {
-          query = `SELECT * FROM nd_document WHERE document_number LIKE ? LIMIT ?, ?`;
-          params = [`%${search}%`, offset, limitQuery];
+        let query = `SELECT t1.* FROM (
+          SELECT * nd_document `;
+        let params = [];
+        
+        let cond_dept = "";
+        let cond_toko = "";
+        let cond_search = "";
+
+        let param_dept = [];
+        let param_toko = [];
+        let param_search = [];
+
+        if (toko_id_filter != 0 && toko_id_filter != "") {
+          cond_toko = `WHERE toko_id = ?`;
+          param_toko.push(toko_id_filter);
         }
 
-        query = `SELECT * FROM nd_document`;
+        if (departemen_id_filter != 0 && departemen_id_filter != "") {
+          cond_dept = ` WHERE department_id = ? `;
+          param_dept.push(departemen_id_filter);
+        }
+
+        if (search.length > 0) {
+          cond_search = `
+          AND ( document_number LIKE ? 
+          OR judul LIKE ?
+          OR tanggal LIKE ? )`;
+          param_search.push(`%${search}%`, `%${search}%`, `%${search}%`);
+        }
+
+        query = `SELECT t1.* 
+        FROM (
+          SELECT * FROM nd_document
+          LIKE ?
+          ${cond_toko}
+        ) t1 
+        LEFT JOIN (
+          SELECT *
+          FROM nd_document_control 
+          ${cond_dept}
+        ) t2
+        ON t1.document_control_id = t2.id 
+        WHERE t2.id IS NOT NULL 
+        ${cond_search}
+        LIMIT ? , ?`;
+
+        params = [
+          ...(param_toko.length ? param_toko : []),
+          ...(param_toko.dept ? param_dept : []),
+          ...(param_search.length ? param_search : []),
+          offset,
+          limitQuery
+        ];
+        
+        
+
         const [rows] = await pool.query(query, params);
         const response = rows.map(row => {
-
           const text = zlib.inflateSync(Buffer.from(row.keterangan, 'base64')).toString().substring(0, 50);
           return {
             id: row.id,

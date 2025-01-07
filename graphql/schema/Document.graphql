@@ -25,7 +25,7 @@ type Document{
     id: ID!
     toko_id: Int!
     document_control_id: Int!
-    document_control: DocumentControl
+    document_control(departemen_id:Int=0): DocumentControl
     document_number_raw: Int
     document_number: String
     document_status: DocumentStatus!

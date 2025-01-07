@@ -29,7 +29,7 @@ type Query{
     documentControl(id: ID!): DocumentControl
     allDocumentControl: [DocumentControl]
     document(id: ID!): Document
-    allDocument(offset: Int = 0, limit: Int = 10, search:String = ""): [Document]
+    allDocument(offset: Int = 0, limit: Int = 10, search:String = "", document_type_id:Int=0, departemen_id:Int=0): [Document]
     department(id: ID!): Department
     allDepartment: [Department]
 }
