@@ -140,15 +140,44 @@ app.use(express.urlencoded({ extended: true }));
 
 app.get('/user/me', async (req, res) => { 
     try {
-        
         if (!req.auth) {
             return res.status(401).json({ error: 'Unauthorized' });
         }else{
+            const currentTime = Math.floor(Date.now() / 1000);
+            if (req.auth.exp && req.auth.exp < currentTime) {
+                return res.status(401).json({ error: 'Token expired' });
+            }
             res.status(200).json(req.auth);
         }
         
     } catch (error) {
         res.status(500).json({ error: 'Failed to get user' });
+    }
+});
+
+app.get('/customers-legacy/get_bounce_back', async (req, res) => { 
+    try {
+        const otherAppUrl = `${NODE2_URL}/customers_bounce_back`;
+
+        console.log(`Fetching bounce back from other app: ${otherAppUrl}`);
+
+        const tgl_awal = new Date('2023-10-09');
+        const customers = {};
+
+        const { page = 1, limit = 10 } = req.query; // Default to page 1 and limit 10
+        const pageNumber = parseInt(page, 10);
+        const pageSize = parseInt(limit, 10);
+
+        axios.get(otherAppUrl,{params: {page: pageNumber, limit: pageSize}})
+            .then(response => {
+                res.json(response.data);
+            })
+            .catch(error => {
+                console.error(`Error fetching data from other app: ${error.message}`);
+                res.status(500).json({ error: 'Failed to fetch data from other app' });
+            });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch data from other app' });
     }
 });
 
