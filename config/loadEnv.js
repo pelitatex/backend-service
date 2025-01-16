@@ -48,6 +48,7 @@ export const RABBITMQ_PASSWORD = process.env.RABBITMQ_PASSWORD;
 
 export const API_KEY = process.env.API_KEY;
 export const PORT_AUTH = process.env.PORT_AUTH;
+export const MACHINE_URL = process.env.MACHINE_URL;
 
 
 // Export the variables to be used in other modules
