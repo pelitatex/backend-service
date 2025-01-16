@@ -81,7 +81,7 @@ app.post('/machine-auth', (req, res) => {
 });
 
 
-export default { app as appAuth };
+export default app;
 
 /* app.listen(PORT, () => {
     console.log(`Authentication server running on port ${PORT}`);

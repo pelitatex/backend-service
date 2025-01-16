@@ -2,7 +2,7 @@
 // const port = process.env.PORT || 3000;
 // import gateway from './api-gateway.js';
 import app from './index.js';
-import appAuth from './authorization.js';
+import { app as appAuth }  from './authorization.js';
 import { PORT_GATEWAY, PORT_APP, PORT_AUTH } from './config/loadEnv.js';
 
 const port_gw = PORT_GATEWAY
