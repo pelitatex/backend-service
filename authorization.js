@@ -4,9 +4,11 @@ import bodyParser from 'body-parser';
 import jwt from "./helpers/jwt.js";
 import cors from 'cors';
 
-const app = express();
+const appAuth = express();
 
-app.use(bodyParser.json());
+appAuth.use(bodyParser.json());
+
+console.log(MACHINE_URL);
 
 let allowedCors = FRONTEND_URL.split(',');
 let allowedMachine = MACHINE_URL.split(',');
@@ -28,11 +30,11 @@ const corsOptions= {
 }
 
 
-app.use(cors(corsOptions)); 
+appAuth.use(cors(corsOptions)); 
 
 
 // for future development
-/* app.post('/login', (req, res) => {
+/* appAuth.post('/login', (req, res) => {
     const { username, password } = req.body;
     const user = users.find(u => u.username === username && u.password === password);
 
@@ -53,7 +55,7 @@ app.use(cors(corsOptions));
 }); */
 
 
-app.post('/machine-auth', (req, res) => {
+appAuth.post('/machine-auth', (req, res) => {
 
     if (!req.headers['x-api-key'] || req.headers['x-api-key'] !== API_KEY) {
         return res.status(403).send('Forbidden');
@@ -81,8 +83,8 @@ app.post('/machine-auth', (req, res) => {
 });
 
 
-export default app;
+export default appAuth;
 
-/* app.listen(PORT, () => {
+/* appAuth.listen(PORT, () => {
     console.log(`Authentication server running on port ${PORT}`);
 }); */
