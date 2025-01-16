@@ -1,7 +1,7 @@
 import { API_KEY, FRONTEND_URL, MACHINE_URL } from "./config/loadEnv.js";
 import express from 'express';
 import bodyParser from 'body-parser';
-import jwt from "../../helpers/jwt.js";
+import jwt from "./helpers/jwt.js";
 import cors from 'cors';
 
 const app = express();
