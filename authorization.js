@@ -4,9 +4,27 @@ import bodyParser from 'body-parser';
 import jwtHelper from './helpers/jwt.js';
 
 const app = express();
-const PORT = 3000;
 
 app.use(bodyParser.json());
+
+const corsOptions= {
+    origin: function (origin, callback) {
+        /* console.log('allowedCors', allowedCors);
+        console.log('origin', origin); */
+        if (!origin || allowedCors.indexOf(origin) !== -1) {
+            callback(null, true); // Allow the request
+        } else {
+            callback(new Error('Not allowed by CORS')); // Reject the request
+        }
+    },
+    methods: 'GET,POST,OPTIONS',
+    allowedHeaders: 'Content-Type, Authorization, x-tenant, x-username',
+    credentials: true, 
+}
+
+
+app.use(cors(corsOptions)); 
+
 
 // const users = [
 //     { id: 1, username: 'user1', password: 'password1' },
@@ -33,11 +51,10 @@ app.post('/login', (req, res) => {
 
 app.post('/machine-auth', (req, res) => {
 
-    if (!req.headers['x-api-key'] || req.headers['x-api-key'] !== 'your-api-key') {
+    if (!req.headers['x-api-key'] || req.headers['x-api-key'] !== API_KEY) {
         return res.status(403).send('Forbidden');
     }
     
-    const hostname = req.headers.origin ? new URL(req.headers.origin).hostname : '';
     const isAuthorized = (req.headers['x-api-key'] === API_KEY);
 
     if (isAuthorized) {
