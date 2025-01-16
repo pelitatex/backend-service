@@ -1,3 +1,4 @@
+import {API_KEY} from "./config/loadEnv.js";
 import express from 'express';
 import bodyParser from 'body-parser';
 import jwtHelper from './helpers/jwt.js';
@@ -36,17 +37,29 @@ app.post('/machine-auth', (req, res) => {
         return res.status(403).send('Forbidden');
     }
     
-    const { machineId, secret } = req.body;
-    const machine = machines.find(m => m.machineId === machineId && m.secret === secret);
+    const hostname = req.headers.origin ? new URL(req.headers.origin).hostname : '';
+    const isAuthorized = (req.headers['x-api-key'] === API_KEY);
 
-    if (machine) {
-        const token = jwtHelper.generateToken({ id: machine.id, machineId: machine.machineId });
+    if (isAuthorized) {
+        // const token = jwtHelper.generateToken({ id: machine.id, machineId: machine.machineId });
+
+        const rand = (Math.random() * 10000).toFixed(0);
+        const payload = {
+            id: 'machine-'+rand,
+            username: `machine-${hostname}-${rand}`,
+            roles: `machine`
+        };
+        const token = jwt.generateToken(payload);
         res.json({ accessToken: token });
+
     } else {
-        res.status(401).send('Machine ID or secret incorrect');
+        res.status(401).send('Authorization failed');
     }
 });
 
-app.listen(PORT, () => {
+
+export { app as appAuth };
+
+/* app.listen(PORT, () => {
     console.log(`Authentication server running on port ${PORT}`);
-});
+}); */

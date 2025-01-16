@@ -393,8 +393,7 @@ function uploadFile(req, res, additionalPath) {
             }
         });
     });
-  }
-
+}
 
 app.post('/upload-image/temp', async (req, res) => {
     
