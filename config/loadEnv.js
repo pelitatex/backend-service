@@ -10,8 +10,6 @@ const __dirname = path.dirname(__filename);
 const loadEnvFile = (filePath) => {
   // console.log('path', filePath);
   const result = dotenv.config({ path: filePath });
-  // console.log('result', result);
-  const envMain = process.env.ENVIRONMENT;
   // console.log('envMain', envMain);
   if (result.error) {
     throw new Error(`Warning: Could not load .env file at ${filePath}`);
