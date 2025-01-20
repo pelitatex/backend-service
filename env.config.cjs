@@ -1,11 +1,3 @@
-const { fileURLToPath } = require('url');
-const { dirname } = require('path');
-
-// PM2 requires CommonJS by default. Add this flag in your PM2 start command: `--interpreter node --node-args="--experimental-loader=@esbuild-kit/esm-loader"`
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
 // Export the configuration object
 const configuration = {
   apps: [

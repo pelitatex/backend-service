@@ -1,5 +1,7 @@
 import dotenv from "dotenv";
-import path from "path";
+dotenv.config();
+
+/* import path from "path";
 import { fileURLToPath } from 'url';
 
 // Get the directory name of the current module
@@ -21,15 +23,15 @@ loadEnvFile(path.resolve(__dirname, '../.env'));
 
 // Now, load the environment-specific .env file
 const envMain = process.env.ENVIRONMENT || 'development';
-loadEnvFile(path.resolve(__dirname, `../.env.${envMain}`));
+loadEnvFile(path.resolve(__dirname, `../.env.${envMain}`)); */
 
 
+export const ENVIRONMENT = process.env.ENVIRONMENT;
 export const LIFETIME = process.env.TOKEN_LIFETIME;
 export const TOKENSECRET = process.env.TOKEN_SECRET;
 export const FRONTEND_URL = process.env.FRONTEND_URL;
 export const PORT_APP = process.env.PORT_APP;
 export const PORT_GATEWAY = process.env.PORT_GATEWAY;
-export const ENVIRONMENT = envMain;
 
 export const DB_HOST = process.env.DB_HOST;
 export const DB_USER =  process.env.DB_USER;
@@ -50,7 +52,7 @@ export const MACHINE_URL = process.env.MACHINE_URL;
 
 
 // Export the variables to be used in other modules
-console.log(envMain+' environment detected');
+console.log(ENVIRONMENT+' environment detected');
 // console.log(LIFETIME, TOKENSECRET, FRONTEND_URL, PORT_APP, PORT_GATEWAY, ENVIRONMENT);
 
 
