@@ -1,13 +1,13 @@
 import dotenv from "dotenv";
-dotenv.config();
 
-/* import path from "path";
+import path from "path";
 import { fileURLToPath } from 'url';
 
 // Get the directory name of the current module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+/* 
 // Helper function to load .env files with error handling
 const loadEnvFile = (filePath) => {
   // console.log('path', filePath);
@@ -26,7 +26,9 @@ const envMain = process.env.ENVIRONMENT || 'development';
 loadEnvFile(path.resolve(__dirname, `../.env.${envMain}`)); */
 
 
-export const ENVIRONMENT = process.env.ENVIRONMENT;
+export const ENVIRONMENT = process.env.NODE_ENV;
+dotenv.config({ path: path.resolve(__dirname, `../.env.${ENVIRONMENT}`) });
+
 export const LIFETIME = process.env.TOKEN_LIFETIME;
 export const TOKENSECRET = process.env.TOKEN_SECRET;
 export const FRONTEND_URL = process.env.FRONTEND_URL;

@@ -1,9 +1,13 @@
+const { watch } = require('fs');
+const path = require('path');
+
 // Export the configuration object
 const configuration = {
   apps: [
     {
-      name: "pelita-api-app",
-      script: "./index.js",
+      name: "pelita-backend",
+      script: "./server.js",
+      watch: true,
       env: {
         NODE_ENV: "development",
       },
