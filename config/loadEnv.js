@@ -53,6 +53,6 @@ export const MACHINE_URL = process.env.MACHINE_URL;
 
 // Export the variables to be used in other modules
 console.log(ENVIRONMENT+' environment detected');
-// console.log(LIFETIME, TOKENSECRET, FRONTEND_URL, PORT_APP, PORT_GATEWAY, ENVIRONMENT);
+console.log(LIFETIME, TOKENSECRET, FRONTEND_URL, PORT_APP, PORT_GATEWAY, ENVIRONMENT, API_KEY, MACHINE_URL);
 
 
