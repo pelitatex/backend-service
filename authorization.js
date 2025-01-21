@@ -32,7 +32,7 @@ const corsOptions= {
 
 appAuth.use(cors(corsOptions)); 
 
-app.use((req, res, next) => {
+appAuth.use((req, res, next) => {
     const allowedIPs = ALLOWED_IPS.split(',');
     let clientIP = req.headers['x-forwarded-for'] 
         ? req.headers['x-forwarded-for'].split(',')[0].trim() 
