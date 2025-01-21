@@ -55,7 +55,8 @@ appAuth.use(cors(corsOptions));
 }); */
 
 
-appAuth.get('/testing', (req, res) => {
+appAuth.get('/testing-con', (req, res) => {
+    console.log('req.headers', req.headers);
     res.send('Testing OK');
 });
 
