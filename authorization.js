@@ -62,6 +62,7 @@ appAuth.get('/testing', (req, res) => {
 appAuth.post('/machine-auth', (req, res) => {
 
     if (!req.headers['x-api-key'] || req.headers['x-api-key'] !== API_KEY) {
+        console.log('Forbidden', req.headers['x-api-key']);
         return res.status(403).send('Forbidden');
     }
     
