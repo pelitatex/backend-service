@@ -1,4 +1,4 @@
-import { API_KEY, FRONTEND_URL, MACHINE_URL } from "./config/loadEnv.js";
+import { API_KEY, FRONTEND_URL, MACHINE_URL, PORT_AUTH } from "./config/loadEnv.js";
 import express from 'express';
 import bodyParser from 'body-parser';
 import jwt from "./helpers/jwt.js";
@@ -83,8 +83,8 @@ appAuth.post('/machine-auth', (req, res) => {
 });
 
 
-export default appAuth;
+// export default appAuth;
 
-/* appAuth.listen(PORT, () => {
-    console.log(`Authentication server running on port ${PORT}`);
-}); */
+appAuth.listen(PORT_AUTH, () => {
+    console.log(`Authentication server running on port ${PORT_AUTH}`);
+});
