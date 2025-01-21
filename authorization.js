@@ -60,6 +60,11 @@ appAuth.get('/testing-con', (req, res) => {
     res.send('Testing OK');
 });
 
+appAuth.post('/testing-post', (req, res) => {
+    console.log('req.body', req.body);
+    res.send('Testing OK');
+});
+
 appAuth.post('/machine-auth', (req, res) => {
 
     if (!req.headers['x-api-key'] || req.headers['x-api-key'] !== API_KEY) {
