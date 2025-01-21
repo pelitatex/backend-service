@@ -35,6 +35,7 @@ appAuth.use(cors(corsOptions));
 let isAccessFromOffice = false;
 
 appAuth.use((req, res, next) => {
+    console.log('1Request method:', req.method);
     const allowedIPs = ALLOWED_IPS.split(',');
     let clientIP = req.headers['x-forwarded-for'] 
         ? req.headers['x-forwarded-for'].split(',')[0].trim() 
@@ -113,11 +114,13 @@ appAuth.use((req, res, next) => {
 
 
 appAuth.get('/testing-con', (req, res) => {
+    console.log('Request method:', req.method);
     console.log('req.headers', req.headers);
     res.send('Testing OK');
 });
 
 appAuth.post('/testing-post', (req, res) => {
+    console.log('Request method:', req.method);
     console.log('req.body', req.body);
     res.send('Testing OK');
 });
@@ -156,3 +159,4 @@ appAuth.post('/machine-auth', (req, res) => {
 appAuth.listen(PORT_AUTH, () => {
     console.log(`Authentication server running on port ${PORT_AUTH}`);
 });
+
