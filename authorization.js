@@ -32,6 +32,8 @@ const corsOptions= {
 
 appAuth.use(cors(corsOptions)); 
 
+let isAccessFromOffice = false;
+
 appAuth.use((req, res, next) => {
     const allowedIPs = ALLOWED_IPS.split(',');
     let clientIP = req.headers['x-forwarded-for'] 
