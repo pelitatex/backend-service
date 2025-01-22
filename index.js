@@ -298,6 +298,8 @@ app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => {
             company_indexes: company_indexes,
             nama:nama
         };
+
+        console.log('msg chosen', msg);
         await publishExchange('customer_legacy_events', 'customer.chosen' , Buffer.from(JSON.stringify(msg)));
 
         return;
