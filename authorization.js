@@ -35,7 +35,10 @@ appAuth.use(cors(corsOptions));
 let isAccessFromOffice = false;
 
 appAuth.use((req, res, next) => {
-    console.log('1Request method:', req.method);
+
+    console.table(req.headers);
+    console.table(req.body);
+
     const allowedIPs = ALLOWED_IPS.split(',');
     let clientIP = req.headers['x-forwarded-for'] 
         ? req.headers['x-forwarded-for'].split(',')[0].trim() 
@@ -127,8 +130,6 @@ appAuth.post('/testing-post', (req, res) => {
 
 appAuth.post('/machine-auth', (req, res) => {
 
-    console.log(req.headers);
-    console.table(req.headers);
     if (!req.headers['x-api-key'] || req.headers['x-api-key'] !== API_KEY) {
         console.log('Forbidden', req.headers['x-api-key']);
         return res.status(403).send('Forbidden');
