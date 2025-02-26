@@ -4,7 +4,7 @@ import queryTransaction from '../../helpers/queryTransaction.js';
 
 const barangSKUResolver = {
   Query:{
-    barangSKU: async(_,args, context)=>{
+    barangSKUToko: async(_,args, context)=>{
       const pool = context.pool;
         if (!pool) {
           console.log('context', pool);
@@ -20,7 +20,7 @@ const barangSKUResolver = {
           throw new Error("Internal Server Error Barang SKU Single");
         }
     },
-    allBarangSKU: async(_,args, context)=>{
+    allBarangSKUToko: async(_,args, context)=>{
       const pool = context.pool;
         if (!pool) {
           console.log('context', pool);
@@ -38,7 +38,7 @@ const barangSKUResolver = {
     }
   },
   Mutation:{
-    addBarangSKU: async (_, {input}, context) => {
+    addBarangSKUToko: async (_, {input}, context) => {
       const pool = context.pool;
       if (!pool) {
         console.log('context', pool);
@@ -112,7 +112,7 @@ const barangSKUResolver = {
         throw new Error(error.message || 'Internal Server Error Add Barang');
       }
     },
-    updateBarangSKU: async (_, {id, input}, context) => {
+    updateBarangSKUToko: async (_, {id, input}, context) => {
       const pool = context.pool;
       if (!pool) {
         console.log('context', pool);
