@@ -83,6 +83,23 @@ const barangSKUResolver = {
       }
     },
   },
+  BarangSKUResolver:{
+    toko:async (parent, args, context) =>{
+      const pool = context.pool;
+      if (!pool) {
+        console.log('context', pool);
+        throw new Error('Database pool not available in context.');
+      }
+      try {
+        const query = 'SELECT * FROM nd_toko WHERE id = ?';
+        const [rows] = await pool.query(query, [parent.toko_id]);
+        return rows[0];
+      } catch (error) {
+        console.error(error);
+        throw new Error('Internal Server Error');
+      }
+    }
+  }
 }
 
 export default barangSKUResolver;
