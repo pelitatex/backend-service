@@ -1,24 +1,25 @@
-import {v4 as uuidv4} from 'uuid';
-// import queryLogger from "../../helpers/queryTransaction.js";
-import queryTransaction from '../../helpers/queryTransaction.js';
+import { NODE2_URL } from '../../config.js';
+import axios from 'axios';
 
 const barangSKUResolver = {
   Query:{
     barangSKUToko: async(_,args, context)=>{
-      const pool = context.pool;
-        if (!pool) {
-          console.log('context', pool);
-          throw new Error('Database pool not available in context.');
-        }
-        try {
-          context.useSatuanLoader = true;
-          const query = `SELECT * FROM nd_barang_sku WHERE id = ?`;
-          const [rows] = await pool.query(query, [args.id]);
-          return rows[0];
-        } catch (error) {
-          console.error(error);
-          throw new Error("Internal Server Error Barang SKU Single");
-        }
+      const toko_id = args.toko_id;
+      try {
+        const otherAppUrl = `${NODE2_URL}/get_barang_sku_by_toko?id=${toko_id}`;
+
+        axios.get(otherAppUrl)
+          .then(response => {
+              res.json(response.data);
+          })
+          .catch(error => {
+              console.error(`Error fetching data from other app: ${error.message}`);
+              res.status(500).json({ error: 'Failed to fetch data from other app' });
+          });
+
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch data from other app' });
+    }
     },
     allBarangSKUToko: async(_,args, context)=>{
       const pool = context.pool;
