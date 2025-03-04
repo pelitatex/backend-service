@@ -98,6 +98,21 @@ const barangSKUResolver = {
         console.error(error);
         throw new Error('Internal Server Error');
       }
+    },
+    barangSKU:async(parent, args, context)=>{
+      const pool = context.pool;
+      if (!pool) {
+        console.log('context', pool);
+        throw new Error('Database pool not available in context.');
+      }
+      try {
+        const query = 'SELECT * FROM nd_barang_sku WHERE id = ?';
+        const [rows] = await pool.query(query, [parent.barang_sku_id]);
+        return rows[0];
+      } catch (error) {
+        console.error(error);
+        throw new Error('Internal Server Error');
+      }
     }
   }
 }
