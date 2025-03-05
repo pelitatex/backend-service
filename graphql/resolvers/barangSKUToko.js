@@ -96,7 +96,7 @@ const barangSKUResolver = {
         return rows[0];
       } catch (error) {
         console.error(error);
-        throw new Error('Internal Server Error');
+        throw new Error('Internal Server Error get barangsku toko');
       }
     },
     barangSKU:async(parent, args, context)=>{
@@ -111,7 +111,7 @@ const barangSKUResolver = {
         return rows[0];
       } catch (error) {
         console.error(error);
-        throw new Error('Internal Server Error');
+        throw new Error('Internal Server Error get barangsku all');
       }
     }
   }
