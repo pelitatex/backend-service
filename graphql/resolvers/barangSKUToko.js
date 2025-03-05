@@ -18,7 +18,7 @@ const barangSKUResolver = {
           return rows[0];
         } catch (error) {
           console.error(error);
-          throw new Error("Internal Server Error");
+          throw new Error("Internal Server Error barang sku per toko");
         }
     },
     allBarangSKUToko: async(_,args, context)=>{
@@ -65,7 +65,7 @@ const barangSKUResolver = {
 
       } catch (error) { 
         console.error(error);
-        throw new Error(error.message || 'Internal Server Error Add toko barang sku');
+        throw new Error(error.message || 'Internal Server Error connection toko barang sku');
       }
     },
     updateBarangSKUToko: async (_, {id, input}, context) => {
