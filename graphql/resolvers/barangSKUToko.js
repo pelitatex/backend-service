@@ -69,7 +69,7 @@ const barangSKUTokoResolver = {
       }
     },
   },
-  BarangSKUResolver:{
+  BarangSKUToko:{
     toko:async (parent, args, context) =>{
       const pool = context.pool;
       if (!pool) {
