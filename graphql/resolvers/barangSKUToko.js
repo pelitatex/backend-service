@@ -12,6 +12,9 @@ const barangSKUTokoResolver = {
           throw new Error('Database pool not available in context.');
         }
         try {
+          if (!args.toko_id) {
+            throw new Error('Toko ID is required');
+          }
           context.useSatuanLoader = true;
           const query = `SELECT * FROM nd_toko_barang_sku WHERE toko_id = ?`;
           const [rows] = await pool.query(query, [args.toko_id]);
