@@ -68,20 +68,6 @@ const barangSKUTokoResolver = {
         throw new Error(error.message || 'Internal Server Error add toko barang sku');
       }
     },
-    updateBarangSKUToko: async (_, {id, input}, context) => {
-      const pool = context.pool;
-      if (!pool) {
-        console.log('context', pool);
-        throw new Error('Database pool not available in context.');
-      }
-      try {
-        throw new Error('Internal Server Toko SKU Barang tidak bisa di edit');
-
-      } catch (error) {
-        console.error(error);
-        throw new Error('Internal Server Error Update toko Barang sku');
-      }
-    },
   },
   BarangSKUResolver:{
     toko:async (parent, args, context) =>{
