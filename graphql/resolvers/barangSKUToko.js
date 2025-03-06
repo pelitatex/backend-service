@@ -3,7 +3,7 @@ import {v4 as uuidv4} from 'uuid';
 import queryTransaction from '../../helpers/queryTransaction.js';
 import barangSKUResolver from './barangSKU.js';
 
-const barangSKUResolver = {
+const barangSKUTokoResolver = {
   Query:{
     barangSKUToko: async(_,args, context)=>{
       const pool = context.pool;
@@ -117,4 +117,4 @@ const barangSKUResolver = {
   }
 }
 
-export default barangSKUResolver;
+export default barangSKUTokoResolver;

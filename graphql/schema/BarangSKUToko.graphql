@@ -1,0 +1,12 @@
+type BarangSKUToko {
+    id: ID!
+    barang_sku_id: Int!
+    toko_id: Int!
+    barangSKU: BarangSKU
+    toko: Toko    
+}
+
+input AddBarangSKUTokoInput{
+    barang_sku_id: Int!
+    toko_id: Int!
+}
