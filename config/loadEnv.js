@@ -26,7 +26,8 @@ const envMain = process.env.ENVIRONMENT || 'development';
 loadEnvFile(path.resolve(__dirname, `../.env.${envMain}`)); */
 
 
-export const ENVIRONMENT = process.env.NODE_ENV;
+export const ENVIRONMENT = process.env.NODE_ENV || 'development'; 
+console.log('ENVIRONMENT', ENVIRONMENT);
 dotenv.config({ path: path.resolve(__dirname, `../.env.${ENVIRONMENT}`) });
 
 export const LIFETIME = process.env.TOKEN_LIFETIME;

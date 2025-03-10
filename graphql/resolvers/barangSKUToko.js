@@ -65,7 +65,7 @@ const barangSKUTokoResolver = {
           throw new Error('Add toko barang sku failed');
         }
         return true;
-
+        
       } catch (error) { 
         console.error(error);
         throw new Error(error.message || 'Internal Server Error add toko barang sku');
