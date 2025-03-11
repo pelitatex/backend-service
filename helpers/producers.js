@@ -22,3 +22,34 @@ export const publishExchange = async (exchange, routingKey, message) => {
     console.log(`Publishing message to exchange ${exchange} with routing key ${routingKey}`);
     channel.publish(exchange, routingKey, message);
 }; 
+
+export const publishExchangeWithTimeout = async (exchange, routingKey, message, timeout) => {
+    if (connection === undefined) {
+        console.error('No connection');
+        return;
+        
+    }
+    console.log(`Publishing message to exchange ${exchange} with routing key ${routingKey}`);
+    channel.publish(exchange, routingKey, message, {expiration: timeout});
+};
+
+export const sendToQueue = async (queue, message) => {
+    if (connection === undefined) {
+        console.error('No connection');
+        return;
+        
+    }
+    console.log(`Sending message to queue ${queue}`);
+    channel.sendToQueue(queue, message);
+};
+
+export const sendToQueueWithTimeout = async (queue, message, timeout) => {
+    if (connection === undefined) {
+        console.error('No connection');
+        return;
+        
+    }
+    console.log(`Sending message to queue ${queue}`);
+    channel.sendToQueue(queue, message, {expiration: timeout});
+};
+
