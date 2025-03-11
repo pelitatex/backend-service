@@ -1,4 +1,5 @@
 import { sendToQueueWithTimeout } from "../../helpers/producers";
+import queryLogger from "../../helpers/queryTransaction";
 
 const barangSKUTokoResolver = {
   Query:{
@@ -39,7 +40,7 @@ const barangSKUTokoResolver = {
     }
   },
   Mutation:{
-    
+
     addBarangSKUToko: async (_, {input}, context) => {
       const pool = context.pool;
       if (!pool) {
@@ -59,9 +60,13 @@ const barangSKUTokoResolver = {
 
         const query = `INSERT INTO nd_toko_barang_sku (toko_id, barang_sku_id) VALUES  (?,?) `;
         const [insertQuery] = await pool.query(query, [toko_id, barang_sku_id])
-        if (insertQuery[0].count > 0) {
+        if (insertQuery[0].affectedRows === 0) {
           throw new Error('Add toko barang sku failed');
         }
+
+        queryLogger(pool, `nd_toko_barang_sku`, insertQuery[0].insertId, query, [toko_id, barang_sku_id]);
+
+        
         return true;
         
       } catch (error) { 
