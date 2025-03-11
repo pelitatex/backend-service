@@ -40,7 +40,6 @@ const barangSKUTokoResolver = {
     }
   },
   Mutation:{
-
     addBarangSKUToko: async (_, {input}, context) => {
       const pool = context.pool;
       if (!pool) {
@@ -71,6 +70,8 @@ const barangSKUTokoResolver = {
         if(notifDataRows[0].count === 0){
           throw new Error('Barang SKU not found');
         }else{
+
+          const msg = {toko_id:toko_id, ...notifDataRows[0]};
           sendToQueueWithTimeout('pairing_sku_master_toko', Buffer.from(JSON.stringify(msg)), 60000 );
         }
         
