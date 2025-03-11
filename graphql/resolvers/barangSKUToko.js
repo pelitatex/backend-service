@@ -66,6 +66,13 @@ const barangSKUTokoResolver = {
 
         queryLogger(pool, `nd_toko_barang_sku`, insertQuery[0].insertId, query, [toko_id, barang_sku_id]);
 
+        const notifDataQuery = `SELECT * FROM nd_barang_sku WHERE id = ?`;
+        const [notifDataRows] = await pool.query(notifDataQuery, [barang_sku_id]);
+        if(notifDataRows[0].count === 0){
+          throw new Error('Barang SKU not found');
+        }else{
+          sendToQueueWithTimeout('pairing_sku_master_toko', Buffer.from(JSON.stringify(msg)), 60000 );
+        }
         
         return true;
         
