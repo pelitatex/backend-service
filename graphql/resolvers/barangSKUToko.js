@@ -48,11 +48,16 @@ const barangSKUTokoResolver = {
       }
 
       const {toko_id, barang_sku_id} = input;
+      let tokoAlias = "";
 
-      const checkQuery = 'SELECT * FROM nd_toko_barang_sku WHERE toko_id = ? and barang_sku_id = ?';
+      const checkQuery = `SELECT barang_sku.* 
+      FROM ( SELECT * FROM nd_toko_barang_sku WHERE toko_id = ? and barang_sku_id = ? ) barang_sku 
+      LEFT JOIN nd_toko ON barang_sku.toko_id = nd_toko.id`;
       const [checkRows] = await pool.query(checkQuery, [toko_id, barang_sku_id]);
       if (checkRows.length > 0) {
         throw new Error('Toko sudah punya barang sku.');
+      }else{
+        tokoAlias = checkRows[0].alias;
       }
       
       try {
@@ -69,8 +74,9 @@ const barangSKUTokoResolver = {
         const [notifDataRows] = await pool.query(notifDataQuery, [barang_sku_id]);
         if(notifDataRows[0].count === 0){
           throw new Error('Barang SKU not found');
+        }else if(tokoAlias === ""){
+          throw new Error('Toko Alias not found');
         }else{
-
           const msg = {toko_id:toko_id, ...notifDataRows[0]};
           sendToQueueWithTimeout('pairing_sku_master_toko', Buffer.from(JSON.stringify(msg)), 60000 );
         }
