@@ -77,7 +77,7 @@ const barangSKUTokoResolver = {
         }else if(tokoAlias === ""){
           throw new Error('Toko Alias not found');
         }else{
-          const msg = {toko_id:toko_id, ...notifDataRows[0]};
+          const msg = {company:tokoAlias, ...notifDataRows[0]};
           sendToQueueWithTimeout('pairing_sku_master_toko', Buffer.from(JSON.stringify(msg)), 60000 );
         }
         
