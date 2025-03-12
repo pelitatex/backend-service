@@ -11,6 +11,7 @@ type Toko{
     status_aktif: Boolean!
     nama_domain: String
     email_pajak: String
+    barangToko: [BarangToko]
 }
 
 input AddTokoInput {
