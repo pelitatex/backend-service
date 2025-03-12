@@ -94,7 +94,7 @@ const barangTokoResolver = {
           sendToQueue('pairing_barang_master_toko', Buffer.from(JSON.stringify(msg)), 60000 );
         }
         
-        return true;
+        return insertQuery.insertId;
         
       } catch (error) { 
         await pool.query('ROLLBACK');
