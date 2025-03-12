@@ -11,8 +11,8 @@ type Barang {
     qty_warning: Int
     deskripsi_info: String
     status_aktif: Boolean!
-    BarangSKU: [BarangSKU]
-    BarangToko: [BarangToko]
+    barangSKU: [BarangSKU]
+    barangToko: [BarangToko]
 }
 
 input AddBarangInput {
