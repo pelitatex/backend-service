@@ -1,7 +1,7 @@
 import {LIFETIME} from "../../config/loadEnv.js";
 import jwt from "../../helpers/jwt.js";
 import bcrypt from "bcrypt";
-import queryTransaction from "../../helpers/queryTransaction.js";
+import { queryTransaction } from "../../helpers/queryTransaction.js";
 
 const userResolver = {
   Query : {

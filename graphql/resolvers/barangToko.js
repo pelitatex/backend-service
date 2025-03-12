@@ -1,5 +1,5 @@
 import { sendToQueue } from "../../helpers/producers.js";
-import queryLogger from "../../helpers/queryTransaction.js";
+import { queryLogger } from "../../helpers/queryTransaction.js";
 
 const barangTokoResolver = {
   Query:{
