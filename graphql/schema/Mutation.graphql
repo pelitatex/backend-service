@@ -28,12 +28,12 @@ type Mutation {
     updateDepartment(id: ID!, input: UpdateDepartmentInput!): Department
     addSatuan(input: AddSatuanInput!): Satuan
     updateSatuan(id: ID!, input: UpdateSatuanInput!): Satuan
-    addBarangSKU(input: [AddBarangSKUInput!]): BarangSKU
+    addBarangSKU(input: AddBarangSKUInput!): BarangSKU
     updateBarangSKU(id: ID!, input: UpdateBarangSKUInput!): BarangSKU
     addGudang(input: AddGudangInput!): Gudang
     updateGudang(id: ID!, input: UpdateGudangInput!): Gudang
     addDocument(input: AddDocumentInput!): Document
     updateDocument(id: ID!, input: UpdateDocumentInput!): Document
     uploadDocument(input: UploadDocumentInput!): [Document]
-    addBarangToko(input: [AddBarangTokoInput!]): BarangToko
+    addBarangToko(input: AddBarangTokoInput!): BarangToko
 }
