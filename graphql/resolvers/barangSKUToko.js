@@ -3,7 +3,7 @@ import queryLogger from "../../helpers/queryTransaction";
 
 const barangSKUTokoResolver = {
   Query:{
-    barangSKUToko: async(_,args, context)=>{
+    barangToko: async(_,args, context)=>{
       const pool = context.pool;
         if (!pool) {
           console.log('context', pool);
@@ -14,15 +14,15 @@ const barangSKUTokoResolver = {
             throw new Error('Toko ID is required');
           }
           context.useSatuanLoader = true;
-          const query = `SELECT * FROM nd_toko_barang_sku WHERE toko_id = ?`;
+          const query = `SELECT * FROM nd_toko_barang_assignment WHERE toko_id = ?`;
           const [rows] = await pool.query(query, [args.toko_id]);
           return rows[0];
         } catch (error) {
           console.error(error);
-          throw new Error("Internal Server Error barang sku per toko");
+          throw new Error("Internal Server Error barang per toko");
         }
     },
-    allBarangSKUToko: async(_,args, context)=>{
+    allBarangToko: async(_,args, context)=>{
       const pool = context.pool;
         if (!pool) {
           console.log('context', pool);
@@ -30,12 +30,12 @@ const barangSKUTokoResolver = {
         }
         try {
           context.useSatuanLoader = false;
-          const query = 'SELECT * FROM nd_toko_barang_sku';
+          const query = 'SELECT * FROM nd_toko_barang_assignment';
           const [rows] = await pool.query(query);
           return rows;
         } catch (error) {
           console.error(error);
-          throw new Error("Internal Server Error Barang SKU TOKO All");
+          throw new Error("Internal Server Error Barang TOKO All");
         }
     }
   },
