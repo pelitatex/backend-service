@@ -40,20 +40,20 @@ const barangSKUTokoResolver = {
     }
   },
   Mutation:{
-    addBarangSKUToko: async (_, {input}, context) => {
+    addBarangToko: async (_, {input}, context) => {
       const pool = context.pool;
       if (!pool) {
         console.log('context', pool);
         throw new Error('Database pool not available in context.');
       }
 
-      const {toko_id, barang_sku_id} = input;
+      const {toko_id, barang_id} = input;
       let tokoAlias = "";
 
-      const checkQuery = `SELECT barang_sku.* 
-      FROM ( SELECT * FROM nd_toko_barang_sku WHERE toko_id = ? and barang_sku_id = ? ) barang_sku 
-      LEFT JOIN nd_toko ON barang_sku.toko_id = nd_toko.id`;
-      const [checkRows] = await pool.query(checkQuery, [toko_id, barang_sku_id]);
+      const checkQuery = `SELECT barang_toko.* 
+      FROM ( SELECT * FROM nd_toko_barang_assignment WHERE toko_id = ? and barang_id = ? ) barang_toko 
+      LEFT JOIN nd_toko ON barang_toko.toko_id = nd_toko.id`;
+      const [checkRows] = await pool.query(checkQuery, [toko_id, barang_id]);
       if (checkRows.length > 0) {
         throw new Error('Toko sudah punya barang sku.');
       }else{
@@ -62,23 +62,25 @@ const barangSKUTokoResolver = {
       
       try {
 
-        const query = `INSERT INTO nd_toko_barang_sku (toko_id, barang_sku_id) VALUES  (?,?) `;
-        const [insertQuery] = await pool.query(query, [toko_id, barang_sku_id])
+        const query = `INSERT INTO nd_toko_barang_assignment (toko_id, barang_id) VALUES  (?,?) `;
+        const [insertQuery] = await pool.query(query, [toko_id, barang_id])
         if (insertQuery[0].affectedRows === 0) {
-          throw new Error('Add toko barang sku failed');
+          throw new Error('Add toko barang failed');
         }
 
-        queryLogger(pool, `nd_toko_barang_sku`, insertQuery[0].insertId, query, [toko_id, barang_sku_id]);
+        queryLogger(pool, `nd_toko_barang_sku`, insertQuery[0].insertId, query, [toko_id, barang_id]);
 
-        const notifDataQuery = `SELECT * FROM nd_barang_sku WHERE id = ?`;
-        const [notifDataRows] = await pool.query(notifDataQuery, [barang_sku_id]);
+        const notifDataQuery = `SELECT * FROM nd_barang_sku WHERE barang_id = ?`;
+        const [notifDataRows] = await pool.query(notifDataQuery, [barang_id]);
         if(notifDataRows[0].count === 0){
-          throw new Error('Barang SKU not found');
-        }else if(tokoAlias === ""){
+          console.log('Barang tidak ada sku');
+        }
+        
+        if(tokoAlias === ""){
           throw new Error('Toko Alias not found');
         }else{
           const msg = {company:tokoAlias, ...notifDataRows[0]};
-          sendToQueue('pairing_sku_master_toko', Buffer.from(JSON.stringify(msg)), 60000 );
+          sendToQueue('pairing_barang_master_toko', Buffer.from(JSON.stringify(msg)), 60000 );
         }
         
         return true;
