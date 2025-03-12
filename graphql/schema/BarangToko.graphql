@@ -1,0 +1,12 @@
+type BarangToko {
+    id: ID!
+    barang_id: Int!
+    toko_id: Int!
+    barang: Barang
+    toko: Toko    
+}
+
+input AddBarangTokoInput{
+    barang_id: Int!
+    toko_id: Int!
+}
