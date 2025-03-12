@@ -68,7 +68,7 @@ const barangSKUTokoResolver = {
           throw new Error('Add toko barang failed');
         }
 
-        queryLogger(pool, `nd_toko_barang_sku`, insertQuery[0].insertId, query, [toko_id, barang_id]);
+        queryLogger(pool, `nd_toko_barang`, insertQuery[0].insertId, query, [toko_id, barang_id]);
 
         const notifDataQuery = `SELECT * FROM nd_barang_sku WHERE barang_id = ?`;
         const [notifDataRows] = await pool.query(notifDataQuery, [barang_id]);
@@ -91,7 +91,7 @@ const barangSKUTokoResolver = {
       }
     },
   },
-  BarangSKUToko:{
+  BarangToko:{
     toko:async (parent, args, context) =>{
       const pool = context.pool;
       if (!pool) {
@@ -107,15 +107,15 @@ const barangSKUTokoResolver = {
         throw new Error('Internal Server Error get barangsku toko');
       }
     },
-    barangSKU:async(parent, args, context)=>{
+    barang:async(parent, args, context)=>{
       const pool = context.pool;
       if (!pool) {
         console.log('context', pool);
         throw new Error('Database pool not available in context.');
       }
       try {
-        const query = 'SELECT * FROM nd_barang_sku WHERE id = ?';
-        const [rows] = await pool.query(query, [parent.barang_sku_id]);
+        const query = 'SELECT * FROM nd_barang WHERE id = ?';
+        const [rows] = await pool.query(query, [parent.barang_id]);
         return rows[0];
       } catch (error) {
         console.error(error);
