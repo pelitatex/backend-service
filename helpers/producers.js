@@ -13,27 +13,22 @@ if (connection) {
 //const channel = await connection.createChannel();
 
 
-export const publishExchange = async (exchange, routingKey, message) => {
+export const publishExchange = async (exchange, routingKey, message, timeout = 0) => {
     if (connection === undefined) {
         console.error('No connection');
         return;
         
     }
     console.log(`Publishing message to exchange ${exchange} with routing key ${routingKey}`);
+    if(timeout > 0) {
+        channel.publish(exchange, routingKey, message, {expiration: timeout});
+        return;
+    }
     channel.publish(exchange, routingKey, message);
 }; 
 
-export const publishExchangeWithTimeout = async (exchange, routingKey, message, timeout) => {
-    if (connection === undefined) {
-        console.error('No connection');
-        return;
-        
-    }
-    console.log(`Publishing message to exchange ${exchange} with routing key ${routingKey}`);
-    channel.publish(exchange, routingKey, message, {expiration: timeout});
-};
 
-export const sendToQueue = async (queue, message, timeout) => {
+export const sendToQueue = async (queue, message, timeout = 0) => {
     if (connection === undefined) {
         console.error('No connection');
         return;
@@ -41,7 +36,7 @@ export const sendToQueue = async (queue, message, timeout) => {
     }
     console.log(`Sending message to queue ${queue}`);
 
-    if (timeout) {
+    if (timeout > 0) {
         channel.sendToQueue(queue, message, {expiration: timeout});
         return;
     }
