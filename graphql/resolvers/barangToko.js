@@ -52,6 +52,7 @@ const barangTokoResolver = {
 
       
       try {
+
         const getToko = 'SELECT * FROM nd_toko WHERE id = ?';
         const [tokoRows] = await pool.query(getToko, [toko_id]);
         if (tokoRows.length === 0) {
@@ -68,6 +69,7 @@ const barangTokoResolver = {
           throw new Error('Toko sudah punya barang sku.');
         }
 
+        await pool.query('START TRANSACTION');
 
         const query = `INSERT INTO nd_toko_barang_assignment (toko_id, barang_id) VALUES  (?,?) `;
         const [insertQuery] = await pool.query(query, [toko_id, barang_id])
@@ -75,7 +77,9 @@ const barangTokoResolver = {
           throw new Error('Add toko barang failed');
         }
 
-        queryLogger(pool, `nd_toko_barang`, insertQuery[0].insertId, query, [toko_id, barang_id]);
+        queryLogger(pool, `nd_toko_barang`, insertQuery.insertId, query, [toko_id, barang_id]);
+        await pool.query('COMMIT');
+
 
         const notifDataQuery = `SELECT * FROM nd_barang_sku WHERE barang_id = ?`;
         const [notifDataRows] = await pool.query(notifDataQuery, [barang_id]);
@@ -93,6 +97,7 @@ const barangTokoResolver = {
         return true;
         
       } catch (error) { 
+        await pool.query('ROLLBACK');
         console.error(error);
         throw new Error(error.message || 'Internal Server Error add toko barang sku');
       }
