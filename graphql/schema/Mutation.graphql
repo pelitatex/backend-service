@@ -1,3 +1,11 @@
+type InsertIdResponse {
+    insertId: ID!
+}
+
+type BlankResponse {
+    success: Boolean!
+}
+
 type Mutation {
     login(username: String!, password: String!): AuthPayload
     pinChecker(input: pinUserInput!): User
@@ -35,5 +43,5 @@ type Mutation {
     addDocument(input: AddDocumentInput!): Document
     updateDocument(id: ID!, input: UpdateDocumentInput!): Document
     uploadDocument(input: UploadDocumentInput!): [Document]
-    addBarangToko(input: AddBarangTokoInput!): BarangToko
+    addBarangToko(input: AddBarangTokoInput!): InsertIdResponse
 }
