@@ -1,4 +1,4 @@
-import { sendToQueueWithTimeout } from "../../helpers/producers";
+import { sendToQueue } from "../../helpers/producers";
 import queryLogger from "../../helpers/queryTransaction";
 
 const barangSKUTokoResolver = {
@@ -78,7 +78,7 @@ const barangSKUTokoResolver = {
           throw new Error('Toko Alias not found');
         }else{
           const msg = {company:tokoAlias, ...notifDataRows[0]};
-          sendToQueueWithTimeout('pairing_sku_master_toko', Buffer.from(JSON.stringify(msg)), 60000 );
+          sendToQueue('pairing_sku_master_toko', Buffer.from(JSON.stringify(msg)), 60000 );
         }
         
         return true;
