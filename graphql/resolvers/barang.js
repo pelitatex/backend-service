@@ -178,9 +178,10 @@ const barangResolver = {
                 throw new Error('Database pool not available in context.');
             }
             try {
+                console.log('parent', parent);
                 const query = `SELECT * FROM nd_barang_sku WHERE barang_id = ?`;
                 const [rows] = await pool.query(query, [parent.id]);
-                return rows[0];
+                return rows;
             } catch (error) {
                 console.error(error);
                 throw new Error("Internal Server Error Barang SKU");
@@ -195,7 +196,7 @@ const barangResolver = {
             try {
                 const query = `SELECT * FROM nd_toko_barang_assignment WHERE barang_id = ?`;
                 const [rows] = await pool.query(query, [parent.id]);
-                return rows[0];
+                return rows;
             } catch (error) {
                 console.error(error);
                 throw new Error("Internal Server Error Barang TOKO");
