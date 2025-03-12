@@ -1,7 +1,7 @@
-import { sendToQueue } from "../../helpers/producers";
-import queryLogger from "../../helpers/queryTransaction";
+import { sendToQueue } from "../../helpers/producers.js";
+import queryLogger from "../../helpers/queryTransaction.js";
 
-const barangSKUTokoResolver = {
+const barangTokoResolver = {
   Query:{
     barangToko: async(_,args, context)=>{
       const pool = context.pool;
@@ -125,4 +125,4 @@ const barangSKUTokoResolver = {
   }
 }
 
-export default barangSKUTokoResolver;
+export default barangTokoResolver;
