@@ -50,21 +50,28 @@ const barangTokoResolver = {
       const {toko_id, barang_id} = input;
       let tokoAlias = "";
 
-      const checkQuery = `SELECT barang_toko.* 
-      FROM ( SELECT * FROM nd_toko_barang_assignment WHERE toko_id = ? and barang_id = ? ) barang_toko 
-      LEFT JOIN nd_toko ON barang_toko.toko_id = nd_toko.id`;
-      const [checkRows] = await pool.query(checkQuery, [toko_id, barang_id]);
-      if (checkRows.length > 0) {
-        throw new Error('Toko sudah punya barang sku.');
-      }else{
-        tokoAlias = checkRows[0].alias;
-      }
       
       try {
+        const getToko = 'SELECT * FROM nd_toko WHERE id = ?';
+        const [tokoRows] = await pool.query(getToko, [toko_id]);
+        if (tokoRows.length === 0) {
+          throw new Error('Toko not found');
+        }else{
+          tokoAlias = tokoRows[0].alias;
+        }
+  
+        const checkQuery = `SELECT barang_toko.* 
+        FROM ( SELECT * FROM nd_toko_barang_assignment WHERE toko_id = ? and barang_id = ? ) barang_toko 
+        LEFT JOIN nd_toko ON barang_toko.toko_id = nd_toko.id`;
+        const [checkRows] = await pool.query(checkQuery, [toko_id, barang_id]);
+        if (checkRows.length > 0) {
+          throw new Error('Toko sudah punya barang sku.');
+        }
+
 
         const query = `INSERT INTO nd_toko_barang_assignment (toko_id, barang_id) VALUES  (?,?) `;
         const [insertQuery] = await pool.query(query, [toko_id, barang_id])
-        if (insertQuery[0].affectedRows === 0) {
+        if (insertQuery.affectedRows === 0) {
           throw new Error('Add toko barang failed');
         }
 
