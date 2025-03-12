@@ -125,6 +125,23 @@ const warnaResolver = {
       }
     }
   },
+  Warna:{
+    barangSKU:async(parent, args, context)=>{
+      const pool = context.pool;
+      if (!pool) {
+        console.log('context', pool);
+        throw new Error('Database pool not available in context.');
+      }
+      try {
+        const query = 'SELECT * FROM nd_barang_sku WHERE warna_id = ?';
+        const [rows] = await pool.query(query, [parent.id]);
+        return rows;
+      } catch (error) {
+        console.error(error);
+        throw new Error('Internal Server Error get barangsku all');
+      }
+    }
+  }
 }
 
 export default warnaResolver;
