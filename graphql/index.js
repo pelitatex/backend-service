@@ -17,7 +17,7 @@ import documentResolver from './resolvers/document.js';
 
 import barangResolver from './resolvers/barang.js';
 import barangSKUResolver from './resolvers/barangSKU.js';
-// import barangTokoResolver from './resolvers/barangToko.js';
+import barangTokoResolver from './resolvers/barangToko.js';
 import gudangResolver from './resolvers/gudang.js';
 
 
@@ -35,7 +35,7 @@ const resolvers = _.merge(
     documentResolver,
     barangResolver,
     barangSKUResolver,
-    // barangTokoResolver,
+    barangTokoResolver,
     gudangResolver
 );
 
