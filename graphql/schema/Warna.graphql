@@ -4,6 +4,7 @@ type Warna {
     warna_jual: String!
     kode_warna: String
     status_aktif: Boolean!
+    BarangSKU: [BarangSKU]
 }
 
 input AddWarnaInput {
