@@ -9,7 +9,7 @@ import helmet from "helmet";
 import multer from 'multer';
 
 // built in modules
-import queryTransaction from "./helpers/queryTransaction.js";
+import { queryTransaction } from "./helpers/queryTransaction.js";
 import eSchema from "./graphql/index.js";
 import { publishExchange } from "./helpers/producers.js";
 import getPoolForRequest from "./config/mysqlCon.js";
