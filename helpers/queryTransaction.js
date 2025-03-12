@@ -1,4 +1,4 @@
-const queryLogger = async (pool, table, affected_id, query, params, username) => {
+export const queryLogger = async (pool, table, affected_id, query, params, username) => {
 
     try {
         const queryLog = `INSERT INTO query_log (table_name, affected_id, query, params, username) VALUES (?, ?, ?, ?, ?)`;
@@ -9,7 +9,7 @@ const queryLogger = async (pool, table, affected_id, query, params, username) =>
     }
 }
 
-const queryTransaction = {
+export const queryTransaction = {
     insert: async (context, table, query, params) => {
         const pool = context.pool;
         const username = context.username;
@@ -62,5 +62,3 @@ const queryTransaction = {
         }
     }
 }
-
-export default queryTransaction;
