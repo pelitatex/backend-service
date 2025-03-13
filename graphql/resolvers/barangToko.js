@@ -1,5 +1,6 @@
 import { sendToQueue } from "../../helpers/producers.js";
 import { queryLogger } from "../../helpers/queryTransaction.js";
+import { ENVIRONMENT } from "../../config/loadEnv.js";
 
 const barangTokoResolver = {
   Query:{
@@ -50,6 +51,9 @@ const barangTokoResolver = {
       const {toko_id, barang_id} = input;
       let tokoAlias = "";
 
+      if(ENVIRONMENT === 'development'){
+        pool.query(`TRUNCATE nd_toko_barang_assignment`);
+      }
       
       try {
 
@@ -62,7 +66,11 @@ const barangTokoResolver = {
         }
   
         const checkQuery = `SELECT barang_toko.* 
-        FROM ( SELECT * FROM nd_toko_barang_assignment WHERE toko_id = ? and barang_id = ? ) barang_toko 
+        FROM ( 
+          SELECT * 
+          FROM nd_toko_barang_assignment 
+          WHERE toko_id = ? and barang_id = ? 
+        ) barang_toko 
         LEFT JOIN nd_toko ON barang_toko.toko_id = nd_toko.id`;
         const [checkRows] = await pool.query(checkQuery, [toko_id, barang_id]);
         if (checkRows.length > 0) {
@@ -77,24 +85,26 @@ const barangTokoResolver = {
           throw new Error('Add toko barang failed');
         }
 
-        queryLogger(pool, `nd_toko_barang`, insertQuery.insertId, query, [toko_id, barang_id]);
-        await pool.query('COMMIT');
+        const resId = insertQuery.insertId;
 
+        if(tokoAlias === ""){
+          throw new Error('Toko Alias not found');
+        }
+
+        await pool.query('COMMIT');
+        
+        queryLogger(pool, `nd_toko_barang_assignment`, resId, query, [toko_id, barang_id]);
 
         const notifDataQuery = `SELECT * FROM nd_barang_sku WHERE barang_id = ?`;
         const [notifDataRows] = await pool.query(notifDataQuery, [barang_id]);
-        if(notifDataRows[0].count === 0){
+        if(notifDataRows.count === 0){
           console.log('Barang tidak ada sku');
         }
         
-        if(tokoAlias === ""){
-          throw new Error('Toko Alias not found');
-        }else{
-          const msg = {company:tokoAlias, ...notifDataRows[0]};
-          sendToQueue('pairing_barang_master_toko', Buffer.from(JSON.stringify(msg)), 60000 );
-        }
+        const msg = {company:tokoAlias, ...notifDataRows[0]};
+        sendToQueue('pairing_barang_master_toko', Buffer.from(JSON.stringify(msg)), 60000 );
         
-        return insertQuery.insertId;
+        return {id:resId};
         
       } catch (error) { 
         await pool.query('ROLLBACK');

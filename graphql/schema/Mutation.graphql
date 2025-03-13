@@ -1,5 +1,5 @@
 type InsertIdResponse {
-    insertId: ID!
+    id: Int!
 }
 
 type BlankResponse {
