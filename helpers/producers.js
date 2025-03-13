@@ -21,10 +21,10 @@ export const publishExchange = async (exchange, routingKey, message, timeout = 0
     }
     console.log(`Publishing message to exchange ${exchange} with routing key ${routingKey}`);
     if(timeout > 0) {
-        channel.publish(exchange, routingKey, message, {expiration: timeout});
+        channel.publish(exchange, routingKey, message, {persistent:true,expiration: timeout});
         return;
     }
-    channel.publish(exchange, routingKey, message);
+    channel.publish(exchange, routingKey, message, {persistent:true});
 }; 
 
 
@@ -37,10 +37,10 @@ export const sendToQueue = async (queue, message, timeout = 0) => {
     console.log(`Sending message to queue ${queue}`);
 
     if (timeout > 0) {
-        channel.sendToQueue(queue, message, {expiration: timeout});
+        channel.sendToQueue(queue, message, {persistent:true, expiration: timeout});
         return;
     }
-    channel.sendToQueue(queue, message);
+    channel.sendToQueue(queue, message, {persistent:true});
 };
 
 
