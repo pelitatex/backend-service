@@ -1,6 +1,6 @@
 import { sendToQueue } from "./producers";
 
-export const notifInitBarangToko = async (tokoAlias, toko_id, barang_id, pool) => {
+export const initBarangMasterToko = async (tokoAlias, toko_id, barang_id, pool) => {
 
     const pool = context.pool;
     if (!pool) {
