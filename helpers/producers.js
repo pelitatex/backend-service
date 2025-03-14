@@ -24,6 +24,7 @@ export const publishExchange = async (exchange, routingKey, message, timeout = 0
     console.log(`Publishing message to exchange ${exchange} with routing key ${routingKey}`);
 
     if(needConfirm) {
+        console.log('Sending message to queue with confirm channel');
         if(timeout > 0) {
             channelConfirm.publish(exchange, routingKey, message, {persistent:true,expiration: timeout});
             return;
@@ -49,6 +50,7 @@ export const sendToQueue = async (queue, message, timeout = 0, needConfirm = fal
     console.log(`Sending message to queue ${queue}`);
 
     if(needConfirm) {
+        console.log('Sending message to queue with confirm channel');
         if (timeout > 0) {
             confirmChannel.sendToQueue(queue, message, {persistent:true, expiration: timeout});
             return;
