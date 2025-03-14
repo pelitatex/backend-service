@@ -1,6 +1,7 @@
 import { sendToQueue } from "../../helpers/producers.js";
 import { queryLogger } from "../../helpers/queryTransaction.js";
 import { ENVIRONMENT } from "../../config/loadEnv.js";
+import { registerBarangSKUToko } from "../../helpers/registerBarangToko.js";
 
 const barangTokoResolver = {
   Query:{
@@ -95,14 +96,14 @@ const barangTokoResolver = {
         
         queryLogger(pool, `nd_toko_barang_assignment`, resId, query, [toko_id, barang_id]);
 
-        const notifDataQuery = `SELECT * FROM nd_barang_sku WHERE barang_id = ?`;
+        /* const notifDataQuery = `SELECT * FROM nd_barang_sku WHERE barang_id = ?`;
         const [notifDataRows] = await pool.query(notifDataQuery, [barang_id]);
         if(notifDataRows.count === 0){
           console.log('Barang tidak ada sku');
         }
-        
-        const msg = {company:tokoAlias, ...notifDataRows[0]};
-        sendToQueue('pairing_barang_master_toko', Buffer.from(JSON.stringify(msg)), 60000 );
+        const msg = {company:tokoAlias, ...notifDataRows[0]}; */
+
+        registerBarangSKUToko(tokoAlias, toko_id, barang_id, pool);
         
         return {id:resId};
         
