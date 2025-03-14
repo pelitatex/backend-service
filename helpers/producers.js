@@ -15,6 +15,20 @@ if (connection) {
 }
 //const channel = await connection.createChannel();
 
+function callbackConfirm(err, ok) {
+
+    try {
+        if (err) {
+            console.error(err);
+        } else {
+            console.log('Message confirmed');
+        }
+        
+    } catch (error) {
+        console.error('massage nacked');
+    }
+}
+
 
 export const publishExchange = async (exchange, routingKey, message, timeout = 0, needConfirm = false) => {
     if (connection === undefined) {
@@ -26,10 +40,10 @@ export const publishExchange = async (exchange, routingKey, message, timeout = 0
     if(needConfirm) {
         console.log('Sending message to queue with confirm channel');
         if(timeout > 0) {
-            channelConfirm.publish(exchange, routingKey, message, {persistent:true,expiration: timeout});
+            channelConfirm.publish(exchange, routingKey, message, {persistent:true,expiration: timeout}, callbackConfirm);
             return;
         }
-        channelConfirm.publish(exchange, routingKey, message, {persistent:true});
+        channelConfirm.publish(exchange, routingKey, message, {persistent:true}, callbackConfirm);
         return;
     };
 
@@ -52,15 +66,15 @@ export const sendToQueue = async (queue, message, timeout = 0, needConfirm = fal
     if(needConfirm) {
         console.log('Sending message to queue with confirm channel');
         if (timeout > 0) {
-            confirmChannel.sendToQueue(queue, message, {persistent:true, expiration: timeout});
+            confirmChannel.sendToQueue(queue, message, {persistent:true, expiration: timeout}, callbackConfirm);
             return;
         }
-        confirmChannel.sendToQueue(queue, message, {persistent:true});
+        confirmChannel.sendToQueue(queue, message, {persistent:true}, callbackConfirm);
         return;
     }
 
     if (timeout > 0) {
-        channel.sendToQueue(queue, message, {persistent:true, expiration: timeout});
+        channel.sendToQueue(queue, message, {persistent:true});
         return;
     }
     channel.sendToQueue(queue, message, {persistent:true});
