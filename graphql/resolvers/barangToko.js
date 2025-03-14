@@ -103,7 +103,7 @@ const barangTokoResolver = {
         }
         const msg = {company:tokoAlias, ...notifDataRows[0]}; */
 
-        registerBarangSKUToko(tokoAlias, toko_id, barang_id, pool);
+        initBarangMasterToko(tokoAlias, toko_id, barang_id, pool);
         
         return {id:resId};
         

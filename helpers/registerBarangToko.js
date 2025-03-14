@@ -1,6 +1,6 @@
 import { sendToQueue } from "./producers";
 
-export const registerBarangSKUToko = async (tokoAlias, toko_id, barang_id, pool) => {
+export const notifInitBarangToko = async (tokoAlias, toko_id, barang_id, pool) => {
 
     const pool = context.pool;
     if (!pool) {
@@ -11,10 +11,10 @@ export const registerBarangSKUToko = async (tokoAlias, toko_id, barang_id, pool)
         
         await sendToQueue(`pairing_barang_master_toko`, Buffer.from(JSON.stringify({tokoAlias, toko_id, barang_id})), 0 , true );
         
-
     } catch (error) {
         console.error(error);
         throw new Error('Internal Server Error get barangsku toko');
     }
     
 }
+
