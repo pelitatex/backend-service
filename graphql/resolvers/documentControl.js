@@ -26,20 +26,14 @@ const documentControlResolver = {
     }),
   },
   Mutation: {
-    addDocumentControl: async (_, {input}, context) => {
-      const pool = context.pool;
-      if (!pool) {
-        console.log('context', pool);
-        throw new Error('Database pool not available in context.');
-      }
-
+    addDocumentControl: handleResolverError(async (_, {input}, context) => {
       const { department_id, tipe_dokumen, nama, kode, keterangan, status_aktif } = input;
       /* if (kode.length > 4 || kode.length == 0) {
         throw new Error('Kode must be 4 characters');
       } */
 
-     let paddedKode = '01';
-     let newKode = 1;
+      let paddedKode = '01';
+      let newKode = 1;
 
       const queryLastCode = `SELECT no_kode, kode FROM nd_document_control WHERE department_id = ? AND status_aktif = 1 ORDER BY no_kode DESC LIMIT 1`;
       const [lastCodeRows] = await pool.query(queryLastCode, [department_id]);
@@ -56,44 +50,22 @@ const documentControlResolver = {
 
       const newPaddedCode = `${deptCode}${paddedKode}`;
 
-      try {
+      const query = `INSERT INTO nd_document_control (department_id, tipe_dokumen, nama, no_kode, kode, keterangan, status_aktif) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+      const params = [department_id, tipe_dokumen, nama.toUpperCase(), newKode, newPaddedCode, keterangan, status_aktif];
+      
+      const [result] = await pool.query(query, params);
+      queryLogger(pool, `nd_document_control`, result.insertId, query, params);
 
-        const checkQuery = `SELECT * FROM nd_document_control WHERE nama = ? OR kode = ?`;
-        const [existingRows] = await pool.query(checkQuery, [nama, paddedKode]);
-        if (existingRows.length > 0) {
-          throw new Error('Nama or kode already exists');
-        }
-
-        const query = `INSERT INTO nd_document_control (department_id, tipe_dokumen, nama, no_kode, kode, keterangan, status_aktif) VALUES (?, ?, ?, ?, ?, ?, ?)`;
-        const params = [department_id, tipe_dokumen, nama.toUpperCase(), newKode, newPaddedCode, keterangan, status_aktif];
-        console.log('paramns',params);
-        const result = await queryTransaction.insert(context, "nd_document_control", query, params);
-        
-        /* const [result] = await pool.query(query, [department_id, nama.toUpperCase(), paddedKode, keterangan, status_aktif]);
-        queryLogger(pool, `nd_document_control`, result.insertId, query, [department_id, nama.toUpperCase(), paddedKode, keterangan, status_aktif]);*/
-
-        return result; 
-      } catch (error) {
-        console.error(error);
-        throw new Error(error.message || "Internal Server Error Add Document Control");
-      }
-    },
-    updateDocumentControl: async (_, {id, input}, context) => {
-      const pool = context.pool;
-      if (!pool) {
-        console.log('context', pool);
-        throw new Error('Database pool not available in context.');
-      }
-
+      return { id: result.insertId, department_id, tipe_dokumen, nama : nama.toUpperCase(), kode : newPaddedCode, keterangan, status_aktif };
+    }),
+    updateDocumentControl: handleResolverError(async (_, {id, input}, context) => {
       const { nama, keterangan, status_aktif } = input;
       /* if (kode.length > 4 || kode.length == 0) {
         throw new Error('Kode must be 4 characters');
       }
       const paddedKode = kode.padStart(4, '0'); */
 
-      try {
-
-        const checkDocumentQuery = `SELECT * FROM nd_document_control WHERE ( nama = ? ) AND id <> ?`;
+      const checkDocumentQuery = `SELECT * FROM nd_document_control WHERE ( nama = ? ) AND id <> ?`;
         const [existingDocumentRows] = await pool.query(checkDocumentQuery, [nama, id]);
         if (existingDocumentRows.length > 0) {
           throw new Error('Nama or kode already exists');
@@ -106,21 +78,15 @@ const documentControlResolver = {
         WHERE id = ?`;
 
         const params = [nama.toUpperCase(), keterangan, status_aktif, id];
-        const result = await queryTransaction.update(context, "nd_document_control", id, query, params);
-        return result;
-
-        /* const [result] = await pool.query(query, [department_id, nama.toUpperCase(), paddedKode, keterangan, status_aktif, id]);
+        
+        const [result] = await pool.query(query, params);
         if (result.affectedRows === 0) {
           throw new Error("Document Control not found");
         }
-        queryLogger(pool, `nd_document_control`, result.insertId, query, [department_id, nama.toUpperCase(), paddedKode, keterangan, status_aktif]);
+        queryLogger(pool, `nd_document_control`, result.insertId, query, params);
 
-        return { id: id, department_id, nama : nama.toUpperCase(), kode : paddedKode, keterangan, status_aktif }; */
-      } catch (error) {
-        console.error(error);
-        throw new Error(error.message || "Internal Server Error Update Document Control");
-      }
-    },
+        return { id: id, department_id, nama : nama.toUpperCase(), kode : paddedKode, keterangan, status_aktif }; 
+    }),
     addDepartment: async (_, {input}, context) => {
       const pool = context.pool;
       if (!pool) {
