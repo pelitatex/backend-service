@@ -1,38 +1,19 @@
-// import queryLogger from "../../helpers/queryTransaction.js";
-import { queryTransaction } from "../../helpers/queryTransaction.js";
+import queryLogger from "../../helpers/queryTransaction.js";
+// import { queryTransaction } from "../../helpers/queryTransaction.js";
+import handleResolverError from "../handleResolverError.js";
 
 const satuanResolver = {
   Query:{
-    satuan: async(_,args, context)=>{
-      const pool = context.pool;
-      if (!pool) {
-        console.log('context', pool);
-        throw new Error('Database pool not available in context.');
-      }
-        try {
-            const query = `SELECT * FROM nd_satuan WHERE id = ?`;
-            const [rows] = await pool.query(query, [args.id]);
-            return rows[0];
-        } catch (error) {
-          console.error(error);
-          throw new Error(error.message || "Internal Server Error Satuan Single");
-        }
-    },
-    allSatuan: async(_,args, context)=>{
-      const pool = context.pool;
-      if (!pool) {
-        console.log('context', pool);
-        throw new Error('Database pool not available in context.');
-      }
-      try {
-        const query = 'SELECT * FROM nd_satuan';
-        const [rows] = await pool.query(query);
-        return rows;
-      } catch (error) {
-        console.error(error);
-        throw new Error(error.message || "Internal Server Error Satuan All");
-      }
-    }
+    satuan: handleResolverError(async(_,args, context)=>{
+      const query = `SELECT * FROM nd_satuan WHERE id = ?`;
+      const [rows] = await pool.query(query, [args.id]);
+      return rows[0];
+    }),
+    allSatuan: handleResolverError(async(_,args, context)=>{
+      const query = 'SELECT * FROM nd_satuan';
+      const [rows] = await pool.query(query);
+      return rows;
+    })
   },
   Mutation: {
     addSatuan: async (_, {input}, context) => {
