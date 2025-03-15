@@ -95,76 +95,64 @@ const tokoResolver = {
         email_pajak };*/
     }),
     
-    updateToko: async (_, {id, input}, context) => {
-      const pool = context.pool;
-      if (!pool) {
-        console.log('context', pool);
-        throw new Error('Database pool not available in context.');
+    updateToko: handleResolverError(async (_, {id, input}, context) => {
+      let { nama,
+        alamat,
+        telepon,
+        email,
+        kota,
+        kode_pos,
+        npwp,
+        kode_toko,
+        status_aktif,
+        nama_domain,
+        email_pajak } = input;
+        
+      if (status_aktif == null) {
+        status_aktif = true;
       }
 
-      try {
-        let { nama,
-          alamat,
-          telepon,
-          email,
-          kota,
-          kode_pos,
-          npwp,
-          kode_toko,
-          status_aktif,
-          nama_domain,
-          email_pajak } = input;
-          
-        if (status_aktif == null) {
-          status_aktif = true;
-        }
-
-        const checkQueryNama = 'SELECT COUNT(*) as count FROM nd_toko WHERE nama = ? AND id != ?';
-        const [checkResultNama] = await pool.query(checkQueryNama, [nama, id]);
-        if (checkResultNama[0].count > 0) {
-          throw new Error('Nama already exists');
-        }
-
-        const checkQueryKode = 'SELECT COUNT(*) as count FROM nd_toko WHERE kode_toko = ? AND id != ?';
-        const [checkResultKode] = await pool.query(checkQueryKode, [kode_toko, id]);
-        if (checkResultKode[0].count > 0) {
-          throw new Error('Kode Toko already exists');
-        }
-
-        const query = `UPDATE nd_toko SET 
-          nama = ?, alamat = ?, telepon = ?, email = ?, 
-          kota = ?, kode_pos = ?, npwp = ?, 
-          kode_toko = ?, status_aktif = ?, nama_domain = ?, email_pajak = ? 
-          WHERE id = ?`;
-
-        const params = [
-          nama, alamat, telepon, email,
-          kota, kode_pos, npwp, 
-          kode_toko, status_aktif, nama_domain, email_pajak, 
-          id];
-        const result = await queryTransaction.update(context, 'nd_toko', id, query, params);
-        return result;
-         /*const [result] = await pool.query(query, [
-          nama, alamat, telepon, email,
-          kota, kode_pos, npwp, 
-          kode_toko, status_aktif, nama_domain, email_pajak, 
-          id]);
-
-        if (result.affectedRows === 0) {
-          throw new Error('Toko not found');
-        }
-        queryLogger(pool, `nd_toko`, id, query, [
-          nama, alamat, telepon, email,
-          kota, kode_pos, npwp, 
-          kode_toko, status_aktif, nama_domain, email_pajak, 
-          id] );
-        return { id, nama, alamat, telepon, email, kota, kode_pos, npwp, kode_toko, status_aktif, nama_domain, email_pajak }; */
-
-      } catch (error) {
-        console.error(error);
-        throw new Error(error.message);
+      const checkQueryNama = 'SELECT COUNT(*) as count FROM nd_toko WHERE nama = ? AND id != ?';
+      const [checkResultNama] = await pool.query(checkQueryNama, [nama, id]);
+      if (checkResultNama[0].count > 0) {
+        throw new Error('Nama already exists');
       }
-    }
+
+      const checkQueryKode = 'SELECT COUNT(*) as count FROM nd_toko WHERE kode_toko = ? AND id != ?';
+      const [checkResultKode] = await pool.query(checkQueryKode, [kode_toko, id]);
+      if (checkResultKode[0].count > 0) {
+        throw new Error('Kode Toko already exists');
+      }
+
+      const query = `UPDATE nd_toko SET 
+        nama = ?, alamat = ?, telepon = ?, email = ?, 
+        kota = ?, kode_pos = ?, npwp = ?, 
+        kode_toko = ?, status_aktif = ?, nama_domain = ?, email_pajak = ? 
+        WHERE id = ?`;
+
+      const params = [
+        nama, alamat, telepon, email,
+        kota, kode_pos, npwp, 
+        kode_toko, status_aktif, nama_domain, email_pajak, 
+        id];
+      const result = await queryTransaction.update(context, 'nd_toko', id, query, params);
+      return result;
+       /*const [result] = await pool.query(query, [
+        nama, alamat, telepon, email,
+        kota, kode_pos, npwp, 
+        kode_toko, status_aktif, nama_domain, email_pajak, 
+        id]);
+
+      if (result.affectedRows === 0) {
+        throw new Error('Toko not found');
+      }
+      queryLogger(pool, `nd_toko`, id, query, [
+        nama, alamat, telepon, email,
+        kota, kode_pos, npwp, 
+        kode_toko, status_aktif, nama_domain, email_pajak, 
+        id] );
+      return { id, nama, alamat, telepon, email, kota, kode_pos, npwp, kode_toko, status_aktif, nama_domain, email_pajak }; */
+    })
   },
 }
 
