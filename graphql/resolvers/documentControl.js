@@ -14,37 +14,16 @@ const documentControlResolver = {
       const [rows] = await pool.query(query);
       return rows;
     }),
-    department: async(_,args, context)=>{
-      const pool = context.pool;
-      if (!pool) {
-        console.log('context', pool);
-        throw new Error('Database pool not available in context.');
-      }
-
-      try {
-          const query = `SELECT * FROM nd_department WHERE id = ?`;
-          const [rows] = await pool.query(query, [args.id]);
-          return rows[0];
-      } catch (error) {
-        console.error(error);
-        throw new Error("Internal Server Error Department Single");
-      }
-    },
-    allDepartment: async(_,args, context)=>{
-      try {
-        const pool = context.pool;
-        if (!pool) {
-          console.log('context', pool);
-          throw new Error('Database pool not available in context.');
-        }
-        const query = 'SELECT * FROM nd_department';
-        const [rows] = await pool.query(query);
-        return rows;
-      } catch (error) {
-        console.error(error);
-        throw new Error("Internal Server Error Department All");
-      }
-    },
+    department: handleResolverError(async(_,args, context)=>{
+      const query = `SELECT * FROM nd_department WHERE id = ?`;
+      const [rows] = await pool.query(query, [args.id]);
+      return rows[0];
+    }),
+    allDepartment: handleResolverError(async(_,args, context)=>{
+      const query = 'SELECT * FROM nd_department';
+      const [rows] = await pool.query(query);
+      return rows;
+    }),
   },
   Mutation: {
     addDocumentControl: async (_, {input}, context) => {
