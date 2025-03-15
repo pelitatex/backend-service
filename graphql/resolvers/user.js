@@ -1,42 +1,21 @@
 import {LIFETIME} from "../../config/loadEnv.js";
 import jwt from "../../helpers/jwt.js";
 import bcrypt from "bcrypt";
-import { queryTransaction } from "../../helpers/queryTransaction.js";
-import { queryLogger } from "../../helpers/queryTransaction.js";
+import { queryLogger, queryTransaction } from "../../helpers/queryTransaction.js";
+import handleResolverError from "../handleResolverError.js";
 
 const userResolver = {
   Query : {
-    user: async(_,args, context)=>{
-      const pool = context.pool;
-        if (!pool) {
-          console.log('context', pool);
-          throw new Error('Database pool not available in context.');
-        }
-        try {
-            console.log(args);
-            const query = `SELECT * FROM nd_user WHERE id = ?`;
-            const [rows] = await pool.query(query, [args.id]);
-            return rows[0];
-        } catch (error) {
-          console.error(error);
-          throw new Error("Internal Server Error User Single");
-        }
-    },
-    allUser: async(_,args, context)=>{
-      const pool = context.pool;
-        if (!pool) {
-          console.log('context', pool);
-          throw new Error('Database pool not available in context.');
-        }
-      try {
-        const query = 'SELECT * FROM nd_user';
-        const [rows] = await pool.query(query);
-        return rows;
-      } catch (error) {
-        console.error(error);
-        throw new Error("Internal Server Error User All");
-      }
-    },
+    user: handleResolverError(async(_,args, context)=>{
+      const query = `SELECT * FROM nd_user WHERE id = ?`;
+      const [rows] = await pool.query(query, [args.id]);
+      return rows[0];
+    }),
+    allUser: handleResolverError(async(_,args, context)=>{
+      const query = 'SELECT * FROM nd_user';
+      const [rows] = await pool.query(query);
+      return rows;
+    }),
   },
   Mutation:{
     login: async(_,{username,password}, context)=>{
