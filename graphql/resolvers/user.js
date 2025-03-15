@@ -18,56 +18,49 @@ const userResolver = {
     }),
   },
   Mutation:{
-    login: async(_,{username,password}, context)=>{
-      const pool = context.pool;
-      if (!pool) {
-        console.log('context', pool);
-        throw new Error('Database pool not available in context.');
-      }
+    login: handleResolverError(async(_,{username,password}, context)=>{
+        
       if (!password) {
         throw new Error('Password is required.');
       }
-      try {
-        const query = `SELECT * FROM nd_user WHERE username = ? and has_account = 1`;
-        const [rows] = await pool.query(query, [username]);
-        
-        if (typeof rows[0] !== 'undefined') {
-          const result = await bcrypt.compare(password, rows[0].password);
-          if (!result) {
-            throw new Error("User and password not match");
-          }else{
-            const user = rows[0];
-            
-            if (!user.status_aktif) {
-              throw new Error ("User is inactive.");
-            }
-
-            const payload = {
-              id: user.id,
-              username: user.username,
-              roles: user.roles,
-              posisi_id: user.posisi_id,
-              time_start: user.time_start,
-              time_end: user.time_end
-            };
-            const token = jwt.generateToken(payload);
-
-            const queryLog = `INSERT INTO user_log (user_id, activity) VALUES (?, ?)`;
-            const [res] = await pool.query(queryLog, [user.id, 'login']);
-            return { token: token, timeout: LIFETIME };
-            
-          }
-          
-          
-        }else{
-          throw new Error("User not found");
-        }
-
-      } catch (error) {
-        console.error(error);
-        throw new Error(error.message);
+      if (!username) {
+        throw new Error('Username is required.');
       }
-    },
+      const query = `SELECT * FROM nd_user WHERE username = ? and has_account = 1`;
+      const [rows] = await pool.query(query, [username]);
+      
+      if (typeof rows[0] !== 'undefined') {
+        const result = await bcrypt.compare(password, rows[0].password);
+        if (!result) {
+          throw new Error("User and password not match");
+        }else{
+          const user = rows[0];
+          
+          if (!user.status_aktif) {
+            throw new Error ("User is inactive.");
+          }
+
+          const payload = {
+            id: user.id,
+            username: user.username,
+            roles: user.roles,
+            posisi_id: user.posisi_id,
+            time_start: user.time_start,
+            time_end: user.time_end
+          };
+          const token = jwt.generateToken(payload);
+
+          const queryLog = `INSERT INTO user_log (user_id, activity) VALUES (?, ?)`;
+          const [res] = await pool.query(queryLog, [user.id, 'login']);
+          return { token: token, timeout: LIFETIME };
+          
+        }
+        
+        
+      }else{
+        throw new Error("User not found");
+      }
+    }),
     pinChecker: async(_,{input}, context)=>{
       const pool = context.pool;
       const {pin} = input;
