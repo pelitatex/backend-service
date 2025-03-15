@@ -1,39 +1,20 @@
 // import queryLogger from "../../helpers/queryTransaction.js";
-import { queryTransaction } from "../../helpers/queryTransaction.js";
+import { queryLogger, queryTransaction } from "../../helpers/queryTransaction.js";
+import handleResolverError from "../handleResolverError.js";
 
 const gudangResolver = {
   Query : {
-    gudang: async(_,args, context)=>{
-      const pool = context.pool;
-      if (!pool) {
-        console.log('context', pool);
-        throw new Error('Database pool not available in context.');
-      }
-        try {
-            const query = `SELECT * FROM nd_gudang WHERE id = ?`;
-            const [rows] = await pool.query(query, [args.id]);
-            return rows[0];
-        } catch (error) {
-          console.error(error);
-          throw new Error("Internal Server Error Gudang Single");
-        }
-    },
-    allGudang: async(_,args, context)=>{
-      const pool = context.pool;
-        if (!pool) {
-          console.log('context', pool);
-          throw new Error('Database pool not available in context.');
-        }
-
-        try {
-            const query = 'SELECT * FROM nd_gudang';
-            const [rows] = await pool.query(query);
-            return rows;
-        } catch (error) {
-          console.error(error);
-          throw new Error("Internal Server Error Gudang All");
-        }
-    }
+    gudang: handleResolverError(async(_,args, context)=>{
+      
+      const query = `SELECT * FROM nd_gudang WHERE id = ?`;
+      const [rows] = await pool.query(query, [args.id]);
+      return rows[0];
+    }),
+    allGudang: handleResolverError(async(_,args, context)=>{
+      const query = 'SELECT * FROM nd_gudang';
+      const [rows] = await pool.query(query);
+      return rows;  
+    })
   },
   Mutation: {
     addGudang: async (_, {input}, context) => {
