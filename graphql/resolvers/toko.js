@@ -63,10 +63,7 @@ const tokoResolver = {
         nama_domain,
         email_pajak];
 
-      const result = await queryTransaction.insert(context, 'nd_toko', query, params);
-      return result;
-      
-      /* const [result] = await pool.query(query, params);
+      const [result] = await pool.query(query, params);
       
       queryLogger(pool, `nd_toko`, result.insertId, query, [
         nama,
@@ -92,7 +89,7 @@ const tokoResolver = {
         kode_toko,
         status_aktif,
         nama_domain,
-        email_pajak };*/
+        email_pajak };
     }),
     
     updateToko: handleResolverError(async (_, {id, input}, context) => {
@@ -135,9 +132,8 @@ const tokoResolver = {
         kota, kode_pos, npwp, 
         kode_toko, status_aktif, nama_domain, email_pajak, 
         id];
-      const result = await queryTransaction.update(context, 'nd_toko', id, query, params);
-      return result;
-       /*const [result] = await pool.query(query, [
+        
+      const [result] = await pool.query(query, [
         nama, alamat, telepon, email,
         kota, kode_pos, npwp, 
         kode_toko, status_aktif, nama_domain, email_pajak, 
@@ -151,7 +147,7 @@ const tokoResolver = {
         kota, kode_pos, npwp, 
         kode_toko, status_aktif, nama_domain, email_pajak, 
         id] );
-      return { id, nama, alamat, telepon, email, kota, kode_pos, npwp, kode_toko, status_aktif, nama_domain, email_pajak }; */
+      return { id, nama, alamat, telepon, email, kota, kode_pos, npwp, kode_toko, status_aktif, nama_domain, email_pajak };
     })
   },
 }
