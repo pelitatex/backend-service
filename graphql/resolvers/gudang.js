@@ -27,7 +27,7 @@ const gudangResolver = {
       const [result] = await pool.query(query, params);
       const insertedId = result.insertId;
       queryLogger(pool, `nd_gudang`, result.insertId, query, [
-        nama, lokasi, status_default, urutan, visible, gudang_group_id, status_aktif] ); */
+        nama, lokasi, status_default, urutan, visible, gudang_group_id, status_aktif] );
 
       return {id: result.id, nama, lokasi, status_default, urutan, visible, gudang_group_id, status_aktif};
     }),
