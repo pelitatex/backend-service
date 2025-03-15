@@ -87,40 +87,22 @@ const documentControlResolver = {
 
         return { id: id, department_id, nama : nama.toUpperCase(), kode : paddedKode, keterangan, status_aktif }; 
     }),
-    addDepartment: async (_, {input}, context) => {
-      const pool = context.pool;
-      if (!pool) {
-        console.log('context', pool);
-        throw new Error('Database pool not available in context.');
-      }
-
+    addDepartment: handleResolverError(async (_, {input}, context) => {
+      
       const { nama, kode, status_aktif } = input;
       if (kode.length > 2 || kode.length == 0) {
         throw new Error('Kode must be 2 characters');
       } 
       const paddedKode = kode.padStart(2, '0');
 
-      try {
-        const checkDepartmentQuery = `SELECT * FROM nd_department WHERE nama = ? OR kode = ?`;
-        const [existingDepartmentRows] = await pool.query(checkDepartmentQuery, [nama, paddedKode]);
-        if (existingDepartmentRows.length > 0) {
-          throw new Error('Nama or kode already exists');
-        }
-        
-        const query = `INSERT INTO nd_department (nama, kode, status_aktif) VALUES (?, ?, ?)`;
-        const params = [nama.toUpperCase(), paddedKode, status_aktif];
-        const result = await queryTransaction.insert(context, "nd_department", query, params);
-        return result;
-        /* const [result] = await pool.query(query, [nama.toUpperCase(), paddedKode, status_aktif]);
-        queryLogger(pool, `nd_department`, result.insertId, query, [nama.toUpperCase(), paddedKode, status_aktif]);
+      const query = `INSERT INTO nd_department (nama, kode, status_aktif) VALUES (?, ?, ?)`;
+      const params = [nama.toUpperCase(), paddedKode, status_aktif];
+      const [result] = await pool.query(query, params);
+      queryLogger(pool, `nd_department`, result.insertId, query, params);
 
-        return { id: result.insertId, nama: nama.toUpperCase(), kode : paddedKode, status_aktif }; */
-      } catch (error) {
-        console.error(error);
-        throw new Error(error.message || "Internal Server Error Add Department");
-      }
-    },
-    updateDepartment: async (_, {id, input}, context) => {
+      return { id: result.insertId, nama: nama.toUpperCase(), kode : paddedKode, status_aktif }; 
+    }),
+    updateDepartment: handleResolverError(async (_, {id, input}, context) => {
       const pool = context.pool;
       if (!pool) {
         console.log('context', pool);
@@ -132,31 +114,16 @@ const documentControlResolver = {
       }
       const paddedKode = kode.padStart(2, '0');
 
-      try {
-        const checkDepartmentQuery = `SELECT * FROM nd_department WHERE (nama = ? OR kode = ?) AND id <> ?`;
-        const [existingDepartmentRows] = await pool.query(checkDepartmentQuery, [nama, paddedKode, id]);
-        if (existingDepartmentRows.length > 0) {
-          throw new Error('Nama or kode already exists');
-        }
-
-
-        const query = `UPDATE nd_department SET nama = ?, kode = ?, status_aktif = ? WHERE id = ?`;
-        const params = [nama.toUpperCase(), paddedKode, status_aktif, id];
-        const result = await queryTransaction.update(context, "nd_department", id, query, params);
-        return result;
-
-        /* const [result] = await pool.query(query, [nama.toUpperCase(), paddedKode, status_aktif, id]);
-        if (result.affectedRows === 0) {
-          throw new Error("Department not found");
-        }
-        queryLogger(pool, `nd_department`, id, query,  [nama.toUpperCase(), paddedKode, status_aktif, id]);
-
-        return {id: id, nama : nama.toUpperCase(), kode: paddedKode, status_aktif}; */
-      } catch (error) {
-        console.error(error);
-        throw new Error(error.message || "Internal Server Error Update Department");
+      const query = `UPDATE nd_department SET nama = ?, kode = ?, status_aktif = ? WHERE id = ?`;
+      const params = [nama.toUpperCase(), paddedKode, status_aktif, id];
+      const [result] = await pool.query(query, [nama.toUpperCase(), paddedKode, status_aktif, id]);
+      if (result.affectedRows === 0) {
+        throw new Error("Department not found");
       }
-    },
+      queryLogger(pool, `nd_department`, id, query,  params);
+
+      return {id: id, nama : nama.toUpperCase(), kode: paddedKode, status_aktif};
+    }),
   },
   DocumentControl: {
     department: async (parent, args, context) => {
