@@ -1,39 +1,19 @@
 // import queryLogger from "../../helpers/queryTransaction.js";
-import { queryTransaction } from "../../helpers/queryTransaction.js";
+import { queryLogger, queryTransaction } from "../../helpers/queryTransaction.js";
+import handleResolverError from "../handleResolverError.js";
 
 const documentControlResolver = {
   Query:{
-    documentControl: async(_,args, context)=>{
-      const pool = context.pool;
-      if (!pool) {
-        console.log('context', pool);
-        throw new Error('Database pool not available in context.');
-      }
-
-      try {
-          const query = `SELECT * FROM nd_document_control WHERE id = ?`;
-          const [rows] = await pool.query(query, [args.id]);
-          return rows[0];
-      } catch (error) {
-        console.error(error);
-        throw new Error("Internal Server Error Document Control Single");
-      }
-    },
-    allDocumentControl: async(_,args, context)=>{
-      try {
-        const pool = context.pool;
-        if (!pool) {
-          console.log('context', pool);
-          throw new Error('Database pool not available in context.');
-        }
-        const query = 'SELECT * FROM nd_document_control';
-        const [rows] = await pool.query(query);
-        return rows;
-      } catch (error) {
-        console.error(error);
-        throw new Error("Internal Server Error Document Control All");
-      }
-    },
+    documentControl: handleResolverError(async(_,args, context)=>{
+      const query = `SELECT * FROM nd_document_control WHERE id = ?`;
+      const [rows] = await pool.query(query, [args.id]);
+      return rows[0];
+    }),
+    allDocumentControl: handleResolverError(async(_,args, context)=>{
+      const query = 'SELECT * FROM nd_document_control';
+      const [rows] = await pool.query(query);
+      return rows;
+    }),
     department: async(_,args, context)=>{
       const pool = context.pool;
       if (!pool) {
