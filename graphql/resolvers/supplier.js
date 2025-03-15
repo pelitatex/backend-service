@@ -61,7 +61,7 @@ const supplierResolver = {
         throw new Error("Internal Server Error Add Supplier");
       }
     }),
-    updateSupplier: async (_, {id, input}, context) => {
+    updateSupplier: handleResolverError(async (_, {id, input}, context) => {
 
       const {
         kode,
@@ -78,14 +78,7 @@ const supplierResolver = {
         status_aktif
       } = input;
 
-      const pool = context.pool;
-      if (!pool) {
-        console.log('context', pool);
-        throw new Error('Database pool not available in context.');
-      }
-
-      try {
-        const query = `UPDATE nd_supplier SET 
+      const query = `UPDATE nd_supplier SET 
           kode = ?,
           nama = ?,
           alamat = ?,
@@ -101,20 +94,14 @@ const supplierResolver = {
           WHERE id = ?`;
 
         const params = [kode, nama, alamat, telepon, fax, kota, kode_pos, nama_bank, no_rek_bank, email, website, status_aktif, id];
-        const result = await queryTransaction.update(context, 'nd_supplier', id, query, params);
-        return result;
-
-        /* const [result] = await pool.query(query, [kode, nama, alamat, telepon, fax, kota, kode_pos, nama_bank, no_rek_bank, email, website, status_aktif, id]);
+        const [result] = await pool.query(query, [kode, nama, alamat, telepon, fax, kota, kode_pos, nama_bank, no_rek_bank, email, website, status_aktif, id]);
         if (result.affectedRows === 0) {
           throw new Error("Supplier not found");
         }
         queryLogger(pool, `nd_supplier`, id, query, [kode, nama, alamat, telepon, fax, kota, kode_pos, nama_bank, no_rek_bank, email, website, status_aktif]);
-        return { id, kode, nama, alamat, telepon, fax, kota, kode_pos, nama_bank, no_rek_bank, email, website, status_aktif }; */
-      } catch (error) {
-        console.error(error);
-        throw new Error("Internal Server Error Update Supplier");
-      }
-    }
+        return { id, kode, nama, alamat, telepon, fax, kota, kode_pos, nama_bank, no_rek_bank, email, website, status_aktif };
+
+    })
   }
 }
 
