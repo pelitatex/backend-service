@@ -16,95 +16,84 @@ const tokoResolver = {
     })
   },
   Mutation: {
-    addToko: async (_, {input}, context) => {
-      const pool = context.pool;
-      if (!pool) {
-        console.log('context', pool);
-        throw new Error('Database pool not available in context.');
+    addToko: handleResolverError (async (_, {input}, context) => {
+      let {
+        nama,
+        alamat,
+        telepon,
+        email,
+        kota,
+        kode_pos,
+        npwp,
+        kode_toko,
+        status_aktif,
+        nama_domain,
+        email_pajak } = input;
+      
+      const checkQueryNama = 'SELECT COUNT(*) as count FROM nd_toko WHERE nama = ?';
+      const [checkResultNama] = await pool.query(checkQueryNama, [nama]);
+      if (checkResultNama[0].count > 0) {
+        throw new Error('Nama already exists');
       }
 
-      try {
-        let {
-          nama,
-          alamat,
-          telepon,
-          email,
-          kota,
-          kode_pos,
-          npwp,
-          kode_toko,
-          status_aktif,
-          nama_domain,
-          email_pajak } = input;
-        
-        const checkQueryNama = 'SELECT COUNT(*) as count FROM nd_toko WHERE nama = ?';
-        const [checkResultNama] = await pool.query(checkQueryNama, [nama]);
-        if (checkResultNama[0].count > 0) {
-          throw new Error('Nama already exists');
-        }
-
-        const checkQueryKode = 'SELECT COUNT(*) as count FROM nd_toko WHERE kode_toko = ?';
-        const [checkResultKode] = await pool.query(checkQueryKode, [kode_toko]);
-        if (checkResultKode[0].count > 0) {
-          throw new Error('Kode Toko already exists');
-        }
-
-        const query = `INSERT INTO nd_toko (
-          nama, alamat, telepon, email, 
-          kota, kode_pos,npwp,
-          kode_toko, status_aktif, nama_domain, email_pajak) 
-          VALUES (?,?,?,?,
-          ?,?,?,
-          ?,?,?,?)`;
-
-        const params = [
-          nama,
-          alamat,
-          telepon,
-          email,
-          kota,
-          kode_pos,
-          npwp,
-          kode_toko,
-          status_aktif,
-          nama_domain,
-          email_pajak];
-
-        const result = await queryTransaction.insert(context, 'nd_toko', query, params);
-        return result;
-        
-        /* const [result] = await pool.query(query, params);
-        
-        queryLogger(pool, `nd_toko`, result.insertId, query, [
-          nama,
-          alamat,
-          telepon,
-          email,
-          kota,
-          kode_pos,
-          npwp,
-          kode_toko,
-          status_aktif,
-          nama_domain,
-          email_pajak] );
-
-        
-        return { id: result.insertId, nama,
-          alamat,
-          telepon,
-          email,
-          kota,
-          kode_pos,
-          npwp,
-          kode_toko,
-          status_aktif,
-          nama_domain,
-          email_pajak };*/
-      } catch (error) {
-        console.error(error);
-        throw new Error(error.message);
+      const checkQueryKode = 'SELECT COUNT(*) as count FROM nd_toko WHERE kode_toko = ?';
+      const [checkResultKode] = await pool.query(checkQueryKode, [kode_toko]);
+      if (checkResultKode[0].count > 0) {
+        throw new Error('Kode Toko already exists');
       }
-    },
+
+      const query = `INSERT INTO nd_toko (
+        nama, alamat, telepon, email, 
+        kota, kode_pos,npwp,
+        kode_toko, status_aktif, nama_domain, email_pajak) 
+        VALUES (?,?,?,?,
+        ?,?,?,
+        ?,?,?,?)`;
+
+      const params = [
+        nama,
+        alamat,
+        telepon,
+        email,
+        kota,
+        kode_pos,
+        npwp,
+        kode_toko,
+        status_aktif,
+        nama_domain,
+        email_pajak];
+
+      const result = await queryTransaction.insert(context, 'nd_toko', query, params);
+      return result;
+      
+      /* const [result] = await pool.query(query, params);
+      
+      queryLogger(pool, `nd_toko`, result.insertId, query, [
+        nama,
+        alamat,
+        telepon,
+        email,
+        kota,
+        kode_pos,
+        npwp,
+        kode_toko,
+        status_aktif,
+        nama_domain,
+        email_pajak] );
+
+      
+      return { id: result.insertId, nama,
+        alamat,
+        telepon,
+        email,
+        kota,
+        kode_pos,
+        npwp,
+        kode_toko,
+        status_aktif,
+        nama_domain,
+        email_pajak };*/
+    }),
     
     updateToko: async (_, {id, input}, context) => {
       const pool = context.pool;
