@@ -21,7 +21,7 @@ const barangTokoResolver = {
           return rows[0];
         } catch (error) {
           console.error(error);
-          throw new Error("Internal Server Error barang per toko");
+          throw error;
         }
     },
     allBarangToko: async(_,args, context)=>{
@@ -37,7 +37,7 @@ const barangTokoResolver = {
           return rows;
         } catch (error) {
           console.error(error);
-          throw new Error("Internal Server Error Barang TOKO All");
+          throw error;
         }
     }
   },

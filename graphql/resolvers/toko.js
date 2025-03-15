@@ -1,39 +1,19 @@
 // import queryLogger from "../../helpers/queryTransaction.js";
 import { queryTransaction } from "../../helpers/queryTransaction.js";
+import handleResolverError from "../handleResolverError.js";
 
 const tokoResolver = {
   Query : {
-    toko: async(_,args, context)=>{
-      const pool = context.pool;
-      if (!pool) {
-        console.log('context', pool);
-        throw new Error('Database pool not available in context.');
-      }
-        try {
-            const query = `SELECT * FROM nd_toko WHERE id = ?`;
-            const [rows] = await pool.query(query, [args.id]);
-            return rows[0];
-        } catch (error) {
-          console.error(error);
-          throw new Error("Internal Server Error Toko Single");
-        }
-    },
-    allToko: async(_,args, context)=>{
-      const pool = context.pool;
-        if (!pool) {
-          console.log('context', pool);
-          throw new Error('Database pool not available in context.');
-        }
-
-        try {
-            const query = 'SELECT * FROM nd_toko';
-            const [rows] = await pool.query(query);
-            return rows;
-        } catch (error) {
-          console.error(error);
-          throw new Error("Internal Server Error Toko All");
-        }
-    }
+    toko: handleResolverError (async(_,args, context)=>{
+      const query = `SELECT * FROM nd_toko WHERE id = ?`;
+      const [rows] = await pool.query(query, [args.id]);
+      return rows[0];
+    }),
+    allToko: handleResolverError (async(_,args, context)=>{
+      const query = 'SELECT * FROM nd_toko';
+      const [rows] = await pool.query(query);
+      return rows;
+    })
   },
   Mutation: {
     addToko: async (_, {input}, context) => {
