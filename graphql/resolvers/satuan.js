@@ -1,4 +1,4 @@
-import queryLogger from "../../helpers/queryTransaction.js";
+import { queryLogger } from "../../helpers/queryTransaction.js";
 // import { queryTransaction } from "../../helpers/queryTransaction.js";
 import handleResolverError from "../handleResolverError.js";
 
