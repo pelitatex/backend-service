@@ -61,53 +61,37 @@ const userResolver = {
         throw new Error("User not found");
       }
     }),
-    pinChecker: async(_,{input}, context)=>{
-      const pool = context.pool;
+    pinChecker: handleResolverError(async(_,{input}, context)=>{
       const {pin} = input;
-      if (!pool) {
-        console.log('context', pool);
-        throw new Error('Database pool not available in context.');
-      }
       if (!pin) {
         throw new Error('PIN is required.');
       }
-      try {
-        const query = `SELECT * FROM nd_user WHERE pin = ? and has_account = 1 and status_aktif = 1`;
-        const [rows] = await pool.query(query, [pin]);
+      const query = `SELECT * FROM nd_user WHERE pin = ? and has_account = 1 and status_aktif = 1`;
+      const [rows] = await pool.query(query, [pin]);
+      
+      if (typeof rows[0] !== 'undefined') {
+        return {
+          id: rows[0].id,
+          has_account: rows[0].has_account,
+          nama: rows[0].nama,
+          username: rows[0].username,
+          posisi_id: rows[0].posisi_id,
+          time_start: rows[0].time_start,
+          time_end: rows[0].time_end,
+          status_aktif: rows[0].status_aktif
+        }         
         
-        if (typeof rows[0] !== 'undefined') {
-          return {
-            id: rows[0].id,
-            has_account: rows[0].has_account,
-            nama: rows[0].nama,
-            username: rows[0].username,
-            posisi_id: rows[0].posisi_id,
-            time_start: rows[0].time_start,
-            time_end: rows[0].time_end,
-            status_aktif: rows[0].status_aktif
-          }         
-          
-        }else{
-          throw new Error("User not found");
-        }
-
-      } catch (error) {
-        console.error(error);
-        throw new Error(error.message);
+      }else{
+        throw new Error("User not found");
       }
-    }
-    ,addUser: async(_, {input}, context) => {
+    }),
+    addUser: handleResolverError(async(_, {input}, context) => {
       let { username, password, posisi_id, roles, time_start, time_end, status_aktif,
         has_account, nama, alamat, telepon, jenis_kelamin, 
         kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp } = input;
 
       let hashedPassword = null;
 
-      const pool = context.pool;
-      if (!pool) {
-        console.log('context', pool);
-        throw new Error('Database pool not available in context.');
-      }
       if (!nama || nama.trim() === '') {
         throw new Error('Nama is required.');
       }
@@ -136,56 +120,39 @@ const userResolver = {
         }
                 
 
-        try {
-          const checkUserExistenceQuery = `SELECT * FROM nd_user WHERE username = ?`;
-          const [existingUserRows] = await pool.query(checkUserExistenceQuery, [username]);
-          // kenapa ini tidak harus di catch ? karena ini adalah asyncronous code
-          if (existingUserRows.length > 0) {
-            throw new Error('User already exists.');
-          }
-          
-        } catch (error) {
-          throw new Error(error.message);
-        }
-
         hashedPassword = await bcrypt.hash(password, 10);
 
       }      
 
-      try {
-        const query = `INSERT INTO nd_user 
-        (username, password, posisi_id, roles,time_start, time_end,
-        status_aktif, has_account, nama, alamat, telepon, jenis_kelamin,
-        kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp)
-        VALUES (?, ?, ?, ?, ?, ?,
-        ?, ?, ?, ?, ?, ?,
-        ?, ?, ?, ?, ?, ?, ?)`;
+      const query = `INSERT INTO nd_user 
+      (username, password, posisi_id, roles,time_start, time_end,
+      status_aktif, has_account, nama, alamat, telepon, jenis_kelamin,
+      kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp)
+      VALUES (?, ?, ?, ?, ?, ?,
+      ?, ?, ?, ?, ?, ?,
+      ?, ?, ?, ?, ?, ?, ?)`;
 
-        const params =[username, hashedPassword, posisi_id, roles, time_start, time_end, status_aktif,
-          has_account, nama, alamat, telepon, jenis_kelamin,
-          kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp
-        ];
+      const params =[username, hashedPassword, posisi_id, roles, time_start, time_end, status_aktif,
+        has_account, nama, alamat, telepon, jenis_kelamin,
+        kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp
+      ];
 
-        const result = await queryTransaction.insert(context, "nd_user", query, params);
-        
-        return { ...input, id: result.id };
-      } catch (error) {
-        console.error(error);
-        throw new Error("Internal Server Error Insert User");
+      const [result] = await pool.query(query, params);
+      if(result.affectedRows === 0){
+        throw new Error("Failed to insert user");
       }
-    },
-    updateUser: async(_, { id, input }, context) => {
+      queryLogger(pool, 'nd_user', result.insertId, query, params);
+      
+      return { ...input, id: result.insertId };
+      
+    }),
+    updateUser: handleResolverError(async(_, { id, input }, context) => {
       let { username, password, posisi_id, roles,time_start, time_end, status_aktif,
         has_account, nama, alamat, telepon, jenis_kelamin, 
         kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp
        } = input;
 
       let hashedPassword = null;
-
-      const pool = context.pool;
-      if (!pool) {
-        throw new Error('Database pool not available in context.');
-      }
 
       if (!nama || nama.trim() === '') {
         throw new Error('Nama is required.');
@@ -222,43 +189,28 @@ const userResolver = {
         if (time_start == null || time_end == null || time_start=='' || time_end == '') {
           time_start="07:00:00";
           time_end="18:00:00";
-        }
-
-        try {
-          const checkUsernameQuery = `SELECT * FROM nd_user WHERE username = ? AND id != ?`;
-          const [existingUserRows] = await pool.query(checkUsernameQuery, [username, id]);
-          if (existingUserRows.length > 0) {
-            console.log(`SELECT * FROM nd_user WHERE username = ${username} AND id != ${id}`);
-            throw new Error('Username is already taken.');
-          }
-          
-        } catch (error) {
-          throw new Error(error.message);
-        }
-        
+        }        
 
         hashedPassword = await bcrypt.hash(password, 10);
 
       }
 
-      try {
+      const query = `UPDATE nd_user SET username = ?, password = ?, posisi_id = ?, roles=?, time_start = ?, time_end = ?, status_aktif = ?,
+      has_account = ?, nama = ?, alamat = ?, telepon = ?, jenis_kelamin = ?,
+      kota_lahir = ?, tgl_lahir = ?, status_perkawinan = ?, jumlah_anak = ?, agama = ?, nik = ?, npwp = ?
+      WHERE id = ?`;
 
-        const query = `UPDATE nd_user SET username = ?, password = ?, posisi_id = ?, roles=?, time_start = ?, time_end = ?, status_aktif = ?,
-        has_account = ?, nama = ?, alamat = ?, telepon = ?, jenis_kelamin = ?,
-        kota_lahir = ?, tgl_lahir = ?, status_perkawinan = ?, jumlah_anak = ?, agama = ?, nik = ?, npwp = ?
-        WHERE id = ?`;
-
-        const params = [username, hashedPassword, posisi_id, roles,time_start, time_end, status_aktif, 
-          has_account, nama, alamat, telepon, jenis_kelamin,
-          kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp, id];
-        const result = await  queryTransaction.update(context, "nd_user", id, query, params);
-
-        return result;
-      } catch (error) {
-        console.error(error);
-        throw new Error(error.message);
+      const params = [username, hashedPassword, posisi_id, roles,time_start, time_end, status_aktif, 
+        has_account, nama, alamat, telepon, jenis_kelamin,
+        kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp, id];
+      const [result] = await pool.query(query, params);
+      if (result.affectedRows === 0) {
+        throw new Error('User not found');
       }
-    },
+      queryLogger(pool, 'nd_user', id, query, params);
+      
+      return result;
+    }),
   },
 }
 
