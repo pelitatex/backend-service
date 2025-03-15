@@ -1,5 +1,5 @@
-// import queryLogger from "../../helpers/queryTransaction.js";
-import { queryTransaction } from "../../helpers/queryTransaction.js";
+import queryLogger from "../../helpers/queryTransaction.js";
+//import { queryTransaction } from "../../helpers/queryTransaction.js";
 import handleResolverError from "../handleResolverError.js";
 
 const tokoResolver = {
@@ -29,18 +29,6 @@ const tokoResolver = {
         status_aktif,
         nama_domain,
         email_pajak } = input;
-      
-      const checkQueryNama = 'SELECT COUNT(*) as count FROM nd_toko WHERE nama = ?';
-      const [checkResultNama] = await pool.query(checkQueryNama, [nama]);
-      if (checkResultNama[0].count > 0) {
-        throw new Error('Nama already exists');
-      }
-
-      const checkQueryKode = 'SELECT COUNT(*) as count FROM nd_toko WHERE kode_toko = ?';
-      const [checkResultKode] = await pool.query(checkQueryKode, [kode_toko]);
-      if (checkResultKode[0].count > 0) {
-        throw new Error('Kode Toko already exists');
-      }
 
       const query = `INSERT INTO nd_toko (
         nama, alamat, telepon, email, 
@@ -107,18 +95,6 @@ const tokoResolver = {
         
       if (status_aktif == null) {
         status_aktif = true;
-      }
-
-      const checkQueryNama = 'SELECT COUNT(*) as count FROM nd_toko WHERE nama = ? AND id != ?';
-      const [checkResultNama] = await pool.query(checkQueryNama, [nama, id]);
-      if (checkResultNama[0].count > 0) {
-        throw new Error('Nama already exists');
-      }
-
-      const checkQueryKode = 'SELECT COUNT(*) as count FROM nd_toko WHERE kode_toko = ? AND id != ?';
-      const [checkResultKode] = await pool.query(checkQueryKode, [kode_toko, id]);
-      if (checkResultKode[0].count > 0) {
-        throw new Error('Kode Toko already exists');
       }
 
       const query = `UPDATE nd_toko SET 
