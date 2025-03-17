@@ -1,42 +1,25 @@
 import {v4 as uuidv4} from 'uuid';
 // import queryLogger from "../../helpers/queryTransaction.js";
 import { queryTransaction } from "../../helpers/queryTransaction.js";
+import handleResolverError from '../handleResolverError.js';
 
 
 const barangSKUResolver = {
   Query:{
-    barangSKU: async(_,args, context)=>{
+    barangSKU: handleResolverError(async(_,args, context)=>{
       const pool = context.pool;
-        if (!pool) {
-          console.log('context', pool);
-          throw new Error('Database pool not available in context.');
-        }
-        try {
-          context.useSatuanLoader = true;
-          const query = `SELECT * FROM nd_barang_sku WHERE id = ?`;
-          const [rows] = await pool.query(query, [args.id]);
-          return rows[0];
-        } catch (error) {
-          console.error(error);
-          throw new Error("Internal Server Error Barang SKU Single");
-        }
-    },
-    allBarangSKU: async(_,args, context)=>{
-      const pool = context.pool;
-        if (!pool) {
-          console.log('context', pool);
-          throw new Error('Database pool not available in context.');
-        }
-        try {
-          context.useSatuanLoader = false;
-          const query = 'SELECT * FROM nd_barang_sku';
-          const [rows] = await pool.query(query);
-          return rows;
-        } catch (error) {
-          console.error(error);
-          throw new Error("Internal Server Error Barang SKU All");
-        }
-    }
+      // context.useSatuanLoader = true;
+      const query = `SELECT * FROM nd_barang_sku WHERE id = ?`;
+      const [rows] = await pool.query(query, [args.id]);
+      return rows[0];
+    }),
+    allBarangSKU: handleResolverError(async(_,args, context)=>{
+      // context.useSatuanLoader = false;
+      const query = 'SELECT * FROM nd_barang_sku';
+      const [rows] = await pool.query(query);
+      return rows;
+      
+    })
   },
   Mutation:{
     addBarangSKU: async (_, {input}, context) => {
