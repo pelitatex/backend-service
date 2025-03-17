@@ -2,44 +2,27 @@ import { sendToQueue } from "../../helpers/producers.js";
 import { queryLogger } from "../../helpers/queryTransaction.js";
 import { ENVIRONMENT } from "../../config/loadEnv.js";
 import { registerBarangSKUToko } from "../../helpers/registerBarangToko.js";
+import handleResolverError from "../handleResolverError.js";
 
 const barangTokoResolver = {
   Query:{
-    barangToko: async(_,args, context)=>{
-      const pool = context.pool;
-        if (!pool) {
-          console.log('context', pool);
-          throw new Error('Database pool not available in context.');
-        }
-        try {
-          if (!args.toko_id) {
-            throw new Error('Toko ID is required');
-          }
-          context.useSatuanLoader = true;
-          const query = `SELECT * FROM nd_toko_barang_assignment WHERE toko_id = ?`;
-          const [rows] = await pool.query(query, [args.toko_id]);
-          return rows[0];
-        } catch (error) {
-          console.error(error);
-          throw error;
-        }
-    },
-    allBarangToko: async(_,args, context)=>{
-      const pool = context.pool;
-        if (!pool) {
-          console.log('context', pool);
-          throw new Error('Database pool not available in context.');
-        }
-        try {
-          context.useSatuanLoader = false;
-          const query = 'SELECT * FROM nd_toko_barang_assignment';
-          const [rows] = await pool.query(query);
-          return rows;
-        } catch (error) {
-          console.error(error);
-          throw error;
-        }
-    }
+    barangToko: handleResolverError(async(_,args, context)=>{
+        
+      if (!args.toko_id) {
+        throw new Error('Toko ID is required');
+      }
+      // context.useSatuanLoader = true;
+      const query = `SELECT * FROM nd_toko_barang_assignment WHERE toko_id = ?`;
+      const [rows] = await pool.query(query, [args.toko_id]);
+      return rows[0];
+      
+    }),
+    allBarangToko: handleResolverError(async(_,args, context)=>{
+      // context.useSatuanLoader = false;
+      const query = 'SELECT * FROM nd_toko_barang_assignment';
+      const [rows] = await pool.query(query);
+      return rows;
+    })
   },
   Mutation:{
     addBarangToko: async (_, {input}, context) => {
