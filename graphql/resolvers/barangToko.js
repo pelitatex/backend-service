@@ -85,36 +85,16 @@ const barangTokoResolver = {
     }),
   },
   BarangToko:{
-    toko:async (parent, args, context) =>{
-      const pool = context.pool;
-      if (!pool) {
-        console.log('context', pool);
-        throw new Error('Database pool not available in context.');
-      }
-      try {
-        const query = 'SELECT * FROM nd_toko WHERE id = ?';
-        const [rows] = await pool.query(query, [parent.toko_id]);
-        return rows[0];
-      } catch (error) {
-        console.error(error);
-        throw new Error('Internal Server Error get barangsku toko');
-      }
-    },
-    barang:async(parent, args, context)=>{
-      const pool = context.pool;
-      if (!pool) {
-        console.log('context', pool);
-        throw new Error('Database pool not available in context.');
-      }
-      try {
-        const query = 'SELECT * FROM nd_barang WHERE id = ?';
-        const [rows] = await pool.query(query, [parent.barang_id]);
-        return rows[0];
-      } catch (error) {
-        console.error(error);
-        throw new Error('Internal Server Error get barangsku all');
-      }
-    }
+    toko:handleResolverError(async (parent, args, context) =>{
+      const query = 'SELECT * FROM nd_toko WHERE id = ?';
+      const [rows] = await pool.query(query, [parent.toko_id]);
+      return rows[0];
+    }),
+    barang:handleResolverError(async(parent, args, context)=>{
+      const query = 'SELECT * FROM nd_barang WHERE id = ?';
+      const [rows] = await pool.query(query, [parent.barang_id]);
+      return rows[0];
+    })
   }
 }
 
