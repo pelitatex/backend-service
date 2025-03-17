@@ -1,38 +1,24 @@
 // import queryLogger from "../../helpers/queryLogger.js";
-import { queryTransaction }  from "../../helpers/queryTransaction.js";
+import { queryLogger, queryTransaction }  from "../../helpers/queryTransaction.js";
+import handleResolverError from "../handleResolverError.js";
 
 const barangResolver = {
     Query: {
-        barang: async(_,args, context)=>{
+        barang: handleResolverError(async(_,args, context)=>{
         const pool = context.pool;
-            if (!pool) {
-                console.log('context', pool);
-                throw new Error('Database pool not available in context.');
-            }
-            try {
-                const query = `SELECT * FROM nd_barang WHERE id = ?`;
-                const [rows] = await pool.query(query, [args.id]);
-                return rows[0];
-            } catch (error) {
-            console.error(error);
-            throw new Error("Internal Server Error Barang All");
-            }
-        },
-        allBarang: async (_, args, context) => {
-            const pool = context.pool;
-            if (!pool) {
-                console.log('context', pool);
-                throw new Error('Database pool not available in context.');
-            }
-            try {
-                const query = `SELECT * FROM nd_barang`;
-                const [rows] = await pool.query(query);
-                return rows;
-            } catch (error) {
-                console.error(error);
-                throw new Error("Internal Server Error All Barang");
-            }
-        },
+            
+            const query = `SELECT * FROM nd_barang WHERE id = ?`;
+            const [rows] = await pool.query(query, [args.id]);
+            return rows[0];
+            
+        }),
+        allBarang: handleResolverError(async (_, args, context) => {
+            
+            const query = `SELECT * FROM nd_barang`;
+            const [rows] = await pool.query(query);
+            return rows;
+            
+        }),
     },
     Mutation: {
         addBarang: async (_, {input}, context) => {
