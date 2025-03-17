@@ -22,128 +22,100 @@ const barangSKUResolver = {
     })
   },
   Mutation:{
-    addBarangSKU: async (_, {input}, context) => {
-      const pool = context.pool;
-      if (!pool) {
-        console.log('context', pool);
-        throw new Error('Database pool not available in context.');
-      }
-
+    addBarangSKU: handleResolverError(async(_, {input}, context) => {
+      
       const newItems = [];
 
       
-      try {
-        for (const item of input) {
-          
-          const { barang_id, warna_id, satuan_id, status_aktif } = item;
-    
-          const getNamaBarangQuery = 'SELECT nama_jual as nama FROM nd_barang WHERE id = ?';
-          const [namaBarangRows] = await pool.query(getNamaBarangQuery, [barang_id]);
-          const nama = namaBarangRows[0].nama;
-    
-          const getWarnaJualQuery = 'SELECT warna_jual FROM nd_warna WHERE id = ?';
-          const [warnaJualRows] = await pool.query(getWarnaJualQuery, [warna_id]);
-          const warna_jual = warnaJualRows[0].warna_jual;
-    
-          
-          const getSatuanQuery = 'SELECT nama FROM nd_satuan WHERE id = ?';
-          const [satuanRows] = await pool.query(getSatuanQuery, [satuan_id]);
-          const nama_satuan = satuanRows[0].nama;
-    
-    
-          const nama_jual = nama.toUpperCase()+' '+warna_jual.toUpperCase();
-          const nama_barang = nama.toUpperCase()+' '+warna_jual.toUpperCase()+' '+nama_satuan.toUpperCase();
-    
-          const checkExistQuery = 'SELECT * FROM nd_barang_sku WHERE nama_barang = ?';
-          const [existRows] = await pool.query(checkExistQuery, [nama_barang]);
-          if (existRows.length > 0) {
-            throw new Error('Barang SKU already exists.');
-          }
-    
-          const barangIdStr = String(barang_id).padStart(2, '0');
-          const warnaIdStr = String(warna_id).padStart(2, '0');
-          const satuanIdStr = String(satuan_id).padStart(2, '0');
-          const sixDigitIdentifier = barangIdStr + warnaIdStr + satuanIdStr;
-          const kode = uuidv4().substring(0, 13);
-          const sku_id = sixDigitIdentifier +'-'+ kode;
-          newItems.push([sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif]);
-
-        };
-
-        const namaBarangSet = new Set();
-        for (const item of newItems) {
-          if (namaBarangSet.has(item[1])) {
-            throw new Error('Duplicate nama_barang found in input.');
-          }
-          namaBarangSet.add(item[1]);
-        }
-
-
-        const placeholder = newItems.map(() => '(?, ?, ?, ?, ?, ?, ?)').join(', ');
-        const query = `INSERT INTO nd_barang_sku (sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif) VALUES ${placeholder}`;
-
-        // const params = [sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif];
-        const params = newItems.flat();
-        const result = await queryTransaction.insert(context, "nd_barang_sku", query, params);
-        return result;
-
-        /* const [result] = await pool.query(query, [sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif]);
-        const insertedId = result.insertId;
-        queryLogger(pool, `nd_barang_sku`, result.insertId, query, [sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif]);
-        return {id: insertedId, sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif};*/
-      } catch (error) { 
-        console.error(error);
-        throw new Error(error.message || 'Internal Server Error Add Barang');
-      }
-    },
-    updateBarangSKU: async (_, {id, input}, context) => {
-      const pool = context.pool;
-      if (!pool) {
-        console.log('context', pool);
-        throw new Error('Database pool not available in context.');
-      }
-
-      const { nama_barang, nama_jual, status_aktif } = input;
-      try {
-        const checkExistQuery = 'SELECT * FROM nd_barang_sku WHERE nama_barang = ? and id <> ?';
-        const [existRows] = await pool.query(checkExistQuery, [nama_barang, id]);
+      for (const item of input) {
         
-        if (existRows.length > 0) {
-          throw new Error('Barang SKU already exists.');
+        const { barang_id, warna_id, satuan_id, status_aktif } = item;
+  
+        const getNamaBarangQuery = 'SELECT nama_jual as nama FROM nd_barang WHERE id = ?';
+        const [namaBarangRows] = await pool.query(getNamaBarangQuery, [barang_id]);
+        const nama = namaBarangRows[0].nama;
+  
+        const getWarnaJualQuery = 'SELECT warna_jual FROM nd_warna WHERE id = ?';
+        const [warnaJualRows] = await pool.query(getWarnaJualQuery, [warna_id]);
+        const warna_jual = warnaJualRows[0].warna_jual;
+  
+        
+        const getSatuanQuery = 'SELECT nama FROM nd_satuan WHERE id = ?';
+        const [satuanRows] = await pool.query(getSatuanQuery, [satuan_id]);
+        const nama_satuan = satuanRows[0].nama;
+  
+  
+        const nama_jual = nama.toUpperCase()+' '+warna_jual.toUpperCase();
+        const nama_barang = nama.toUpperCase()+' '+warna_jual.toUpperCase()+' '+nama_satuan.toUpperCase();
+  
+          
+        const barangIdStr = String(barang_id).padStart(2, '0');
+        const warnaIdStr = String(warna_id).padStart(2, '0');
+        const satuanIdStr = String(satuan_id).padStart(2, '0');
+        const sixDigitIdentifier = barangIdStr + warnaIdStr + satuanIdStr;
+        const kode = uuidv4().substring(0, 13);
+        const sku_id = sixDigitIdentifier +'-'+ kode;
+        newItems.push([sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif]);
+
+      };
+
+      const namaBarangSet = new Set();
+      for (const item of newItems) {
+        if (namaBarangSet.has(item[1])) {
+          throw new Error('Duplicate nama_barang found in input.');
         }
-
-        if(nama_jual === null || nama_jual === '') {
-          const getNamaBarangQuery = 'SELECT nama_jual as nama FROM nd_barang WHERE id = ?';
-          const [namaBarangRows] = await pool.query(getNamaBarangQuery, [barang_id]);
-          const nama = namaBarangRows[0].nama;
-
-          const getWarnaJualQuery = 'SELECT warna_jual FROM nd_warna WHERE id = ?';
-          const [warnaJualRows] = await pool.query(getWarnaJualQuery, [warna_id]);
-          const warna_jual = warnaJualRows[0].warna_jual;
-
-          nama_jual = nama.toUpperCase()+' '+warna_jual.toUpperCase();
-        }
-
-        const query = 'UPDATE nd_barang_sku SET nama_barang = ?, nama_jual = ?, status_aktif = ? WHERE id = ?';
-        const params = [nama_barang.toUpperCase(), nama_jual.toUpperCase(), status_aktif, id];
-        const result = await queryTransaction.update(context, "nd_barang_sku", id, query, params);
-        return result;
-
-        /* const [result] = await pool.query(query, [nama_barang.toUpperCase(), nama_jual.toUpperCase(), status_aktif, id]);
-        if (result.affectedRows === 0) {
-          throw new Error('Barang SKU not found');
-        }
-        queryLogger(pool, `nd_barang_sku`, id, query, [nama_barang.toUpperCase(), nama_jual.toUpperCase(), status_aktif, id]);
-
-        const updatedQuery = `SELECT * FROM nd_barang_sku WHERE id = ?`;
-        const [rows] = await pool.query(updatedQuery, [id]);
-        return rows[0]; */
-
-      } catch (error) {
-        console.error(error);
-        throw new Error('Internal Server Error Update Barang');
+        namaBarangSet.add(item[1]);
       }
-    },
+
+
+      const placeholder = newItems.map(() => '(?, ?, ?, ?, ?, ?, ?)').join(', ');
+      const query = `INSERT INTO nd_barang_sku (sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif) VALUES ${placeholder}`;
+
+      const params = newItems.flat();
+      /* const result = await queryTransaction.insert(context, "nd_barang_sku", query, params);
+      return result; */
+
+      const [result] = await pool.query(query, params);
+      const insertedId = result.insertId;
+      queryLogger(pool, `nd_barang_sku`, result.insertId, query, params);
+      return {id: insertedId, sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif};
+    }),
+    updateBarangSKU: handleResolverError(async (_, {id, input}, context) => {
+      
+      const checkExistQuery = 'SELECT * FROM nd_barang_sku WHERE nama_barang = ? and id <> ?';
+      const [existRows] = await pool.query(checkExistQuery, [nama_barang, id]);
+      
+      if (existRows.length > 0) {
+        throw new Error('Barang SKU already exists.');
+      }
+
+      if(nama_jual === null || nama_jual === '') {
+        const getNamaBarangQuery = 'SELECT nama_jual as nama FROM nd_barang WHERE id = ?';
+        const [namaBarangRows] = await pool.query(getNamaBarangQuery, [barang_id]);
+        const nama = namaBarangRows[0].nama;
+
+        const getWarnaJualQuery = 'SELECT warna_jual FROM nd_warna WHERE id = ?';
+        const [warnaJualRows] = await pool.query(getWarnaJualQuery, [warna_id]);
+        const warna_jual = warnaJualRows[0].warna_jual;
+
+        nama_jual = nama.toUpperCase()+' '+warna_jual.toUpperCase();
+      }
+
+      const query = 'UPDATE nd_barang_sku SET nama_barang = ?, nama_jual = ?, status_aktif = ? WHERE id = ?';
+      const params = [nama_barang.toUpperCase(), nama_jual.toUpperCase(), status_aktif, id];
+      /* const result = await queryTransaction.update(context, "nd_barang_sku", id, query, params);
+      return result; */
+
+      const [result] = await pool.query(query, params);
+      if (result.affectedRows === 0) {
+        throw new Error('Barang SKU not found');
+      }
+      queryLogger(pool, `nd_barang_sku`, id, query, params);
+
+      const updatedQuery = `SELECT * FROM nd_barang_sku WHERE id = ?`;
+      const [rows] = await pool.query(updatedQuery, [id]);
+      return rows[0];
+    }),
   }
 }
 
