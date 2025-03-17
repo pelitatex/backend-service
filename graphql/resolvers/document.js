@@ -44,7 +44,7 @@ const documentResolver = {
       const toko_id_filter = toko_id;
       const departemen_id_filter = departemen_id;
 
-      
+
       let query = `SELECT t1.* FROM (
         SELECT * nd_document `;
       let params = [];
@@ -126,26 +126,15 @@ const documentResolver = {
     }),
   },
   Document: {
-    document_control: async(parent,args,context)=> {
+    document_control: handleResolverError(async(parent,args,context)=> {
 
-      const pool = context.pool;
-      if (!pool) {
-        console.log('context', pool);
-        throw new Error('Database pool not available in context.');
-      }
+      const query = `SELECT * FROM nd_document_control WHERE id = ?`;
+      const [rows] = await pool.query(query, [parent.document_control_id]);
+      const response = rows[0];
 
-      try {
-        const query = `SELECT * FROM nd_document_control WHERE id = ?`;
-        const [rows] = await pool.query(query, [parent.document_control_id]);
-        const response = rows[0];
-
-        console.log(response);
-        return response;
-      } catch (error) {
-        console.error(error);
-        throw new Error("Internal Server Error Document Control From Document Single");
-      }
-    },
+      return response;
+      
+    }),
   },
   Mutation: {
     addDocument: async (_, {input}, context) => {
