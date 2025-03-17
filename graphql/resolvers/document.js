@@ -1,5 +1,6 @@
 import { stat } from 'fs';
 import zlib from 'zlib';
+import handleResolverError from '../handleResolverError';
 
 // import queryLogger from "../../helpers/queryTransaction.js";
 // import queryTransaction from "../../helpers/queryTransaction.js";
@@ -7,139 +8,122 @@ const MAX_LIMIT = 100;
 
 const documentResolver = {
   Query:{
-    document: async(_,args, context, info)=>{
-      const pool = context.pool;
-      if (!pool) {
-        console.log('context', pool);
-        throw new Error('Database pool not available in context.');
+    document: handleResolverError(async(_,args, context, info)=>{
+      
+      const query = `SELECT * FROM nd_document WHERE id = ?`;
+      const [rows] = await pool.query(query, [args.id]);
+
+      if (rows.length === 0) {
+        throw new Error("Document not found");
       }
+      /* const text = "123456789ABCDEF";
+      const ketCompress = zlib.deflateSync(text).toString('base64'); */
+      const text = zlib.inflateSync(Buffer.from(rows[0].keterangan, 'base64')).toString();
 
-      try {
-          const query = `SELECT * FROM nd_document WHERE id = ?`;
-          const [rows] = await pool.query(query, [args.id]);
-
-          if (rows.length === 0) {
-            throw new Error("Document not found");
-          }
-          /* const text = "123456789ABCDEF";
-          const ketCompress = zlib.deflateSync(text).toString('base64'); */
-          const text = zlib.inflateSync(Buffer.from(rows[0].keterangan, 'base64')).toString();
-
-          const response = {
-            id: rows[0].id,
-            toko_id: rows[0].toko_id,
-            document_control_id: rows[0].document_control_id,
-            tanggal: rows[0].tanggal,
-            document_number_raw: rows[0].document_number_raw,
-            document_number: rows[0].document_number,
-            document_status: rows[0].document_status,
-            judul: rows[0].judul,
-            dari: rows[0].dari,
-            kepada: rows[0].kepada,
-            keterangan: text,
-            penanggung_jawab: rows[0].penanggung_jawab,
-            username: rows[0].username,
-            status_aktif: rows[0].status_aktif
-          }
-          return response;
-      } catch (error) {
-        console.error(error);
-        throw new Error(error.message || "Internal Server Error Document Control Single");
+      const response = {
+        id: rows[0].id,
+        toko_id: rows[0].toko_id,
+        document_control_id: rows[0].document_control_id,
+        tanggal: rows[0].tanggal,
+        document_number_raw: rows[0].document_number_raw,
+        document_number: rows[0].document_number,
+        document_status: rows[0].document_status,
+        judul: rows[0].judul,
+        dari: rows[0].dari,
+        kepada: rows[0].kepada,
+        keterangan: text,
+        penanggung_jawab: rows[0].penanggung_jawab,
+        username: rows[0].username,
+        status_aktif: rows[0].status_aktif
       }
-    },
-    allDocument: async(_,{offset=0, limit = 10, search="", toko_id = 0, departemen_id = 0 }, context)=>{
+      return response;
+      
+    }),
+    allDocument: handleResolverError(async(_,{offset=0, limit = 10, search="", toko_id = 0, departemen_id = 0 }, context)=>{
       const limitQuery = limit > MAX_LIMIT ? MAX_LIMIT : limit;
       const toko_id_filter = toko_id;
       const departemen_id_filter = departemen_id;
-      try {
-        const pool = context.pool;
-        if (!pool) {
-          console.log('context', pool);
-          throw new Error('Database pool not available in context.');
-        }
 
-        let query = `SELECT t1.* FROM (
-          SELECT * nd_document `;
-        let params = [];
-        
-        let cond_dept = "";
-        let cond_toko = "";
-        let cond_search = "";
+      
+      let query = `SELECT t1.* FROM (
+        SELECT * nd_document `;
+      let params = [];
+      
+      let cond_dept = "";
+      let cond_toko = "";
+      let cond_search = "";
 
-        let param_dept = [];
-        let param_toko = [];
-        let param_search = [];
+      let param_dept = [];
+      let param_toko = [];
+      let param_search = [];
 
-        if (toko_id_filter != 0 && toko_id_filter != "") {
-          cond_toko = `WHERE toko_id = ?`;
-          param_toko.push(toko_id_filter);
-        }
-
-        if (departemen_id_filter != 0 && departemen_id_filter != "") {
-          cond_dept = ` WHERE department_id = ? `;
-          param_dept.push(departemen_id_filter);
-        }
-
-        if (search.length > 0) {
-          cond_search = `
-          AND ( document_number LIKE ? 
-          OR judul LIKE ?
-          OR tanggal LIKE ? )`;
-          param_search.push(`%${search}%`, `%${search}%`, `%${search}%`);
-        }
-
-        query = `SELECT t1.* 
-        FROM (
-          SELECT * FROM nd_document
-          LIKE ?
-          ${cond_toko}
-        ) t1 
-        LEFT JOIN (
-          SELECT *
-          FROM nd_document_control 
-          ${cond_dept}
-        ) t2
-        ON t1.document_control_id = t2.id 
-        WHERE t2.id IS NOT NULL 
-        ${cond_search}
-        LIMIT ? , ?`;
-
-        params = [
-          ...(param_toko.length ? param_toko : []),
-          ...(param_toko.dept ? param_dept : []),
-          ...(param_search.length ? param_search : []),
-          offset,
-          limitQuery
-        ];
-        
-        
-
-        const [rows] = await pool.query(query, params);
-        const response = rows.map(row => {
-          const text = zlib.inflateSync(Buffer.from(row.keterangan, 'base64')).toString().substring(0, 50);
-          return {
-            id: row.id,
-            toko_id: row.toko_id,
-            document_control_id: row.document_control_id,
-            tanggal: row.tanggal,
-            document_number_raw: row.document_number_raw,
-            document_number: row.document_number,
-            document_status: row.document_status,
-            judul: row.judul,
-            dari: row.dari,
-            kepada: row.kepada,
-            keterangan: text,
-            penanggung_jawab: row.penanggung_jawab,
-            username: row.username,
-            status_aktif: row.status_aktif
-          }
-        });
-        return response;
-      } catch (error) {
-        console.error(error);
-        throw new Error("Internal Server Error Document Control All");
+      if (toko_id_filter != 0 && toko_id_filter != "") {
+        cond_toko = `WHERE toko_id = ?`;
+        param_toko.push(toko_id_filter);
       }
-    },
+
+      if (departemen_id_filter != 0 && departemen_id_filter != "") {
+        cond_dept = ` WHERE department_id = ? `;
+        param_dept.push(departemen_id_filter);
+      }
+
+      if (search.length > 0) {
+        cond_search = `
+        AND ( document_number LIKE ? 
+        OR judul LIKE ?
+        OR tanggal LIKE ? )`;
+        param_search.push(`%${search}%`, `%${search}%`, `%${search}%`);
+      }
+
+      query = `SELECT t1.* 
+      FROM (
+        SELECT * FROM nd_document
+        LIKE ?
+        ${cond_toko}
+      ) t1 
+      LEFT JOIN (
+        SELECT *
+        FROM nd_document_control 
+        ${cond_dept}
+      ) t2
+      ON t1.document_control_id = t2.id 
+      WHERE t2.id IS NOT NULL 
+      ${cond_search}
+      LIMIT ? , ?`;
+
+      params = [
+        ...(param_toko.length ? param_toko : []),
+        ...(param_toko.dept ? param_dept : []),
+        ...(param_search.length ? param_search : []),
+        offset,
+        limitQuery
+      ];
+      
+      
+
+      const [rows] = await pool.query(query, params);
+      const response = rows.map(row => {
+        const text = zlib.inflateSync(Buffer.from(row.keterangan, 'base64')).toString().substring(0, 50);
+        return {
+          id: row.id,
+          toko_id: row.toko_id,
+          document_control_id: row.document_control_id,
+          tanggal: row.tanggal,
+          document_number_raw: row.document_number_raw,
+          document_number: row.document_number,
+          document_status: row.document_status,
+          judul: row.judul,
+          dari: row.dari,
+          kepada: row.kepada,
+          keterangan: text,
+          penanggung_jawab: row.penanggung_jawab,
+          username: row.username,
+          status_aktif: row.status_aktif
+        }
+      });
+      return response;
+      
+    }),
   },
   Document: {
     document_control: async(parent,args,context)=> {
