@@ -25,13 +25,8 @@ const barangTokoResolver = {
     })
   },
   Mutation:{
-    addBarangToko: async (_, {input}, context) => {
-      const pool = context.pool;
-      if (!pool) {
-        console.log('context', pool);
-        throw new Error('Database pool not available in context.');
-      }
-
+    addBarangToko: handleResolverError(async (_, {input}, context) => {
+      
       const {toko_id, barang_id} = input;
       let tokoAlias = "";
 
@@ -39,63 +34,55 @@ const barangTokoResolver = {
         pool.query(`TRUNCATE nd_toko_barang_assignment`);
       }
       
-      try {
-
-        const getToko = 'SELECT * FROM nd_toko WHERE id = ?';
-        const [tokoRows] = await pool.query(getToko, [toko_id]);
-        if (tokoRows.length === 0) {
-          throw new Error('Toko not found');
-        }else{
-          tokoAlias = tokoRows[0].alias;
-        }
-  
-        const checkQuery = `SELECT barang_toko.* 
-        FROM ( 
-          SELECT * 
-          FROM nd_toko_barang_assignment 
-          WHERE toko_id = ? and barang_id = ? 
-        ) barang_toko 
-        LEFT JOIN nd_toko ON barang_toko.toko_id = nd_toko.id`;
-        const [checkRows] = await pool.query(checkQuery, [toko_id, barang_id]);
-        if (checkRows.length > 0) {
-          throw new Error('Toko sudah punya barang sku.');
-        }
-
-        await pool.query('START TRANSACTION');
-
-        const query = `INSERT INTO nd_toko_barang_assignment (toko_id, barang_id) VALUES  (?,?) `;
-        const [insertQuery] = await pool.query(query, [toko_id, barang_id])
-        if (insertQuery.affectedRows === 0) {
-          throw new Error('Add toko barang failed');
-        }
-
-        const resId = insertQuery.insertId;
-
-        if(tokoAlias === ""){
-          throw new Error('Toko Alias not found');
-        }
-
-        await pool.query('COMMIT');
-        
-        queryLogger(pool, `nd_toko_barang_assignment`, resId, query, [toko_id, barang_id]);
-
-        /* const notifDataQuery = `SELECT * FROM nd_barang_sku WHERE barang_id = ?`;
-        const [notifDataRows] = await pool.query(notifDataQuery, [barang_id]);
-        if(notifDataRows.count === 0){
-          console.log('Barang tidak ada sku');
-        }
-        const msg = {company:tokoAlias, ...notifDataRows[0]}; */
-
-        initBarangMasterToko(tokoAlias, toko_id, barang_id, pool);
-        
-        return {id:resId};
-        
-      } catch (error) { 
-        await pool.query('ROLLBACK');
-        console.error(error);
-        throw new Error(error.message || 'Internal Server Error add toko barang sku');
+      const getToko = 'SELECT * FROM nd_toko WHERE id = ?';
+      const [tokoRows] = await pool.query(getToko, [toko_id]);
+      if (tokoRows.length === 0) {
+        throw new Error('Toko not found');
+      }else{
+        tokoAlias = tokoRows[0].alias;
       }
-    },
+
+      const checkQuery = `SELECT barang_toko.* 
+      FROM ( 
+        SELECT * 
+        FROM nd_toko_barang_assignment 
+        WHERE toko_id = ? and barang_id = ? 
+      ) barang_toko 
+      LEFT JOIN nd_toko ON barang_toko.toko_id = nd_toko.id`;
+      const [checkRows] = await pool.query(checkQuery, [toko_id, barang_id]);
+      if (checkRows.length > 0) {
+        throw new Error('Toko sudah punya barang sku.');
+      }
+
+      await pool.query('START TRANSACTION');
+
+      const query = `INSERT INTO nd_toko_barang_assignment (toko_id, barang_id) VALUES  (?,?) `;
+      const [insertQuery] = await pool.query(query, [toko_id, barang_id])
+      if (insertQuery.affectedRows === 0) {
+        throw new Error('Add toko barang failed');
+      }
+
+      const resId = insertQuery.insertId;
+
+      if(tokoAlias === ""){
+        throw new Error('Toko Alias not found');
+      }
+
+      await pool.query('COMMIT');
+      
+      queryLogger(pool, `nd_toko_barang_assignment`, resId, query, [toko_id, barang_id]);
+
+      /* const notifDataQuery = `SELECT * FROM nd_barang_sku WHERE barang_id = ?`;
+      const [notifDataRows] = await pool.query(notifDataQuery, [barang_id]);
+      if(notifDataRows.count === 0){
+        console.log('Barang tidak ada sku');
+      }
+      const msg = {company:tokoAlias, ...notifDataRows[0]}; */
+
+      initBarangMasterToko(tokoAlias, toko_id, barang_id, pool);
+      
+      return {id:resId};
+    }),
   },
   BarangToko:{
     toko:async (parent, args, context) =>{
