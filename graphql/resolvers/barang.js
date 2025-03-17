@@ -21,140 +21,125 @@ const barangResolver = {
         }),
     },
     Mutation: {
-        addBarang: async (_, {input}, context) => {
+        addBarang: handleResolverError(async (_, {input}, context) => {
             const pool = context.pool;
             if (!pool) {
                 console.log('context', pool);
                 throw new Error('Database pool not available in context.');
             }
-            try {
-                const {
-                    sku_id,
-                    nama_jual,
-                    nama_beli,
-                    satuan_id,
-                    jenis_barang,
-                    grade,
-                    bahan,
-                    tipe,
-                    fitur,
-                    qty_warning,
-                    deskripsi_info,
-                    status_aktif
+            const {
+                sku_id,
+                nama_jual,
+                nama_beli,
+                satuan_id,
+                jenis_barang,
+                grade,
+                bahan,
+                tipe,
+                fitur,
+                qty_warning,
+                deskripsi_info,
+                status_aktif
 
-                } = input;
+            } = input;
 
-                const query = `INSERT INTO nd_barang (sku_id, nama_jual, satuan_id, jenis_barang, grade, bahan, tipe, fitur, qty_warning, deskripsi_info, status_aktif) 
-                               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+            const query = `INSERT INTO nd_barang (sku_id, nama_jual, satuan_id, jenis_barang, grade, bahan, tipe, fitur, qty_warning, deskripsi_info, status_aktif) 
+                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-                const params = [
-                    sku_id,
-                    nama_jual,
-                    satuan_id,
-                    jenis_barang,
-                    grade,
-                    bahan,
-                    tipe,
-                    fitur,
-                    qty_warning,
-                    deskripsi_info,
-                    status_aktif
-                ];
+            const params = [
+                sku_id,
+                nama_jual,
+                satuan_id,
+                jenis_barang,
+                grade,
+                bahan,
+                tipe,
+                fitur,
+                qty_warning,
+                deskripsi_info,
+                status_aktif
+            ];
 
-                console.log('params', params);
+            console.log('params', params);
 
-                // const [result] = await pool.query(query, params);
+            // const [result] = await pool.query(query, params);
+            
+            const result = await queryTransaction.insert(context, "nd_barang", query, params);
+
+            if (nama_beli != '') {
+                const queryBeli = `INSERT INTO nd_barang_beli (nama, barang_id, status_aktif ) VALUES (?, ?)`;
+                const resultBeli = await queryTransaction.insert(context, "nd_barang_beli", queryBeli, [nama_beli, result.id, 1]);
                 
-                const result = await queryTransaction.insert(context, "nd_barang", query, params);
+            }
+            
+            return {id: result.id,
+                sku_id,
+                nama_jual,
+                satuan_id,
+                jenis_barang,
+                grade,
+                bahan,
+                tipe,
+                fitur,
+                qty_warning,
+                deskripsi_info,
+                status_aktif
+            }
+        }),
+        updateBarang: handleResolverError(async (_, {id, input}, context) => {
+            
+            const {
+                sku_id, nama_jual, 
+                nama_beli,
+                satuan_id, jenis_barang,
+                grade, bahan, tipe, fitur,
+                qty_warning, deskripsi_info, status_aktif
+            } = input;
 
-                if (nama_beli != '') {
+            const query = `UPDATE nd_barang 
+                           SET sku_id = ?, nama_jual = ?, satuan_id = ?, jenis_barang = ?, 
+                           grade = ?, bahan = ?, tipe = ?, fitur = ?, 
+                           qty_warning = ?, deskripsi_info = ?, status_aktif = ? 
+                           WHERE id = ?`;
+            
+            const params = [
+                sku_id, nama_jual, satuan_id, jenis_barang, 
+                grade, bahan, tipe, fitur, 
+                qty_warning, deskripsi_info, status_aktif, 
+                id
+            ];
+
+            // const [result] = await pool.query(query, params);
+
+            const result = await queryTransaction.update(context, "nd_barang", id, query, params);
+
+            if (nama_beli != '') {
+                const checkBeli = `SELECT * FROM nd_barang_beli WHERE barang_id = ?`;
+                const queryBeliCheck = await pool.query(checkBeli, [id]);
+                const [rows] = queryBeliCheck;
+                if (rows.length > 0) {
+                    const queryBeli = `UPDATE nd_barang_beli SET nama = ? WHERE barang_id = ?`;
+                    const resultBeli = await queryTransaction.update(context, "nd_barang_beli", id, queryBeli, [nama_beli, id]);
+                } else {
                     const queryBeli = `INSERT INTO nd_barang_beli (nama, barang_id, status_aktif ) VALUES (?, ?)`;
-                    const resultBeli = await queryTransaction.insert(context, "nd_barang_beli", queryBeli, [nama_beli, result.id, 1]);
-                    
-                }
-                
-                return {id: result.id,
-                    sku_id,
-                    nama_jual,
-                    satuan_id,
-                    jenis_barang,
-                    grade,
-                    bahan,
-                    tipe,
-                    fitur,
-                    qty_warning,
-                    deskripsi_info,
-                    status_aktif
-                 }
-            } catch (error) {
-                console.error(error);
-                throw new Error("Internal Server Error Add Barang");
-            }
-        },
-        updateBarang: async (_, {id, input}, context) => {
-            const pool = context.pool;
-            if (!pool) {
-                console.log('context', pool);
-                throw new Error('Database pool not available in context.');
-            }
-            try {
+                    const resultBeli = await queryTransaction.insert(context, "nd_barang_beli", queryBeli, [nama_beli, id, 1]);
+                }                    
+            } 
 
-                const {
-                    sku_id, nama_jual, 
-                    nama_beli,
-                    satuan_id, jenis_barang,
-                    grade, bahan, tipe, fitur,
-                    qty_warning, deskripsi_info, status_aktif
-                } = input;
-
-                const query = `UPDATE nd_barang 
-                               SET sku_id = ?, nama_jual = ?, satuan_id = ?, jenis_barang = ?, 
-                               grade = ?, bahan = ?, tipe = ?, fitur = ?, 
-                               qty_warning = ?, deskripsi_info = ?, status_aktif = ? 
-                               WHERE id = ?`;
-                
-                const params = [
-                    sku_id, nama_jual, satuan_id, jenis_barang, 
-                    grade, bahan, tipe, fitur, 
-                    qty_warning, deskripsi_info, status_aktif, 
-                    id
-                ];
-
-                // const [result] = await pool.query(query, params);
-
-                const result = await queryTransaction.update(context, "nd_barang", id, query, params);
-
-                if (nama_beli != '') {
-                    const checkBeli = `SELECT * FROM nd_barang_beli WHERE barang_id = ?`;
-                    const queryBeliCheck = await pool.query(checkBeli, [id]);
-                    const [rows] = queryBeliCheck;
-                    if (rows.length > 0) {
-                        const queryBeli = `UPDATE nd_barang_beli SET nama = ? WHERE barang_id = ?`;
-                        const resultBeli = await queryTransaction.update(context, "nd_barang_beli", id, queryBeli, [nama_beli, id]);
-                    } else {
-                        const queryBeli = `INSERT INTO nd_barang_beli (nama, barang_id, status_aktif ) VALUES (?, ?)`;
-                        const resultBeli = await queryTransaction.insert(context, "nd_barang_beli", queryBeli, [nama_beli, id, 1]);
-                    }                    
-                } 
-
-                return {id,
-                    sku_id,
-                    nama_jual,
-                    satuan_id,
-                    jenis_barang,
-                    grade,
-                    bahan,
-                    tipe,
-                    fitur,
-                    qty_warning,
-                    deskripsi_info,
-                    status_aktif
-                 };
-            } catch (error) {
-                console.error(error);
-                throw new Error("Internal Server Error Update Barang");
-            }
-        },
+            return {id,
+                sku_id,
+                nama_jual,
+                satuan_id,
+                jenis_barang,
+                grade,
+                bahan,
+                tipe,
+                fitur,
+                qty_warning,
+                deskripsi_info,
+                status_aktif
+            };
+        }),
     },
     Barang:{
         barangSKU: async(parent, args, context)=>{
