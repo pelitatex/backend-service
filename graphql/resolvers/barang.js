@@ -142,37 +142,21 @@ const barangResolver = {
         }),
     },
     Barang:{
-        barangSKU: async(parent, args, context)=>{
-            const pool = context.pool;
-            if (!pool) {
-                console.log('context', pool);
-                throw new Error('Database pool not available in context.');
-            }
-            try {
-                console.log('parent', parent);
-                const query = `SELECT * FROM nd_barang_sku WHERE barang_id = ?`;
-                const [rows] = await pool.query(query, [parent.id]);
-                return rows;
-            } catch (error) {
-                console.error(error);
-                throw new Error("Internal Server Error Barang SKU");
-            }
-        },
-        barangToko: async(parent, args, context)=>{
-            const pool = context.pool;
-            if (!pool) {
-                console.log('context', pool);
-                throw new Error('Database pool not available in context.');
-            }
-            try {
-                const query = `SELECT * FROM nd_toko_barang_assignment WHERE barang_id = ?`;
-                const [rows] = await pool.query(query, [parent.id]);
-                return rows;
-            } catch (error) {
-                console.error(error);
-                throw new Error("Internal Server Error Barang TOKO");
-            }
-        },
+        barangSKU: handleResolverError(async(parent, args, context)=>{
+            
+            console.log('parent', parent);
+            const query = `SELECT * FROM nd_barang_sku WHERE barang_id = ?`;
+            const [rows] = await pool.query(query, [parent.id]);
+            return rows;
+            
+        }),
+        barangToko: handleResolverError(async(parent, args, context)=>{
+            
+            const query = `SELECT * FROM nd_toko_barang_assignment WHERE barang_id = ?`;
+            const [rows] = await pool.query(query, [parent.id]);
+            return rows;
+            
+        }),
     }
 };
 
