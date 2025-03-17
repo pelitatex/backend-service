@@ -1,38 +1,22 @@
-import { queryTransaction } from "../../helpers/queryTransaction.js";
+import { queryLogger, queryTransaction } from "../../helpers/queryTransaction.js";
 import { publishExchange } from '../../helpers/producers.js';
+import handleResolverError from "../handleResolverError.js";
 
 const customerResolver = {
   Query:{
-    customer: async(_,args, context)=>{
-      const pool = context.pool;
-      if (!pool) {
-        console.log('context', pool);
-        throw new Error('Database pool not available in context.');
-      }
-        try {
-            const query = `SELECT * FROM nd_customer WHERE id = ?`;
-            const [rows] = await pool.query(query, [args.id]);
-            return rows[0];
-        } catch (error) {
-          console.error(error);
-          throw new Error("Internal Server Error Customer All");
-        }
-    },
-    allCustomer: async(_,args,context)=>{
-      const pool = context.pool;
-      if (!pool) {
-        console.log('context', pool);
-        throw new Error('Database pool not available in context.');
-      }
-      try {
-          const query = 'SELECT * FROM nd_customer';
-          const [rows] = await pool.query(query);
-          return rows;
-        } catch (error) {
-          console.error(error);
-          throw new Error("Internal Server Error Customer All");
-        }
-    }
+    customer: handleResolverError(async(_,args, context)=>{
+      
+      const query = `SELECT * FROM nd_customer WHERE id = ?`;
+      const [rows] = await pool.query(query, [args.id]);
+      return rows[0];
+      
+    }),
+    allCustomer: handleResolverError(async(_,args,context)=>{
+      
+      const query = 'SELECT * FROM nd_customer';
+      const [rows] = await pool.query(query);
+      return rows;
+    })
   },
   Mutation: {
     addCustomer: async (_, {input}, context) => {
