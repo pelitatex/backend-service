@@ -24,10 +24,12 @@ export const assignBarangToko = async (data) => {
         }
 
         const namaBarang = barangRows[0].nama_jual;
+        const satuan_id = barangRows[0].satuan_id;
 
         const msg = {
             company:company,
             barang_id:barang_id,
+            satuan_id:satuan_id,
             nama_barang:namaBarang
         };
         const correlationId = uuidv4();
