@@ -29,12 +29,12 @@ const barangSKUResolver = {
       
       for (const item of input) {
         
-        const { barang_id, warna_id, satuan_id, status_aktif } = item;
+        const { barang_id, warna_id, status_aktif } = item;
   
         const getNamaBarangQuery = 'SELECT nama_jual as nama FROM nd_barang WHERE id = ?';
         const [namaBarangRows] = await pool.query(getNamaBarangQuery, [barang_id]);
         const nama = namaBarangRows[0].nama;
-        const satuan_id_barang = namaBarangRows[0].satuan_id;
+        const satuan_id = namaBarangRows[0].satuan_id;
   
         const getWarnaJualQuery = 'SELECT warna_jual FROM nd_warna WHERE id = ?';
         const [warnaJualRows] = await pool.query(getWarnaJualQuery, [warna_id]);
@@ -42,7 +42,7 @@ const barangSKUResolver = {
   
         
         const getSatuanQuery = 'SELECT nama FROM nd_satuan WHERE id = ?';
-        const [satuanRows] = await pool.query(getSatuanQuery, [satuan_id_barang]);
+        const [satuanRows] = await pool.query(getSatuanQuery, [satuan_id]);
         const nama_satuan = satuanRows[0].nama;
   
   
