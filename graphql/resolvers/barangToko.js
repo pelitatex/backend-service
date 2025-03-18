@@ -1,7 +1,7 @@
-import { sendToQueue } from "../../helpers/producers.js";
+import { sendToQueue } from "../../helpers/rabbitMQ/producers.js";
 import { queryLogger } from "../../helpers/queryTransaction.js";
 import { ENVIRONMENT } from "../../config/loadEnv.js";
-import { assignBarangToko } from "../../helpers/barangSKUToko_producers.js";
+import { assignBarangToko } from "../../helpers/rabbitMQ/barangSKUToko_producers.js";
 import handleResolverError from "../handleResolverError.js";
 
 const barangTokoResolver = {
