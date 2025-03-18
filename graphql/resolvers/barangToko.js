@@ -1,7 +1,7 @@
 import { sendToQueue } from "../../helpers/producers.js";
 import { queryLogger } from "../../helpers/queryTransaction.js";
 import { ENVIRONMENT } from "../../config/loadEnv.js";
-import { assignBarangToko } from "../../helpers/registerBarangToko.js";
+import { assignBarangToko } from "../../helpers/barangSKUToko_producers.js";
 import handleResolverError from "../handleResolverError.js";
 
 const barangTokoResolver = {
@@ -42,16 +42,13 @@ const barangTokoResolver = {
         tokoAlias = tokoRows[0].alias;
       }
 
-      const checkQuery = `SELECT barang_toko.* 
-      FROM ( 
-        SELECT * 
+      const checkQuery = `SELECT * 
         FROM nd_toko_barang_assignment 
         WHERE toko_id = ? and barang_id = ? 
-      ) barang_toko 
-      LEFT JOIN nd_toko ON barang_toko.toko_id = nd_toko.id`;
+      `;
       const [checkRows] = await pool.query(checkQuery, [toko_id, barang_id]);
       if (checkRows.length > 0) {
-        throw new Error('Toko sudah punya barang sku.');
+        throw new Error('Barang sudah diregister di toko.');
       }
 
       try {

@@ -8,21 +8,34 @@ export const assignBarangToko = async (data) => {
     if(!data.pool)
         throw new Error('Database pool not available in context.');
 
+    const pool = data.pool;
+    const toko_id = data.toko_id;
+    const barang_id = data.barang_id;
+    const company = data.company;
+
     try {
         const ch = await connection.createConfirmChannel();
         const q = await ch.assertQueue('', {exclusive:true});
 
+        const barangQuery = `SELECT * FROM nd_barang WHERE id=?`;
+        const [barangRows] = await pool.query(barangQuery, [barang_id]);
+        if(barangRows.length === 0){
+            throw new Error('Barang not found');
+        }
+
+        const namaBarang = barangRows[0].nama_jual;
+
         const msg = {
-            company:data.company,
-            toko_id:data.toko_id,
-            barang_id:data.barang_id
+            company:company,
+            barang_id:barang_id,
+            nama_barang:namaBarang
         };
         const correlationId = uuidv4();
 
         ch.consume(q.queue, function(msg) {
             if (msg.properties.correlationId === correlationId) {
                 console.log(' [.] Got %s registered', msg.content.toString());
-                assignAllBarangSKUToko(data.company, data.toko_id, data.barang_id, data.pool);
+                assignAllBarangSKUToko(company, toko_id, barang_id, pool);
             }
         }, {noAck:true});
 
@@ -35,6 +48,7 @@ export const assignBarangToko = async (data) => {
             async function(err, ok) {
                 if (err) {
                     console.error(err);
+                    throw err;
                 } else {
                     console.log('Message sent to queue');
                 }
