@@ -35,9 +35,16 @@ export const assignBarangToko = async (data) => {
         const correlationId = uuidv4();
 
         ch.consume(q.queue, function(msg) {
+            let response = msg.content.toString();
+            response = JSON.parse(content);
             if (msg.properties.correlationId === correlationId) {
-                console.log(' [.] Got %s registered', msg.content.toString());
-                assignAllBarangSKUToko(company, toko_id, barang_id, pool);
+                console.log(`response for ${correlationId}`, response);
+                if(response.status === 'success'){
+                    console.log(' [.] ', response.message);
+                    assignAllBarangSKUToko(company, toko_id, barang_id, pool);
+                }else{
+                    console.error(' [.] ', response.message);
+                }
             }
         }, {noAck:true});
 
@@ -102,7 +109,7 @@ export const assignAllBarangSKUToko = async (tokoAlias, toko_id, barang_id, pool
                 if (msg.properties.correlationId === correlationId) {
                     console.log(`response for ${correlationId}`, response);
                     if(response.status === 'success'){
-                        console.log(' [.] ', response.message);
+                        console.log(`[.]  ${response.affectedRows} ditambahkan`);
                     }else{
                         console.error(' [.] ', response.message);
                     }
