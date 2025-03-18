@@ -1,7 +1,7 @@
 import { sendToQueue } from "../../helpers/producers.js";
 import { queryLogger } from "../../helpers/queryTransaction.js";
 import { ENVIRONMENT } from "../../config/loadEnv.js";
-import { assignBarangSKUToko } from "../../helpers/registerBarangToko.js";
+import { assignBarangToko } from "../../helpers/registerBarangToko.js";
 import handleResolverError from "../handleResolverError.js";
 
 const barangTokoResolver = {
@@ -80,7 +80,7 @@ const barangTokoResolver = {
           pool: pool
         }
 
-        await assignBarangSKUToko(dataRMQ);
+        await assignBarangToko(dataRMQ);
       
         return {id:resId};
       } catch (error) {

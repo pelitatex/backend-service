@@ -1,6 +1,51 @@
 import {v4 as uuidv4} from 'uuid';
 import { connection } from './connection.js';
 
+export const assignBarangToko = async (data) => {
+    if(connection === undefined)
+        throw new Error('No Connection');
+
+    if(!data.pool)
+        throw new Error('Database pool not available in context.');
+
+    try {
+        const ch = await connection.createConfirmChannel();
+        const q = await ch.assertQueue('', {exclusive:true});
+
+        const msg = {
+            company:data.company,
+            toko_id:data.toko_id,
+            barang_id:data.barang_id
+        };
+        const correlationId = uuidv4();
+
+        ch.consume(q.queue, function(msg) {
+            if (msg.properties.correlationId === correlationId) {
+                console.log(' [.] Got %s registered', msg.content.toString());
+                assignAllBarangSKUToko(data.company, data.toko_id, data.barang_id, data.pool);
+            }
+        }, {noAck:true});
+
+        ch.sendToQueue(`add_barang_master_toko`,
+            Buffer.from(JSON.stringify(msg)),
+            {
+                correlationId:correlationId,
+                replyTo:q.queue,
+            },
+            async function(err, ok) {
+                if (err) {
+                    console.error(err);
+                } else {
+                    console.log('Message sent to queue');
+                }
+            }
+        );
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
 export const assignAllBarangSKUToko = async (tokoAlias, toko_id, barang_id, pool) => {
     if (connection === undefined) 
         throw new Error('No Connection');
