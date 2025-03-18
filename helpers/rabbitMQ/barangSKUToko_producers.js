@@ -23,14 +23,14 @@ export const assignBarangToko = async (data) => {
             throw new Error('Barang not found');
         }
 
-        const namaBarang = barangRows[0].nama_jual;
+        const nama_barang = barangRows[0].nama_jual;
         const satuan_id = barangRows[0].satuan_id;
 
         const msg = {
             company:company,
             barang_id:barang_id,
             satuan_id:satuan_id,
-            nama_barang:namaBarang
+            nama_barang:nama_barang
         };
         const correlationId = uuidv4();
 
@@ -93,12 +93,19 @@ export const assignAllBarangSKUToko = async (tokoAlias, toko_id, barang_id, pool
                 hasRows = false;
                 return;
             }
-            const msg = {company:tokoAlias, data:[...rows]};
+            const msg = {company:tokoAlias, barang_id:barang_id, data:[...rows]};
             const correlationId = uuidv4();
     
             ch.consume(q.queue, function(msg) {
+                let response = msg.content.toString();
+                response = JSON.parse(content);
                 if (msg.properties.correlationId === correlationId) {
-                    console.log(' [.] Got %s registered', msg.content.toString());
+                    console.log(`response for ${correlationId}`, response);
+                    if(response.status === 'success'){
+                        console.log(' [.] ', response.message);
+                    }else{
+                        console.error(' [.] ', response.message);
+                    }
                 }
             }, {noAck:true});
 
