@@ -1,5 +1,6 @@
 import { connect } from "amqplib";
 import { RABBITMQ_URL, RABBITMQ_USER, RABBITMQ_PASSWORD } from "../config/loadEnv.js";
+import {v4 as uuidv4} from 'uuid';
 
 let channel;
 let confirmChannel;
@@ -14,20 +15,6 @@ if (connection) {
     console.log('Connected to RabbitMQ');
 }
 //const channel = await connection.createChannel();
-
-function callbackConfirm(err, ok) {
-
-    try {
-        if (err) {
-            console.error(err);
-        } else {
-            console.log('Message confirmed');
-        }
-        
-    } catch (error) {
-        console.error('massage nacked');
-    }
-}
 
 
 export const publishExchange = async (exchange, routingKey, message, timeout = 0, needConfirm = false) => {
@@ -80,4 +67,60 @@ export const sendToQueue = async (queue, message, timeout = 0, needConfirm = fal
     channel.sendToQueue(queue, message, {persistent:true});
 };
 
+export const assignBarangSKUToko = async (tokoAlias, toko_id, barang_id, pool) => {
+    if (connection === undefined) 
+        throw new Error('No Connection');
+    
+    if(!pool)
+        throw new Error('Database pool not available in context.');
 
+    let hasRows = true;
+    let offset = 0;
+    const limit = 50;
+
+    try {
+
+        const ch = await connection.createConfirmChannel();
+        const q = await ch.assertQueue('', {exclusive:true});
+        
+        while(hasRows){
+            const query = 'SELECT * FROM nd_barang_sku WHERE barang_id = ? LIMIT ?,?';
+            const [rows] = await pool.query(query, [barang_id, offset, limit]);
+            if(rows.length === 0){
+                hasRows = false;
+                return;
+            }
+            
+            const correlationId = uuidv4();
+    
+            ch.consume(q.queue, function(msg) {
+                if (msg.properties.correlationId === correlationId) {
+                    console.log(' [.] Got %s registered', msg.content.toString());
+                }
+            }, {noAck:true});
+
+            const msg = {company:tokoAlias, data:[...rows]};
+
+            ch.sendToQueue(`add_barang_sku_master_toko`,
+                Buffer.from(JSON.stringify(msg)),
+                {
+                    correlationId:correlationId,
+                    replyTo:q.queue
+                },
+                async function(err, ok) {
+                    if (err) {
+                        console.error(err);
+                    } else {
+                        console.log('Message sent to queue');
+                    }
+                }
+            );
+
+            offset += limit;
+        }
+        
+    } catch (error) {
+        console.error(error);
+        throw error;        
+    }
+}

@@ -1,7 +1,7 @@
 import { sendToQueue } from "../../helpers/producers.js";
 import { queryLogger } from "../../helpers/queryTransaction.js";
 import { ENVIRONMENT } from "../../config/loadEnv.js";
-import { registerBarangSKUToko } from "../../helpers/registerBarangToko.js";
+import { assignBarangSKUToko } from "../../helpers/registerBarangToko.js";
 import handleResolverError from "../handleResolverError.js";
 
 const barangTokoResolver = {
@@ -25,7 +25,7 @@ const barangTokoResolver = {
     })
   },
   Mutation:{
-    addBarangToko: handleResolverError(async (_, {input}, context) => {
+    addBarangToko: async (_, {input}, context) => {
       
       const {toko_id, barang_id} = input;
       let tokoAlias = "";
@@ -54,35 +54,50 @@ const barangTokoResolver = {
         throw new Error('Toko sudah punya barang sku.');
       }
 
-      await pool.query('START TRANSACTION');
+      try {
+        
+        await pool.query('START TRANSACTION');
+  
+        const query = `INSERT INTO nd_toko_barang_assignment (toko_id, barang_id) VALUES  (?,?) `;
+        const [insertQuery] = await pool.query(query, [toko_id, barang_id])
+        if (insertQuery.affectedRows === 0) {
+          throw new Error('Add toko barang failed');
+        }
+  
+        const resId = insertQuery.insertId;
+  
+        if(tokoAlias === ""){
+          throw new Error('Toko Alias not found');
+        }
+        await pool.query('COMMIT');
+        
+        queryLogger(pool, `nd_toko_barang_assignment`, resId, query, [toko_id, barang_id]);
 
-      const query = `INSERT INTO nd_toko_barang_assignment (toko_id, barang_id) VALUES  (?,?) `;
-      const [insertQuery] = await pool.query(query, [toko_id, barang_id])
-      if (insertQuery.affectedRows === 0) {
-        throw new Error('Add toko barang failed');
-      }
+        const msg = {
+          company:tokoAlias, 
+          toko_id: toko_id, 
+          barang_id: barang_id
+        }
 
-      const resId = insertQuery.insertId;
-
-      if(tokoAlias === ""){
-        throw new Error('Toko Alias not found');
-      }
-
-      await pool.query('COMMIT');
+        await sendToQueue(`add_barang_master_toko`, 
+          Buffer.from(JSON.stringify(msg)), 0 , true,
+          async function(err, ok) {
+            if (err) {
+                console.error(err);
+            } else {
+                console.log('Message confirmed');
+                await assignBarangSKUToko(tokoAlias, toko_id, barang_id, pool);
+            }
+          }
+        );
       
-      queryLogger(pool, `nd_toko_barang_assignment`, resId, query, [toko_id, barang_id]);
-
-      /* const notifDataQuery = `SELECT * FROM nd_barang_sku WHERE barang_id = ?`;
-      const [notifDataRows] = await pool.query(notifDataQuery, [barang_id]);
-      if(notifDataRows.count === 0){
-        console.log('Barang tidak ada sku');
+        return {id:resId};
+      } catch (error) {
+        await pool.query('ROLLBACK');
+        console.error(error);
+        throw error;
       }
-      const msg = {company:tokoAlias, ...notifDataRows[0]}; */
-
-      initBarangMasterToko(tokoAlias, toko_id, barang_id, pool);
-      
-      return {id:resId};
-    }),
+    },
   },
   BarangToko:{
     toko:handleResolverError(async (parent, args, context) =>{

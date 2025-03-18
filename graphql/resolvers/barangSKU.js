@@ -67,7 +67,6 @@ const barangSKUResolver = {
         namaBarangSet.add(item[1]);
       }
 
-
       const placeholder = newItems.map(() => '(?, ?, ?, ?, ?, ?, ?)').join(', ');
       const query = `INSERT INTO nd_barang_sku (sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif) VALUES ${placeholder}`;
 
