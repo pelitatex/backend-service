@@ -73,23 +73,14 @@ const barangTokoResolver = {
         
         queryLogger(pool, `nd_toko_barang_assignment`, resId, query, [toko_id, barang_id]);
 
-        const msg = {
+        const dataRMQ = {
           company:tokoAlias, 
           toko_id: toko_id, 
-          barang_id: barang_id
+          barang_id: barang_id,
+          pool: pool
         }
 
-        await sendToQueue(`add_barang_master_toko`, 
-          Buffer.from(JSON.stringify(msg)), 0 , true,
-          async function(err, ok) {
-            if (err) {
-                console.error(err);
-            } else {
-                console.log('Message confirmed');
-                await assignBarangSKUToko(tokoAlias, toko_id, barang_id, pool);
-            }
-          }
-        );
+        await assignBarangSKUToko(dataRMQ);
       
         return {id:resId};
       } catch (error) {
