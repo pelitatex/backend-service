@@ -21,12 +21,12 @@ describe('barangToko Resolver', () => {
 
   describe('Query', () => {
     describe('barangToko', () => {
-      it('should return barangSKUToko by toko_id', async () => {
+      it('should return barangToko by toko_id', async () => {
         const args = { toko_id: 1 };
         const rows = [{ id: 1, toko_id: 1, barang_sku_id: 1 }];
         mockPool.query.mockResolvedValue([rows]);
 
-        const result = await barangSKUTokoResolver.Query.barangSKUToko(null, args, context);
+        const result = await barangSKUTokoResolver.Query.barangToko(null, args, context);
 
         expect(result).toEqual(rows[0]);
         expect(mockPool.query).toHaveBeenCalledWith('SELECT * FROM nd_toko_barang_sku WHERE toko_id = ?', [args.toko_id]);
