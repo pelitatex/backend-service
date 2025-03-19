@@ -14,13 +14,13 @@ const context = {
   pool: mockPool,
 };
 
-describe('barangSKUToko Resolver', () => {
+describe('barangToko Resolver', () => {
   beforeAll(() => {
     createPool.mockReturnValue(mockPool);
   });
 
   describe('Query', () => {
-    describe('barangSKUToko', () => {
+    describe('barangToko', () => {
       it('should return barangSKUToko by toko_id', async () => {
         const args = { toko_id: 1 };
         const rows = [{ id: 1, toko_id: 1, barang_sku_id: 1 }];
