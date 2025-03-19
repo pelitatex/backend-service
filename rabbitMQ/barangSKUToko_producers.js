@@ -1,7 +1,8 @@
 import {v4 as uuidv4} from 'uuid';
-import { connection } from './connection.js';
+import { getRabbitMQ } from './connection.js';
 
 export const assignBarangToko = async (data) => {
+    const {connection} = await getRabbitMQ();
     if(connection === undefined)
         throw new Error('No Connection');
 
