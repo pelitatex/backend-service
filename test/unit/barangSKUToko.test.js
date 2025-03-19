@@ -1,4 +1,4 @@
-import barangSKUTokoResolver from '../../graphql/resolvers/barangSKUToko.js';
+import barangTokoResolver from '../../graphql/resolvers/barangToko.js';
 import { createPool } from 'mysql2/promise';
 
 
