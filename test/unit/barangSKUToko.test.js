@@ -1,5 +1,6 @@
-import barangSKUTokoResolver from '../../graphql/resolvers/barangSKUToko';
+import barangSKUTokoResolver from '../../graphql/resolvers/barangSKUToko.js';
 import { createPool } from 'mysql2/promise';
+
 
 jest.mock('mysql2/promise', () => ({
   createPool: jest.fn(),
@@ -7,7 +8,7 @@ jest.mock('mysql2/promise', () => ({
 
 const mockPool = {
   query: jest.fn(),
-};
+}
 
 const context = {
   pool: mockPool,
