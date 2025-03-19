@@ -6,7 +6,7 @@ let channel;
 let confirmChannel;
 let connection;
 
-export const initializeRabbitMQ = async () => {
+const initializeRabbitMQ = async () => {
     try {
         if (connection) {
             connection = await connect(`amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@${RABBITMQ_URL}:5672/master`).catch((err) => {
@@ -21,5 +21,12 @@ export const initializeRabbitMQ = async () => {
         console.error('Error initializing RabbitMQ', error);
     }
 
+    return {channel, confirmChannel, connection};
+}
+
+export const getRabbitMQ = async()  => {
+    if(!connection){
+        return await initializeRabbitMQ();
+    }
     return {channel, confirmChannel, connection};
 }
