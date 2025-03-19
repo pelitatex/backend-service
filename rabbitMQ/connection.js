@@ -20,6 +20,6 @@ export const initializeRabbitMQ = async () => {
     } catch (error) {
         console.error('Error initializing RabbitMQ', error);
     }
-}
 
-export { connection, channel, confirmChannel };
+    return {channel, confirmChannel, connection};
+}
