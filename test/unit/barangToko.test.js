@@ -29,7 +29,7 @@ describe('barangToko Resolver', () => {
         const result = await barangSKUTokoResolver.Query.barangToko(null, args, context);
 
         expect(result).toEqual(rows[0]);
-        expect(mockPool.query).toHaveBeenCalledWith('SELECT * FROM nd_toko_barang_sku WHERE toko_id = ?', [args.toko_id]);
+        expect(mockPool.query).toHaveBeenCalledWith('SELECT * FROM nd_toko_barang_assignment WHERE toko_id = ?', [args.toko_id]);
       });
 
       it('should throw an error if toko_id is not provided', async () => {
