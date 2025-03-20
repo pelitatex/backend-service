@@ -1,5 +1,6 @@
 import { connect } from "amqplib";
 import { RABBITMQ_URL, RABBITMQ_USER, RABBITMQ_PASSWORD } from "../config/loadEnv.js";
+import {v4 as uuidv4} from 'uuid';
 
 let channel;
 let confirmChannel;
