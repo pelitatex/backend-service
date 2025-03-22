@@ -25,25 +25,18 @@
     "mysql2": "^3.6.3",
     "sharp": "^0.33.5",
     "uuid": "^10.0.0",
-    "vitest": "^3.0.9",
     "ws": "^8.14.2"
   },
-  "devDependencies": {
-    "@babel/core": "^7.26.9",
-    "@babel/preset-env": "^7.26.9",
-    "babel-jest": "^29.7.0",
-    "cross-env": "^7.0.3",
-    "jest": "^29.7.0",
-    "supertest": "^7.0.0"
-  },
   "scripts": {
-    "start": "node ./bin/www",
-    "test": "cross-env NODE_ENV=test jest"
+    "start": "node ./bin/www"
   },
   "jest": {
     "testEnvironment": "node",
     "transform": {
       "^.+\\.[t|j]sx?$": "babel-jest"
     }
+  },
+  "devDependencies": {
+    "vitest": "^3.0.9"
   }
 }
