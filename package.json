@@ -30,12 +30,6 @@
   "scripts": {
     "start": "node ./bin/www"
   },
-  "jest": {
-    "testEnvironment": "node",
-    "transform": {
-      "^.+\\.[t|j]sx?$": "babel-jest"
-    }
-  },
   "devDependencies": {
     "vitest": "^3.0.9"
   }
