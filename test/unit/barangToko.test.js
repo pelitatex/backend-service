@@ -1,13 +1,13 @@
 import barangTokoResolver from '../../graphql/resolvers/barangToko.js';
 import { createPool } from 'mysql2/promise';
+import { vi } from 'vitest';
 
-
-jest.mock('mysql2/promise', () => ({
-  createPool: jest.fn(),
+vi.mock('mysql2/promise', () => ({
+  createPool: vi.fn(),
 }));
 
 const mockPool = {
-  query: jest.fn(),
+  query: vi.fn(),
 }
 
 const context = {
