@@ -55,7 +55,7 @@ describe('barangToko Resolver', () => {
   describe('Mutation', () => {
     describe('addBarangToko', () => {
       it('should add a new barangToko', async () => {
-        const input = { toko_id: 1, barang_sku_id: 1 };
+        const input = { toko_id: 1, barang_id: 1 };
         const checkRows = [];
         const insertQuery = [{ count: 0 }];
         mockPool.query
@@ -65,16 +65,16 @@ describe('barangToko Resolver', () => {
         const result = await barangTokoResolver.Mutation.addBarangToko(null, { input }, context);
 
         expect(result).toBe(true);
-        expect(mockPool.query).toHaveBeenCalledWith('SELECT * FROM nd_toko_barang_assignment WHERE toko_id = ? and barang_sku_id = ?', [input.toko_id, input.barang_sku_id]);
-        expect(mockPool.query).toHaveBeenCalledWith('INSERT INTO nd_toko_barang_sku (toko_id, barang_sku_id) VALUES  (?,?)', [input.toko_id, input.barang_sku_id]);
+        expect(mockPool.query).toHaveBeenCalledWith('SELECT * FROM nd_toko WHERE id = ?', [input.toko_id]);
+        expect(mockPool.query).toHaveBeenCalledWith('INSERT INTO nd_toko_barang_assignment (toko_id, barang_id) VALUES  (?,?)', [input.toko_id, input.barang_id]);
       });
 
       it('should throw an error if barangSKUToko already exists', async () => {
-        const input = { toko_id: 1, barang_sku_id: 1 };
+        const input = { toko_id: 1, barang_id: 1 };
         const checkRows = [{ id: 1 }];
         mockPool.query.mockResolvedValueOnce([checkRows]);
 
-        await expect(barangSKUTokoResolver.Mutation.addBarangSKUToko(null, { input }, context)).rejects.toThrow('Toko sudah punya barang sku.');
+        await expect(barangTokoResolver.Mutation.addBarangToko(null, { input }, context)).rejects.toThrow('Barang sudah diregister di toko.');
       });
     });
   });
