@@ -29,9 +29,11 @@
   },
   "scripts": {
     "start": "node ./bin/www",
-    "test" : "vitest"
+    "test": "vitest"
   },
   "devDependencies": {
-    "vitest": "^3.0.9"
+    "vitest": "^3.0.9",
+    "@vitest/ui": "^3.0.9",
+    "supertest": "^7.1.0"
   }
 }
