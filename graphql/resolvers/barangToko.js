@@ -43,14 +43,15 @@ const barangTokoResolver = {
         tokoAlias = tokoRows[0].alias;
       }
 
-      const checkQuery = `SELECT * 
+      // ga usah soalnya udah di constraint
+      /* const checkQuery = `SELECT * 
         FROM nd_toko_barang_assignment 
         WHERE toko_id = ? and barang_id = ? 
       `;
       const [checkRows] = await pool.query(checkQuery, [toko_id, barang_id]);
       if (checkRows.length > 0) {
         throw new Error('Barang sudah diregister di toko.');
-      }
+      } */
 
       try {
         
