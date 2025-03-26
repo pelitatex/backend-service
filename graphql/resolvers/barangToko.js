@@ -34,6 +34,7 @@ const barangTokoResolver = {
         pool.query(`TRUNCATE nd_toko_barang_assignment`);
       }
       
+      // this row needed to get alias for rabbitMQ send company value
       const getToko = 'SELECT * FROM nd_toko WHERE id = ?';
       const [tokoRows] = await pool.query(getToko, [toko_id]);
       if (tokoRows.length === 0) {

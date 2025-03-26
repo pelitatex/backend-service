@@ -53,8 +53,8 @@ describe('barangToko Resolver', () => {
   });
 
   describe('Mutation', () => {
-    describe('addBarangSKUToko', () => {
-      it('should add a new barangSKUToko', async () => {
+    describe('addBarangToko', () => {
+      it('should add a new barangToko', async () => {
         const input = { toko_id: 1, barang_sku_id: 1 };
         const checkRows = [];
         const insertQuery = [{ count: 0 }];
@@ -62,10 +62,10 @@ describe('barangToko Resolver', () => {
           .mockResolvedValueOnce([checkRows])
           .mockResolvedValueOnce([insertQuery]);
 
-        const result = await barangSKUTokoResolver.Mutation.addBarangSKUToko(null, { input }, context);
+        const result = await barangTokoResolver.Mutation.addBarangToko(null, { input }, context);
 
         expect(result).toBe(true);
-        expect(mockPool.query).toHaveBeenCalledWith('SELECT * FROM nd_toko_barang_sku WHERE toko_id = ? and barang_sku_id = ?', [input.toko_id, input.barang_sku_id]);
+        expect(mockPool.query).toHaveBeenCalledWith('SELECT * FROM nd_toko_barang_assignment WHERE toko_id = ? and barang_sku_id = ?', [input.toko_id, input.barang_sku_id]);
         expect(mockPool.query).toHaveBeenCalledWith('INSERT INTO nd_toko_barang_sku (toko_id, barang_sku_id) VALUES  (?,?)', [input.toko_id, input.barang_sku_id]);
       });
 
