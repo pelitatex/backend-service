@@ -79,30 +79,30 @@ describe('barangToko Resolver', () => {
     });
   });
 
-  describe('BarangSKUToko', () => {
+  describe('BarangToko', () => {
     describe('toko', () => {
       it('should return toko by toko_id', async () => {
         const parent = { toko_id: 1 };
         const rows = [{ id: 1, name: 'Toko 1' }];
         mockPool.query.mockResolvedValue([rows]);
 
-        const result = await barangSKUTokoResolver.BarangSKUToko.toko(parent, null, context);
+        const result = await barangTokoResolver.BarangToko.toko(parent, null, context);
 
         expect(result).toEqual(rows[0]);
         expect(mockPool.query).toHaveBeenCalledWith('SELECT * FROM nd_toko WHERE id = ?', [parent.toko_id]);
       });
     });
 
-    describe('barangSKU', () => {
-      it('should return barangSKU by barang_sku_id', async () => {
-        const parent = { barang_sku_id: 1 };
-        const rows = [{ id: 1, name: 'Barang SKU 1' }];
+    describe('barang', () => {
+      it('should return barang by barang_id', async () => {
+        const parent = { barang_id: 1 };
+        const rows = [{ id: 1, name: 'Barang 1' }];
         mockPool.query.mockResolvedValue([rows]);
 
-        const result = await barangSKUTokoResolver.BarangSKUToko.barangSKU(parent, null, context);
+        const result = await barangTokoResolver.BarangToko.barang(parent, null, context);
 
         expect(result).toEqual(rows[0]);
-        expect(mockPool.query).toHaveBeenCalledWith('SELECT * FROM nd_barang_sku WHERE id = ?', [parent.barang_sku_id]);
+        expect(mockPool.query).toHaveBeenCalledWith('SELECT * FROM nd_barang WHERE id = ?', [parent.barang_id]);
       });
     });
   });
