@@ -1,6 +1,6 @@
 import barangTokoResolver from '../../graphql/resolvers/barangToko.js';
 import { createPool } from 'mysql2/promise';
-import { vi, describe, expect } from 'vitest';
+import { vi, describe, expect, beforeAll, it } from 'vitest';
 
 vi.mock('mysql2/promise', () => ({
   createPool: vi.fn(),
@@ -12,6 +12,7 @@ const mockPool = {
 
 const context = {
   pool: mockPool,
+  username:'test'
 };
 
 describe('barangToko Resolver', () => {
@@ -25,7 +26,6 @@ describe('barangToko Resolver', () => {
         const args = { toko_id: 1 };
         const rows = [{ id: 1, toko_id: 1, barang_sku_id: 1 }];
         mockPool.query.mockResolvedValue([rows]);
-
         const result = await barangTokoResolver.Query.barangToko(null, args, context);
 
         expect(result).toEqual(rows[0]);
@@ -35,7 +35,7 @@ describe('barangToko Resolver', () => {
       it('should throw an error if toko_id is not provided', async () => {
         const args = {};
 
-        await expect(barangTokoResolver.Query.barangSKUToko(null, args, context)).rejects.toThrow('Toko ID is required');
+        await expect(barangTokoResolver.Query.barangToko(null, args, context)).rejects.toThrow('Toko ID is required');
       });
     });
 
@@ -69,7 +69,7 @@ describe('barangToko Resolver', () => {
         expect(mockPool.query).toHaveBeenCalledWith('INSERT INTO nd_toko_barang_assignment (toko_id, barang_id) VALUES  (?,?)', [input.toko_id, input.barang_id]);
       });
 
-      it('should throw an error if barangSKUToko already exists', async () => {
+      it('should throw an error if barangToko already exists', async () => {
         const input = { toko_id: 1, barang_id: 1 };
         const checkRows = [{ id: 1 }];
         mockPool.query.mockResolvedValueOnce([checkRows]);
