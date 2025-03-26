@@ -1,6 +1,6 @@
 import barangTokoResolver from '../../graphql/resolvers/barangToko.js';
 import { createPool } from 'mysql2/promise';
-import { vi } from 'vitest';
+import { vi, describe, expect } from 'vitest';
 
 vi.mock('mysql2/promise', () => ({
   createPool: vi.fn(),
