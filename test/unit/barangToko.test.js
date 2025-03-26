@@ -26,7 +26,7 @@ describe('barangToko Resolver', () => {
         const rows = [{ id: 1, toko_id: 1, barang_sku_id: 1 }];
         mockPool.query.mockResolvedValue([rows]);
 
-        const result = await barangSKUTokoResolver.Query.barangToko(null, args, context);
+        const result = await barangTokoResolver.Query.barangToko(null, args, context);
 
         expect(result).toEqual(rows[0]);
         expect(mockPool.query).toHaveBeenCalledWith('SELECT * FROM nd_toko_barang_assignment WHERE toko_id = ?', [args.toko_id]);
@@ -35,7 +35,7 @@ describe('barangToko Resolver', () => {
       it('should throw an error if toko_id is not provided', async () => {
         const args = {};
 
-        await expect(barangSKUTokoResolver.Query.barangSKUToko(null, args, context)).rejects.toThrow('Toko ID is required');
+        await expect(barangTokoResolver.Query.barangSKUToko(null, args, context)).rejects.toThrow('Toko ID is required');
       });
     });
 
