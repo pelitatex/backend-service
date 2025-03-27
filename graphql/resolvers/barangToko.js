@@ -7,7 +7,7 @@ import handleResolverError from "../handleResolverError.js";
 const barangTokoResolver = {
   Query:{
     barangToko: handleResolverError(async(_,args, context)=>{
-        
+      const { pool } = context; // Use pool from context
       if (!args.toko_id) {
         throw new Error('Toko ID is required');
       }
@@ -18,6 +18,7 @@ const barangTokoResolver = {
       
     }),
     allBarangToko: handleResolverError(async(_,args, context)=>{
+      const { pool } = context; // Use pool from context
       // context.useSatuanLoader = false;
       const query = 'SELECT * FROM nd_toko_barang_assignment';
       const [rows] = await pool.query(query);
@@ -26,12 +27,12 @@ const barangTokoResolver = {
   },
   Mutation:{
     addBarangToko: async (_, {input}, context) => {
-      
+      const { pool } = context; // Use pool from context
       const {toko_id, barang_id} = input;
       let tokoAlias = "";
 
       if(ENVIRONMENT === 'development'){
-        pool.query(`TRUNCATE nd_toko_barang_assignment`);
+        await pool.query(`TRUNCATE nd_toko_barang_assignment`);
       }
       
       // this row needed to get alias for rabbitMQ send company value
@@ -91,11 +92,13 @@ const barangTokoResolver = {
   },
   BarangToko:{
     toko:handleResolverError(async (parent, args, context) =>{
+      const { pool } = context; // Use pool from context
       const query = 'SELECT * FROM nd_toko WHERE id = ?';
       const [rows] = await pool.query(query, [parent.toko_id]);
       return rows[0];
     }),
     barang:handleResolverError(async(parent, args, context)=>{
+      const { pool } = context; // Use pool from context
       const query = 'SELECT * FROM nd_barang WHERE id = ?';
       const [rows] = await pool.query(query, [parent.barang_id]);
       return rows[0];
