@@ -52,7 +52,7 @@ describe('barangToko Resolver', () => {
     });
   });
 
-  /* describe('Mutation', () => {
+  describe('Mutation', () => {
     describe('addBarangToko', () => {
       it('should add a new barangToko', async () => {
         const input = { toko_id: 1, barang_id: 1 };
@@ -79,7 +79,7 @@ describe('barangToko Resolver', () => {
     });
   });
 
-  describe('BarangToko', () => {
+  /* describe('BarangToko', () => {
     describe('toko', () => {
       it('should return toko by toko_id', async () => {
         const parent = { toko_id: 1 };
