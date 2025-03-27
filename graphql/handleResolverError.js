@@ -1,6 +1,5 @@
 const handleResolverError = (resolver) => async(parent, args, context, info) => {
     
-    console.log('context',context);
     if(!context.pool){
         throw new Error('Database pool not available in context.');
     }
