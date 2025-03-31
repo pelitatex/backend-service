@@ -1,10 +1,16 @@
 import barangTokoResolver from '../../graphql/resolvers/barangToko.js';
 import { createPool } from 'mysql2/promise';
 import { vi, describe, expect, beforeAll, it } from 'vitest';
+import { assignBarangToko } from '../../rabbitMQ/barangSKUToko_producers.js';
 
 vi.mock('mysql2/promise', () => ({
   createPool: vi.fn(),
 }));
+
+vi.mock('../../rabbitMQ/barangSKUToko_producers.js', () => ({
+  assignBarangToko: vi.fn(),
+}));
+
 
 const mockPool = {
   query: vi.fn(),
@@ -14,6 +20,10 @@ const context = {
   pool: mockPool,
   username:'test'
 };
+
+vi.mock(`amqplib`, () => {
+  connect: vi.fn().mockRejectedValue(new Error('Failed to connect to RabbitMQ'))
+});
 
 describe('barangToko Resolver', () => {
   beforeAll(() => {
@@ -55,11 +65,9 @@ describe('barangToko Resolver', () => {
   describe('Mutation', () => {
     describe('addBarangToko', () => {
       it('should add a new barangToko', async () => {
-        const input = { toko_id: 1, barang_id: 1 };
-        const checkRows = [];
+        const input = { toko_id: 1, barang_id: 1, alias: 'Toko 1' };
         const insertQuery = [{ count: 0 }];
         mockPool.query
-          .mockResolvedValueOnce([checkRows])
           .mockResolvedValueOnce([insertQuery]);
 
         const result = await barangTokoResolver.Mutation.addBarangToko(null, { input }, context);

@@ -2,6 +2,7 @@ import { sendToQueue } from "../../rabbitMQ/producers.js";
 import { queryLogger } from "../../helpers/queryTransaction.js";
 import { ENVIRONMENT } from "../../config/loadEnv.js";
 import { assignBarangToko } from "../../rabbitMQ/barangSKUToko_producers.js";
+
 import handleResolverError from "../handleResolverError.js";
 
 const barangTokoResolver = {
@@ -43,16 +44,6 @@ const barangTokoResolver = {
       }else{
         tokoAlias = tokoRows[0].alias;
       }
-
-      // ga usah soalnya udah di constraint
-      /* const checkQuery = `SELECT * 
-        FROM nd_toko_barang_assignment 
-        WHERE toko_id = ? and barang_id = ? 
-      `;
-      const [checkRows] = await pool.query(checkQuery, [toko_id, barang_id]);
-      if (checkRows.length > 0) {
-        throw new Error('Barang sudah diregister di toko.');
-      } */
 
       try {
         
