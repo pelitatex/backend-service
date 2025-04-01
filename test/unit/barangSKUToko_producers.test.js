@@ -23,7 +23,7 @@ const mockPool = {
 
 beforeEach(() => {
     vi.clearAllMocks();
-    getRabbitMQ.mockResolvedValue({ connection: mockConnection });
+    // getRabbitMQ.mockResolvedValue({ connection: mockConnection });
 });
 
 describe('assignBarangToko', () => {
