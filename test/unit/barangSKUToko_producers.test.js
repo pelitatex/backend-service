@@ -2,10 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { assignBarangToko, assignAllBarangSKUToko, assignSingleBarangSKUToko } from '../../rabbitMQ/barangSKUToko_producers.js';
 import { getRabbitMQ } from '../../rabbitMQ/connection.js';
 
-vi.mock('./connection.js', () => ({
-    getRabbitMQ: vi.fn(),
-}));
-
 const mockChannel = {
     createConfirmChannel: vi.fn(),
     assertQueue: vi.fn(),
@@ -21,9 +17,18 @@ const mockPool = {
     query: vi.fn(),
 };
 
+vi.mock('./connection.js', () => ({
+    getRabbitMQ: vi.fn(()=>
+        Promise.resolve({ 
+            connection: mockConnection,
+            channel: mockChannel,
+            confirmChannel: mockChannel,
+        })
+    ),
+}));
+
 beforeEach(() => {
     vi.clearAllMocks();
-    // getRabbitMQ.mockResolvedValue({ connection: mockConnection });
 });
 
 describe('assignBarangToko', () => {
@@ -34,7 +39,7 @@ describe('assignBarangToko', () => {
     });
 
     it('should throw an error if no pool is provided', async () => {
-        await expect(assignBarangToko({ toko_id: 1, barang_id: 1, company: 'test' }))
+        await expect(assignBarangToko({ pool: undefined, toko_id: 1, barang_id: 1, company: 'test' }))
             .rejects.toThrow('Database pool not available in context.');
     });
 
