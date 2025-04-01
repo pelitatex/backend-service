@@ -28,7 +28,7 @@ const barangTokoResolver = {
   },
   Mutation:{
     addBarangToko: async (_, {input}, context) => {
-      const { pool } = context; 
+      const { pool } = context;
       const {toko_id, barang_id} = input;
       let tokoAlias = "";
 

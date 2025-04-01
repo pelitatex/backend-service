@@ -1,117 +1,167 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import barangTokoResolver from '../../graphql/resolvers/barangToko.js';
-import { createPool } from 'mysql2/promise';
-import { vi, describe, expect, beforeAll, it } from 'vitest';
+import { ENVIRONMENT } from '../../config/loadEnv.js';
 import { assignBarangToko } from '../../rabbitMQ/barangSKUToko_producers.js';
-
-vi.mock('mysql2/promise', () => ({
-  createPool: vi.fn(),
-}));
+import { queryLogger } from '../../helpers/queryTransaction.js';
 
 vi.mock('../../rabbitMQ/barangSKUToko_producers.js', () => ({
   assignBarangToko: vi.fn(),
 }));
 
+vi.mock('../../helpers/queryTransaction.js', () => ({
+  queryLogger: vi.fn(),
+}));
 
-const mockPool = {
-  query: vi.fn(),
-}
+describe('barangTokoResolver', () => {
+  let pool;
 
-const context = {
-  pool: mockPool,
-  username:'test'
-};
-
-vi.mock(`amqplib`, () => {
-  connect: vi.fn().mockRejectedValue(new Error('Failed to connect to RabbitMQ'))
-});
-
-describe('barangToko Resolver', () => {
-  beforeAll(() => {
-    createPool.mockReturnValue(mockPool);
+  beforeEach(() => {
+    pool = {
+      query: vi.fn(),
+    };
   });
 
-  describe('Query', () => {
-    describe('barangToko', () => {
-      it('should return barangToko by toko_id', async () => {
-        const args = { toko_id: 1 };
-        const rows = [{ id: 1, toko_id: 1, barang_id: 1 }];
-        mockPool.query.mockResolvedValue([rows]);
-        const result = await barangTokoResolver.Query.barangToko(null, args, context);
+  describe('Query.barangToko', () => {
+    it('should return a single barangToko by toko_id', async () => {
+      const toko_id = 1;
+      const mockResult = [{ id: 1, toko_id, barang_id: 2 }];
+      pool.query.mockResolvedValueOnce([mockResult]);
 
-        expect(result).toEqual(rows[0]);
-        expect(mockPool.query).toHaveBeenCalledWith('SELECT * FROM nd_toko_barang_assignment WHERE toko_id = ?', [args.toko_id]);
-      });
+      const result = await barangTokoResolver.Query.barangToko(
+        {},
+        { toko_id },
+        { pool }
+      );
 
-      it('should throw an error if toko_id is not provided', async () => {
-        const args = {};
-
-        await expect(barangTokoResolver.Query.barangToko(null, args, context)).rejects.toThrow('Toko ID is required');
-      });
+      expect(pool.query).toHaveBeenCalledWith(
+        'SELECT * FROM nd_toko_barang_assignment WHERE toko_id = ?',
+        [toko_id]
+      );
+      expect(result).toEqual(mockResult[0]);
     });
 
-    describe('allBarangToko', () => {
-      it('should return all barangToko', async () => {
-        const rows = [{ id: 1, toko_id: 1, barang_id: 1 },{ id: 2, toko_id: 2, barang_id: 1 }];
-        mockPool.query.mockResolvedValue([rows]);
-
-        const result = await barangTokoResolver.Query.allBarangToko(null, null, context);
-
-        expect(result).toEqual(rows);
-        expect(mockPool.query).toHaveBeenCalledWith('SELECT * FROM nd_toko_barang_assignment');
-      });
+    it('should throw an error if toko_id is not provided', async () => {
+      await expect(
+        barangTokoResolver.Query.barangToko({}, {}, { pool })
+      ).rejects.toThrow('Toko ID is required');
     });
   });
 
-  describe('Mutation', () => {
-    describe('addBarangToko', () => {
-      it('should add a new barangToko', async () => {
-        const input = { toko_id: 1, barang_id: 1, alias: 'Toko 1' };
-        const insertQuery = [{ count: 0 }];
-        mockPool.query
-          .mockResolvedValueOnce([insertQuery]);
+  describe('Query.allBarangToko', () => {
+    it('should return all barangToko', async () => {
+      const mockResult = [{ id: 1, toko_id: 1, barang_id: 2 }];
+      pool.query.mockResolvedValueOnce([mockResult]);
 
-        const result = await barangTokoResolver.Mutation.addBarangToko(null, { input }, context);
+      const result = await barangTokoResolver.Query.allBarangToko(
+        {},
+        {},
+        { pool }
+      );
 
-        expect(result).toBe(true);
-        expect(mockPool.query).toHaveBeenCalledWith('SELECT * FROM nd_toko WHERE id = ?', [input.toko_id]);
-        expect(mockPool.query).toHaveBeenCalledWith('INSERT INTO nd_toko_barang_assignment (toko_id, barang_id) VALUES  (?,?)', [input.toko_id, input.barang_id]);
-      });
-
-      it('should throw an error if barangToko already exists', async () => {
-        const input = { toko_id: 1, barang_id: 1 };
-        const checkRows = [{ id: 1 }];
-        mockPool.query.mockResolvedValueOnce([checkRows]);
-
-        await expect(barangTokoResolver.Mutation.addBarangToko(null, { input }, context)).rejects.toThrow('Barang sudah diregister di toko.');
-      });
+      expect(pool.query).toHaveBeenCalledWith(
+        'SELECT * FROM nd_toko_barang_assignment'
+      );
+      expect(result).toEqual(mockResult);
     });
   });
 
-  /* describe('BarangToko', () => {
-    describe('toko', () => {
-      it('should return toko by toko_id', async () => {
-        const parent = { toko_id: 1 };
-        const rows = [{ id: 1, name: 'Toko 1' }];
-        mockPool.query.mockResolvedValue([rows]);
+  describe('Mutation.addBarangToko', () => {
+    it('should add a barangToko and return its ID', async () => {
+      const input = { toko_id: 1, barang_id: 2 };
+      const mockTokoRows = [{ alias: 'testAlias' }];
+      const mockInsertResult = { affectedRows: 1, insertId: 123 };
 
-        const result = await barangTokoResolver.BarangToko.toko(parent, null, context);
+      pool.query
+        .mockResolvedValueOnce([mockTokoRows]) // SELECT * FROM nd_toko
+        .mockResolvedValueOnce() // START TRANSACTION
+        .mockResolvedValueOnce([mockInsertResult]) // INSERT INTO nd_toko_barang_assignment
+        .mockResolvedValueOnce(); // COMMIT
 
-        expect(result).toEqual(rows[0]);
-        expect(mockPool.query).toHaveBeenCalledWith('SELECT * FROM nd_toko WHERE id = ?', [parent.toko_id]);
+      const result = await barangTokoResolver.Mutation.addBarangToko(
+        {},
+        { input },
+        { pool }
+      );
+
+      expect(pool.query).toHaveBeenCalledWith(
+        'SELECT * FROM nd_toko WHERE id = ?',
+        [input.toko_id]
+      );
+      expect(pool.query).toHaveBeenCalledWith(
+        'INSERT INTO nd_toko_barang_assignment (toko_id, barang_id) VALUES  (?,?) ',
+        [input.toko_id, input.barang_id]
+      );
+      expect(assignBarangToko).toHaveBeenCalledWith({
+        company: 'testAlias',
+        toko_id: input.toko_id,
+        barang_id: input.barang_id,
+        pool,
       });
+      expect(queryLogger).toHaveBeenCalledWith(
+        pool,
+        'nd_toko_barang_assignment',
+        mockInsertResult.insertId,
+        'INSERT INTO nd_toko_barang_assignment (toko_id, barang_id) VALUES  (?,?) ',
+        [input.toko_id, input.barang_id]
+      );
+      expect(result).toEqual({ id: mockInsertResult.insertId });
     });
 
-    describe('barang', () => {
-      it('should return barang by barang_id', async () => {
-        const parent = { barang_id: 1 };
-        const rows = [{ id: 1, name: 'Barang 1' }];
-        mockPool.query.mockResolvedValue([rows]);
+    it('should rollback and throw an error if the transaction fails', async () => {
+      const input = { toko_id: 1, barang_id: 2 };
+      const mockTokoRows = [{ alias: 'testAlias' }];
 
-        const result = await barangTokoResolver.BarangToko.barang(parent, null, context);
+      pool.query
+        .mockResolvedValueOnce([mockTokoRows]) // SELECT * FROM nd_toko
+        .mockResolvedValueOnce() // START TRANSACTION
+        .mockRejectedValueOnce(new Error('Insert failed')) // INSERT INTO nd_toko_barang_assignment
+        .mockResolvedValueOnce(); // ROLLBACK
 
-        expect(result).toEqual(rows[0]);
-        expect(mockPool.query).toHaveBeenCalledWith('SELECT * FROM nd_barang WHERE id = ?', [parent.barang_id]);
-      });
+      await expect(
+        barangTokoResolver.Mutation.addBarangToko({}, { input }, { pool })
+      ).rejects.toThrow('Insert failed');
+
+      expect(pool.query).toHaveBeenCalledWith('ROLLBACK');
     });
-  }); */
+  });
+
+  describe('BarangToko.toko', () => {
+    it('should return the toko for a given barangToko', async () => {
+      const parent = { toko_id: 1 };
+      const mockResult = [{ id: 1, name: 'Toko A' }];
+      pool.query.mockResolvedValueOnce([mockResult]);
+
+      const result = await barangTokoResolver.BarangToko.toko(
+        parent,
+        {},
+        { pool }
+      );
+
+      expect(pool.query).toHaveBeenCalledWith(
+        'SELECT * FROM nd_toko WHERE id = ?',
+        [parent.toko_id]
+      );
+      expect(result).toEqual(mockResult[0]);
+    });
+  });
+
+  describe('BarangToko.barang', () => {
+    it('should return the barang for a given barangToko', async () => {
+      const parent = { barang_id: 2 };
+      const mockResult = [{ id: 2, name: 'Barang A' }];
+      pool.query.mockResolvedValueOnce([mockResult]);
+
+      const result = await barangTokoResolver.BarangToko.barang(
+        parent,
+        {},
+        { pool }
+      );
+
+      expect(pool.query).toHaveBeenCalledWith(
+        'SELECT * FROM nd_barang WHERE id = ?',
+        [parent.barang_id]
+      );
+      expect(result).toEqual(mockResult[0]);
+    });
+  });
 });
