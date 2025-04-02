@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { assignBarangToko, assignAllBarangSKUToko, assignSingleBarangSKUToko } from '../../rabbitMQ/barangSKUToko_producers.js';
-import { getRabbitMQ } from '../../rabbitMQ/connection.js';
+// import { getRabbitMQ } from '../../rabbitMQ/connection.js';
 
 const mockChannel = {
     createConfirmChannel: vi.fn(),
@@ -9,18 +9,22 @@ const mockChannel = {
     sendToQueue: vi.fn(),
 };
 
+
 const mockConnection = {
-    createConfirmChannel: vi.fn(() => mockChannel),
+    connection: vi.fn(),
 };
 
 const mockPool = {
     query: vi.fn(),
 };
 
-vi.mock('./connection.js', () => ({
-    getRabbitMQ: vi.fn(()=>
-        Promise.resolve({ 
-            connection: mockConnection,
+vi.mock('../../rabbitMQ/connection.js', () => ({
+    getRabbitMQ: vi.fn(() =>
+        Promise.resolve({
+            connection: {
+                createChannel: vi.fn(() => mockChannel),
+                createConfirmChannel: vi.fn(() => mockChannel),
+            },
             channel: mockChannel,
             confirmChannel: mockChannel,
         })
@@ -33,7 +37,7 @@ beforeEach(() => {
 
 describe('assignBarangToko', () => {
     it('should throw an error if no connection is available', async () => {
-        getRabbitMQ.mockResolvedValue({ connection: undefined });
+
         await expect(assignBarangToko({ pool: mockPool, toko_id: 1, barang_id: 1, company: 'test' }))
             .rejects.toThrow('No Connection');
     });
