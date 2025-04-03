@@ -36,14 +36,30 @@ export const getRabbitMQ = async()  => {
         confirmChannel = await connection.createConfirmChannel();
     }
 
-    channel.on('error', async (err) => {
-        console.error('Channel error:', err);
-        channel = null;
-        channel = await connection.createChannel();
+    connection.on('error', async (err) => {
+        console.error('Connection error:', err);
+
+        if (err.message !== "Connection closing") {
+            connection = null;
+            channel = null;
+            confirmChannel = null;
+            
+            await initializeRabbitMQ();
+            channel = await connection.createChannel();
+            confirmChannel = await connection.createConfirmChannel();
+        }
+
     });
-    confirmChannel.on('error', async (err) => {
-        console.error('Confirm channel error:', err);
+
+    connection.on("close", async () => {
+        console.warn("RabbitMQ connection closed. Reconnecting...");
+        
+        connection = null;
+        channel = null;
         confirmChannel = null;
+        
+        await initializeRabbitMQ();
+        channel = await connection.createChannel();
         confirmChannel = await connection.createConfirmChannel();
     });
 
