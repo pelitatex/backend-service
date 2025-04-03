@@ -51,7 +51,7 @@ describe('assignBarangToko', () => {
     });
 
     it('should throw an error if no pool is provided', async () => {
-        await expect(assignBarangToko({ pool: undefined, toko_id: 1, barang_id: 1, company: 'test' }))
+        await expect(assignBarangToko({ toko_id: 1, barang_id: 1, company: 'test' }))
             .rejects.toThrow('Database pool not available in context.');
     });
 

@@ -37,7 +37,6 @@ export const assignBarangToko = async (data) => {
 
         ch.consume(q.queue, function(msg) {
             let response = msg.content.toString();
-            response = JSON.parse(content);
             if (msg.properties.correlationId === correlationId) {
                 console.log(`response for ${correlationId}`, response);
                 if(response.status === 'success'){
