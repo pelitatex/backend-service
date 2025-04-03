@@ -1,0 +1,61 @@
+import { describe, it, vi, expect, beforeEach } from "vitest";
+import { getRabbitMQ } from "../../rabbitMQ/connection";
+import * as amqplib from "amqplib";
+import { RABBITMQ_URL, RABBITMQ_USER, RABBITMQ_PASSWORD } from "../../config/loadEnv";
+
+vi.mock("amqplib", () => ({
+    connect: vi.fn(),
+}));
+
+vi.mock("../../config/loadEnv", () => ({
+    RABBITMQ_URL: "localhost",
+    RABBITMQ_USER: "my_user",
+    RABBITMQ_PASSWORD: "my_password",
+}));
+
+describe("RabbitMQ Connection", () => {
+    let mockConnection, mockChannel, mockConfirmChannel;
+
+    beforeEach(() => {
+        mockChannel = { createChannel: vi.fn() };
+        mockConfirmChannel = { createConfirmChannel: vi.fn() };
+        mockConnection = {
+            createChannel: vi.fn().mockResolvedValue(mockChannel),
+            createConfirmChannel: vi.fn().mockResolvedValue(mockConfirmChannel),
+        };
+
+        amqplib.connect.mockResolvedValue(mockConnection);
+    });
+
+    it("should initialize and return RabbitMQ connection, channel, and confirmChannel", async () => {
+        const result = await getRabbitMQ();
+
+        expect(amqplib.connect).toHaveBeenCalled();
+        expect(mockConnection.createChannel).toHaveBeenCalled();
+        expect(mockConnection.createConfirmChannel).toHaveBeenCalled();
+        expect(result).toEqual({
+            channel: mockChannel,
+            confirmChannel: mockConfirmChannel,
+            connection: mockConnection,
+        });
+    });
+
+    /* it("should reuse existing connection, channel, and confirmChannel if already initialized", async () => {
+        await getRabbitMQ(); // First call to initialize
+        const result = await getRabbitMQ(); // Second call to reuse
+
+        expect(amqplib.connect).toHaveBeenCalledTimes(1); // Ensure connect is called only once
+        expect(result).toEqual({
+            channel: mockChannel,
+            confirmChannel: mockConfirmChannel,
+            connection: mockConnection,
+        });
+    });
+
+    it("should handle connection errors gracefully", async () => {
+        amqplib.connect.mockRejectedValue(new Error("Connection failed"));
+
+        await expect(getRabbitMQ()).rejects.toThrow("Connection failed");
+    }); */
+});
+

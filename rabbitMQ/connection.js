@@ -8,8 +8,8 @@ let connection;
 
 const initializeRabbitMQ = async () => {
     try {
-        if (connection) {
-            
+        if (!connection) {
+            console.log('param status',RABBITMQ_URL, RABBITMQ_USER, RABBITMQ_PASSWORD);
             connection = await connect(`amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@${RABBITMQ_URL}:5672/master`).catch((err) => {
                 console.error(err);
                 // process.exit(1);
@@ -30,7 +30,9 @@ const initializeRabbitMQ = async () => {
 }
 
 export const getRabbitMQ = async()  => {
-    if(!connection ||!channel || !confirmChannel){
+    console.log('Getting RabbitMQ connection...');
+    console.log('connection status',connection, channel, confirmChannel);
+    if(!connection || !channel || !confirmChannel){
         await initializeRabbitMQ();
     }
     return {channel, confirmChannel, connection};

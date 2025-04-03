@@ -1,17 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { assignBarangToko, assignAllBarangSKUToko, assignSingleBarangSKUToko } from '../../rabbitMQ/barangSKUToko_producers.js';
 
-let getRabbitMQ = vi.fn(() =>
-    Promise.resolve({
-        connection: {
-            createChannel: vi.fn(() => mockChannel),
-            createConfirmChannel: vi.fn(() => mockChannel),
-        },
-        channel: mockChannel,
-        confirmChannel: mockChannel,
-    })
-);
-
 const mockConfirmChannel = {
     createConfirmChannel: vi.fn(),
     assertQueue: vi.fn(),
@@ -30,9 +19,18 @@ const mockPool = {
     query: vi.fn(),
 };
 
-// vi.mock('../../rabbitMQ/connection.js', () => ({
-    
-// }));
+vi.mock('../../rabbitMQ/connection.js', () => ({
+    getRabbitMQ : vi.fn(() =>
+        Promise.resolve({
+            connection: {
+                createChannel: vi.fn(() => mockChannel),
+                createConfirmChannel: vi.fn(() => mockChannel),
+            },
+            channel: mockChannel,
+            confirmChannel: mockConfirmChannel,
+        })
+    )
+}));
 
 // import { getRabbitMQ } from '../../rabbitMQ/connection.js';
 
