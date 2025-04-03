@@ -32,7 +32,7 @@ vi.mock('../../rabbitMQ/connection.js', () => ({
     )
 }));
 
-// import { getRabbitMQ } from '../../rabbitMQ/connection.js';
+import { getRabbitMQ } from '../../rabbitMQ/connection.js';
 
 
 beforeEach(() => {
@@ -41,6 +41,10 @@ beforeEach(() => {
 
 describe('assignBarangToko', () => {
     it('should throw an error if no connection is available', async () => {
+
+        getRabbitMQ.mockImplementationOnce(() => {
+            return Promise.resolve({ connection: undefined });
+        });
 
         await expect(assignBarangToko({ pool: mockPool, toko_id: 1, barang_id: 1, company: 'test' }))
             .rejects.toThrow('No Connection');
