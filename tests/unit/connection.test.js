@@ -35,6 +35,16 @@ describe("RabbitMQ Connection", () => {
         mockConnection = {
             createChannel: vi.fn().mockResolvedValue(mockChannel),
             createConfirmChannel: vi.fn().mockResolvedValue(mockConfirmChannel),
+            close: vi.fn(), // Tambahkan fungsi close
+            on: vi.fn((event, callback) => {
+                if (event === "error") {
+                    setTimeout(() => callback(new Error("Mocked connection error")), 10);
+                }
+
+                if (event === "close") {
+                    setTimeout(() => callback(new Error("Mocked connection close")), 10);
+                }
+            }),
         };
 
         amqplib.connect.mockResolvedValue(mockConnection);
