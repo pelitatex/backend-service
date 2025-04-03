@@ -13,12 +13,25 @@ vi.mock("../../config/loadEnv", () => ({
     RABBITMQ_PASSWORD: "my_password",
 }));
 
+
 describe("RabbitMQ Connection", () => {
     let mockConnection, mockChannel, mockConfirmChannel;
 
     beforeEach(() => {
-        mockChannel = { createChannel: vi.fn() };
-        mockConfirmChannel = { createConfirmChannel: vi.fn() };
+        mockChannel = { /* Tambahkan fungsi yang diperlukan di channel */
+            assertQueue: vi.fn(),
+            sendToQueue: vi.fn(),
+            consume: vi.fn(),
+            ack: vi.fn(),
+        };
+        
+        mockConfirmChannel = { /* Tambahkan fungsi yang diperlukan di channel */
+            assertQueue: vi.fn(),
+            sendToQueue: vi.fn(),
+            consume: vi.fn(),
+            ack: vi.fn(),
+        };
+        
         mockConnection = {
             createChannel: vi.fn().mockResolvedValue(mockChannel),
             createConfirmChannel: vi.fn().mockResolvedValue(mockConfirmChannel),
@@ -36,19 +49,7 @@ describe("RabbitMQ Connection", () => {
         expect(result).toEqual({
             channel: mockChannel,
             confirmChannel: mockConfirmChannel,
-            connection: mockConnection,
-        });
-    });
-
-    /* it("should reuse existing connection, channel, and confirmChannel if already initialized", async () => {
-        await getRabbitMQ(); // First call to initialize
-        const result = await getRabbitMQ(); // Second call to reuse
-
-        expect(amqplib.connect).toHaveBeenCalledTimes(1); // Ensure connect is called only once
-        expect(result).toEqual({
-            channel: mockChannel,
-            confirmChannel: mockConfirmChannel,
-            connection: mockConnection,
+            connection: mockConnection, 
         });
     });
 
@@ -56,6 +57,6 @@ describe("RabbitMQ Connection", () => {
         amqplib.connect.mockRejectedValue(new Error("Connection failed"));
 
         await expect(getRabbitMQ()).rejects.toThrow("Connection failed");
-    }); */
+    });
 });
 

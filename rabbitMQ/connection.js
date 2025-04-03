@@ -15,13 +15,6 @@ const initializeRabbitMQ = async () => {
                 // process.exit(1);
             });
         }
-
-        if(!channel){
-            channel = await connection.createChannel();
-        }
-        if(!confirmChannel){
-            confirmChannel = await connection.createConfirmChannel();
-        }
         console.log('Connected to RabbitMQ');
     } catch (error) {
         console.error('Error initializing RabbitMQ', error);
@@ -32,8 +25,27 @@ const initializeRabbitMQ = async () => {
 export const getRabbitMQ = async()  => {
     console.log('Getting RabbitMQ connection...');
     console.log('connection status',connection, channel, confirmChannel);
-    if(!connection || !channel || !confirmChannel){
+    if(!connection){
         await initializeRabbitMQ();
     }
+
+    if(!channel){
+        channel = await connection.createChannel();
+    }
+    if(!confirmChannel){
+        confirmChannel = await connection.createConfirmChannel();
+    }
+
+    channel.on('error', async (err) => {
+        console.error('Channel error:', err);
+        channel = null;
+        channel = await connection.createChannel();
+    });
+    confirmChannel.on('error', async (err) => {
+        console.error('Confirm channel error:', err);
+        confirmChannel = null;
+        confirmChannel = await connection.createConfirmChannel();
+    });
+
     return {channel, confirmChannel, connection};
 }

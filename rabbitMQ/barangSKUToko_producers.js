@@ -3,7 +3,7 @@ import { getRabbitMQ } from './connection.js';
 
 export const assignBarangToko = async (data) => {
     const {connection} = await getRabbitMQ();
-    if(connection === undefined)
+    if(typeof connection === 'undefined')
         throw new Error('No Connection');
 
     if(!data.pool)
@@ -70,7 +70,9 @@ export const assignBarangToko = async (data) => {
 }
 
 export const assignAllBarangSKUToko = async (tokoAlias, toko_id, barang_id, pool) => {
-    if (connection === undefined) 
+    const {connection} = await getRabbitMQ();
+
+    if (typeof connection === 'undefined') 
         throw new Error('No Connection');
     
     if(!pool)
@@ -87,7 +89,7 @@ export const assignAllBarangSKUToko = async (tokoAlias, toko_id, barang_id, pool
         
         while(hasRows){
             const query = `
-            SELECT sku.*, nd_warna.nama as warna_jual_master
+            SELECT sku.id as id, sku_id, nd_warna.nama as warna_jual_master
             FROM (
                 SELECT *
                 FROM nd_barang_sku WHERE barang_id = ? LIMIT ?,?
@@ -95,7 +97,8 @@ export const assignAllBarangSKUToko = async (tokoAlias, toko_id, barang_id, pool
             LEFT JOIN nd_warna ON sku.warna_id = nd_warna.id
             `;
 
-            const [rows] = await pool.query(query, [barang_id, offset, limit]);
+            const [rows] = await pool.query(query, [barang_id, offset, limit]); 
+            console.log('rows', rows);
             if(rows.length === 0){
                 hasRows = false;
                 return;
@@ -105,7 +108,6 @@ export const assignAllBarangSKUToko = async (tokoAlias, toko_id, barang_id, pool
     
             ch.consume(q.queue, function(msg) {
                 let response = msg.content.toString();
-                response = JSON.parse(content);
                 if (msg.properties.correlationId === correlationId) {
                     console.log(`response for ${correlationId}`, response);
                     if(response.status === 'success'){
@@ -142,6 +144,8 @@ export const assignAllBarangSKUToko = async (tokoAlias, toko_id, barang_id, pool
 }
 
 export const assignSingleBarangSKUToko = async (barang_sku_id, pool) => {
+    const {connection} = await getRabbitMQ();
+
     if(connection === undefined)
         throw new Error('No Connection');
 

@@ -80,7 +80,7 @@ describe('assignBarangToko', () => {
 describe('assignAllBarangSKUToko', () => {
     it('should process all SKUs in batches', async () => {
         mockPool.query
-            .mockResolvedValueOnce([[{ id: 1, warna_jual_master: 'Red' }]])
+            .mockResolvedValueOnce([[{ id: 1, sku_id: '010701-37410fd2-0a47', warna_jual_master: 'Red' }]])
             .mockResolvedValueOnce([])
             .mockResolvedValueOnce([[{ id: 1 }]]);
 
