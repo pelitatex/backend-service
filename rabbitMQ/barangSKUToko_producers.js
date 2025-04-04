@@ -208,8 +208,6 @@ export const assignSingleBarangSKUToko = async (barang_sku_id, pool) => {
                 sku:skuData,
                 toko_list:[...rows]
             };
-
-
             const correlationId = uuidv4();
 
             ch.consume(q.queue, function(msg) {
@@ -218,7 +216,7 @@ export const assignSingleBarangSKUToko = async (barang_sku_id, pool) => {
                 }
             }, {noAck:true});
 
-            ch.sendToQueue(`add_barang_sku_toko`,
+            ch.sendToQueue(`add_barang_sku_master_toko`,
                 Buffer.from(JSON.stringify(msg)),
                 {
                     correlationId:correlationId,
