@@ -1,10 +1,14 @@
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import barangSKUResolver from '../../graphql/resolvers/barangSKU.js';
 import handleResolverError from '../../graphql/handleResolverError.js';
 import { assignSingleBarangSKUToko } from '../../rabbitMQ/barangSKUToko_producers.js';
 
-jest.mock('../handleResolverError.js', () => jest.fn((fn) => fn));
-jest.mock('../../rabbitMQ/barangSKUToko_producers.js', () => ({
-  assignSingleBarangSKUToko: jest.fn(),
+vi.mock('../handleResolverError.js', () => ({
+  default: vi.fn((fn) => fn),
+}));
+
+vi.mock('../../rabbitMQ/barangSKUToko_producers.js', () => ({
+  assignSingleBarangSKUToko: vi.fn(),
 }));
 
 describe('barangSKUResolver', () => {
@@ -12,12 +16,12 @@ describe('barangSKUResolver', () => {
 
   beforeEach(() => {
     pool = {
-      query: jest.fn(),
+      query: vi.fn(),
     };
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('Query.barangSKU', () => {

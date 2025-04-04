@@ -15,6 +15,7 @@ const barangSKUResolver = {
       return rows[0];
     }),
     allBarangSKU: handleResolverError(async(_,args, context)=>{
+      const pool = context.pool;
       // context.useSatuanLoader = false;
       const query = 'SELECT * FROM nd_barang_sku';
       const [rows] = await pool.query(query);
@@ -24,6 +25,7 @@ const barangSKUResolver = {
   },
   Mutation:{
     addBarangSKU: handleResolverError(async(_, {input}, context) => {
+      const pool = context.pool;
       
       const newItems = [];
 
@@ -85,6 +87,7 @@ const barangSKUResolver = {
       return {id: insertedId, sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif};
     }),
     updateBarangSKU: handleResolverError(async (_, {id, input}, context) => {
+      const pool = context.pool;
       
       const checkExistQuery = 'SELECT * FROM nd_barang_sku WHERE nama_barang = ? and id <> ?';
       const [existRows] = await pool.query(checkExistQuery, [nama_barang, id]);
