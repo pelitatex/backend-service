@@ -103,6 +103,19 @@ export const assignAllBarangSKUToko = async (tokoAlias, toko_id, barang_id, pool
                 hasRows = false;
                 return;
             }
+
+            for(const row of rows){
+                const {id, sku_id, warna_jual_master} = row;
+                if(!id || !sku_id || !warna_jual_master){
+                    if(!sku_id || !warna_jual_master){
+                        throw new Error('SKU data tidak lengkap');
+                    }
+                    hasRows = false;
+                    break;
+                }
+            }
+
+            
             const msg = {company:tokoAlias, barang_id:barang_id, data:[...rows]};
             const correlationId = uuidv4();
     
