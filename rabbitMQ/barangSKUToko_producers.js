@@ -159,6 +159,10 @@ export const assignAllBarangSKUToko = async (tokoAlias, toko_id, barang_id, pool
     }
 }
 
+
+// digunakan untuk add sku ke toko yang sudah di assign barangya
+// barang otomatis di add ke semua toko tersebut
+
 export const assignSingleBarangSKUToko = async (barang_sku_id, pool) => {
     const {connection} = await getRabbitMQ();
 
@@ -186,60 +190,45 @@ export const assignSingleBarangSKUToko = async (barang_sku_id, pool) => {
         const [rowSKU] = await pool.query(querySKU, [barang_sku_id]);
         if(rowSKU.length === 0){
             throw new Error('Barang SKU not found');
-        }else{
-            
-            if(!rowSKU[0].barang_id || !rowSKU[0].warna_id){
-                throw new Error('SKU data tidak lengkap');
-            }
-            barang_id = rowSKU[0].barang_id;
         }
         const skuData = rowSKU[0];
-
-        let hasRows = true;
-
-        while(hasRows){
-
-            const query = `SELECT toko.id as toko_id, toko.alias as company * 
+        const query = `SELECT toko.id as toko_id, toko.alias as company 
             FROM (
-                SELECT *FROM nd_toko_barang_assignment WHERE barang_id = ? 
+                SELECT * FROM nd_toko_barang_assignment WHERE barang_id = ? 
             )sku_toko
-            LEFT JOIN nd_toko toko ON sku_toko.toko_id = toko.id
-            `;
-            const [rows] = await pool.query(query, [barang_id, offset, limit]);
-            if(rows.length === 0){
-                console.warn('Toko not found');
-                hasRows = false;
-                return;
-            }
-
-            const msg = {
-                sku:skuData,
-                company_list:[...rows]
-            };
-            const correlationId = uuidv4();
-
-            ch.consume(q.queue, function(msg) {
-                if (msg.properties.correlationId === correlationId) {
-                    console.log(' [.] Got %s registered', msg.content.toString());
-                }
-            }, {noAck:true});
-
-            ch.sendToQueue(`add_barang_sku_master_toko_multiple`,
-                Buffer.from(JSON.stringify(msg)),
-                {
-                    correlationId:correlationId,
-                    replyTo:q.queue,
-                },
-                async function(err, ok) {
-                    if (err) {
-                        console.error(err);
-                    } else {
-                        console.log('Message sent to queue');
-                    }
-                }
-            );
-            
+            LEFT JOIN nd_toko toko ON sku_toko.toko_id = toko.id`;
+        const [rows] = await pool.query(query, [barang_id]);
+        if(rows.length === 0){
+            console.warn('Toko not found');
+            return;
         }
+
+        const msg = {
+            sku:skuData,
+            company_list:[...rows]
+        };
+        const correlationId = uuidv4();
+
+        ch.consume(q.queue, function(msg) {
+            if (msg.properties.correlationId === correlationId) {
+                console.log(' [.] Got %s registered', msg.content.toString());
+            }
+        }, {noAck:true});
+
+        ch.sendToQueue(`add_barang_sku_master_toko_multiple`,
+            Buffer.from(JSON.stringify(msg)),
+            {
+                correlationId:correlationId,
+                replyTo:q.queue,
+            },
+            async function(err, ok) {
+                if (err) {
+                    console.error(err);
+                } else {
+                    console.log('Message sent to queue');
+                }
+            }
+        );
     }
     catch (error) {
         console.error(error);

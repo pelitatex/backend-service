@@ -2,6 +2,7 @@ import {v4 as uuidv4} from 'uuid';
 // import queryLogger from "../../helpers/queryTransaction.js";
 import { queryTransaction } from "../../helpers/queryTransaction.js";
 import handleResolverError from '../handleResolverError.js';
+import { assignSingleBarangSKUToko } from '../../rabbitMQ/barangSKUToko_producers.js';
 
 
 const barangSKUResolver = {
@@ -78,6 +79,9 @@ const barangSKUResolver = {
       const [result] = await pool.query(query, params);
       const insertedId = result.insertId;
       queryLogger(pool, `nd_barang_sku`, result.insertId, query, params);
+
+      await assignSingleBarangSKUToko(insertedId,pool);
+
       return {id: insertedId, sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif};
     }),
     updateBarangSKU: handleResolverError(async (_, {id, input}, context) => {

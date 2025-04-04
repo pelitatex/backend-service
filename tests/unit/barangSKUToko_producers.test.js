@@ -105,10 +105,20 @@ describe('assignAllBarangSKUToko', () => {
 });
 
 describe('assignSingleBarangSKUToko', () => {
-    it('should process a single SKU and send it to the queue', async () => {
+    it('menambah single barang toko tetapi belum di assign ke toko manapun ', async () => {
         mockPool.query
-            .mockResolvedValueOnce([[{ barang_id: 1, warna_id: 1 }]])
+            .mockResolvedValueOnce([{ barang_id: 1, warna_id: 1 }])
             .mockResolvedValueOnce([[]]);
+
+        await assignSingleBarangSKUToko(1, mockPool);
+
+        expect(mockChannel.sendToQueue).toHaveBeenCalledTimes(0);
+    });
+
+    it('menambah single barang toko dan assign ke toko yang terdaftar ', async () => {
+        mockPool.query
+            .mockResolvedValueOnce([{ barang_id: 1, warna_id: 1 }])
+            .mockResolvedValueOnce([[{toko_id: 1, company: 'test'}]]);
 
         mockChannel.assertQueue.mockResolvedValue({ queue: 'test_queue' });
         mockChannel.consume.mockImplementation((queue, callback) => {
@@ -124,9 +134,4 @@ describe('assignSingleBarangSKUToko', () => {
         expect(mockChannel.sendToQueue).toHaveBeenCalledTimes(1);
     });
 
-    it('akan return error karena data sku tidak lengkap', async () => {
-        mockPool.query.mockResolvedValueOnce([[{ id: 1 }]]);
-
-        await expect(assignSingleBarangSKUToko(1, mockPool)).rejects.toThrow('SKU data tidak lengkap');
-    });
 });
