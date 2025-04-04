@@ -65,7 +65,7 @@ describe("RabbitMQ Connection", () => {
 
     it("should handle connection errors gracefully", async () => {
         amqplib.connect.mockRejectedValue(new Error("Connection failed"));
-
+        console.log('resut', await getRabbitMQ()); // Harusnya tidak mengembalikan objek connection
         await expect(getRabbitMQ()).rejects.toThrow("Connection failed");
     });
 });
