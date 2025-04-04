@@ -108,7 +108,7 @@ describe('assignSingleBarangSKUToko', () => {
     it('should process a single SKU and send it to the queue', async () => {
         mockPool.query
             .mockResolvedValueOnce([[{ barang_id: 1, warna_id: 1 }]])
-            .mockResolvedValueOnce([]);
+            .mockResolvedValueOnce([[]]);
 
         mockChannel.assertQueue.mockResolvedValue({ queue: 'test_queue' });
         mockChannel.consume.mockImplementation((queue, callback) => {
