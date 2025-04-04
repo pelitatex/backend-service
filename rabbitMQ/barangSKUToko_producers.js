@@ -89,7 +89,7 @@ export const assignAllBarangSKUToko = async (tokoAlias, toko_id, barang_id, pool
         
         while(hasRows){
             const query = `
-            SELECT sku.id as id, sku_id, nd_warna.nama as warna_jual_master
+            SELECT sku.*, nd_warna.nama as warna_jual_master
             FROM (
                 SELECT *
                 FROM nd_barang_sku WHERE barang_id = ? LIMIT ?,?
@@ -171,6 +171,7 @@ export const assignSingleBarangSKUToko = async (barang_sku_id, pool) => {
         const q = await ch.assertQueue('', {exclusive:true});
 
         let barang_id = null;
+        let warna_id = null;
         const querySKU = `SELECT sku.*, nd_warna.nama as warna_jual_master
             FROM (
                 SELECT *
@@ -181,6 +182,10 @@ export const assignSingleBarangSKUToko = async (barang_sku_id, pool) => {
         if(rowSKU.length === 0){
             throw new Error('Barang SKU not found');
         }else{
+            
+            if(!rowSKU[0].barang_id || !rowSKU[0].warna_id){
+                throw new Error('SKU data tidak lengkap');
+            }
             barang_id = rowSKU[0].barang_id;
             warna_id = rowSKU[0].warna_id;
         }
