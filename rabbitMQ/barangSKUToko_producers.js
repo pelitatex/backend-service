@@ -207,6 +207,7 @@ export const assignSingleBarangSKUToko = async (barang_sku_id, pool) => {
             `;
             const [rows] = await pool.query(query, [barang_id, offset, limit]);
             if(rows.length === 0){
+                console.warn('Toko not found');
                 hasRows = false;
                 return;
             }
