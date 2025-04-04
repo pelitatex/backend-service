@@ -78,6 +78,10 @@ export const assignAllBarangSKUToko = async (tokoAlias, toko_id, barang_id, pool
     if(!pool)
         throw new Error('Database pool not available in context.');
 
+    // 1. ambil data barang_id dan warna_id dari barang_sku_id
+    // 2. cek toko apa saja yang terdaftar dari nd_toko_barang_assignment
+    // 3. kirim ke queue add_barang_sku_master_toko
+
     let hasRows = true;
     let offset = 0;
     const limit = 50;
@@ -98,7 +102,6 @@ export const assignAllBarangSKUToko = async (tokoAlias, toko_id, barang_id, pool
             `;
 
             const [rows] = await pool.query(query, [barang_id, offset, limit]); 
-            console.log('rows', rows);
             if(rows.length === 0){
                 hasRows = false;
                 return;
@@ -165,13 +168,15 @@ export const assignSingleBarangSKUToko = async (barang_sku_id, pool) => {
     if(!pool)
         throw new Error('Database pool not available in context.');
 
+    // 1. ambil data barang_id dan warna_id dari barang_sku_id
+    // 2. cek toko apa saja yang terdaftar dari nd_toko_barang_assignment
+    // 3. kirim ke queue add_barang_sku_master_toko
     try {
         
         const ch = await connection.createConfirmChannel();
         const q = await ch.assertQueue('', {exclusive:true});
 
         let barang_id = null;
-        let warna_id = null;
         const querySKU = `SELECT sku.*, nd_warna.nama as warna_jual_master
             FROM (
                 SELECT *
@@ -187,17 +192,19 @@ export const assignSingleBarangSKUToko = async (barang_sku_id, pool) => {
                 throw new Error('SKU data tidak lengkap');
             }
             barang_id = rowSKU[0].barang_id;
-            warna_id = rowSKU[0].warna_id;
         }
         const skuData = rowSKU[0];
 
         let hasRows = true;
-        let offset = 0;
-        const limit = 50;
 
         while(hasRows){
 
-            const query = 'SELECT * FROM nd_toko_barang_assignment WHERE barang_id = ? LIMIT ?,?';
+            const query = `SELECT toko.id as toko_id, toko.alias as company * 
+            FROM (
+                SELECT *FROM nd_toko_barang_assignment WHERE barang_id = ? 
+            )sku_toko
+            LEFT JOIN nd_toko toko ON sku_toko.toko_id = toko.id
+            `;
             const [rows] = await pool.query(query, [barang_id, offset, limit]);
             if(rows.length === 0){
                 hasRows = false;
@@ -206,7 +213,7 @@ export const assignSingleBarangSKUToko = async (barang_sku_id, pool) => {
 
             const msg = {
                 sku:skuData,
-                toko_list:[...rows]
+                company_list:[...rows]
             };
             const correlationId = uuidv4();
 
@@ -216,7 +223,7 @@ export const assignSingleBarangSKUToko = async (barang_sku_id, pool) => {
                 }
             }, {noAck:true});
 
-            ch.sendToQueue(`add_barang_sku_master_toko`,
+            ch.sendToQueue(`add_barang_sku_master_toko_multiple`,
                 Buffer.from(JSON.stringify(msg)),
                 {
                     correlationId:correlationId,
