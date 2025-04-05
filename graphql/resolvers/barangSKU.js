@@ -138,10 +138,18 @@ const barangSKUResolver = {
       /* const result = await queryTransaction.insert(context, "nd_barang_sku", query, params);
       return result; */
 
-      await pool.query("START TRANSACTION");
-      const [result] = await pool.query(query, params);
-      const affectedRows = result.affectedRows;
-      await pool.query("COMMIT");
+      try {
+        await pool.query("START TRANSACTION");
+        const [result] = await pool.query(query, params);
+        const affectedRows = result.affectedRows;
+        await pool.query("COMMIT");
+        if (affectedRows === 0) {
+          throw new Error('No rows inserted');
+        }
+      } catch (error) {
+        await pool.query("ROLLBACK");
+        throw error;
+      }
 
       queryLogger(pool, `nd_barang_sku`, result.insertId, query, params);
 
