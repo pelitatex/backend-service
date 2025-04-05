@@ -65,13 +65,21 @@ describe('barangSKUResolver', () => {
   describe('Mutation.addBarangSKU', () => {
     it('should add new barangSKU and return the inserted data', async () => {
       const input = [
-        { barang_id: 1, warna_id: 2, status_aktif: true },
+        { nama_barang: 'Barang Test Red', nama_jual:'Barang Test Red', barang_id:1, warna_id:1, satuan_id: 3, status_aktif:1 },
       ];
+
       const mockResult = { insertId: 1 };
+      const newItems = [
+        { sku_id:'123-1231-23', nama_barang: 'Barang Test Red', nama_jual:'Barang Test Red', barang_id:1, warna_id:1, satuan_id: 3, status_aktif:1 },
+      ]
+      // newItems.push([sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif]);
+      
       pool.query.mockResolvedValueOnce([[{ nama: 'Barang Test', satuan_id: 3 }]]);
       pool.query.mockResolvedValueOnce([[{ warna_jual: 'Merah' }]]);
       pool.query.mockResolvedValueOnce([[{ nama: 'PCS' }]]);
       pool.query.mockResolvedValueOnce([mockResult]);
+
+      
 
       const result = await barangSKUResolver.Mutation.addBarangSKU(
         null,

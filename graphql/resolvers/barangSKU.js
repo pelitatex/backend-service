@@ -1,9 +1,8 @@
 import {v4 as uuidv4} from 'uuid';
 // import queryLogger from "../../helpers/queryTransaction.js";
-import { queryTransaction } from "../../helpers/queryTransaction.js";
+import { queryLogger } from "../../helpers/queryTransaction.js";
 import handleResolverError from '../handleResolverError.js';
 import { assignSingleBarangSKUToko } from '../../rabbitMQ/barangSKUToko_producers.js';
-
 
 const barangSKUResolver = {
   Query:{
@@ -28,7 +27,7 @@ const barangSKUResolver = {
       const pool = context.pool;
       
       const newItems = [];
-
+      const sku_id_inserted = [];
       
       for (const item of input) {
         
@@ -60,15 +59,83 @@ const barangSKUResolver = {
         const kode = uuidv4().substring(0, 13);
         const sku_id = sixDigitIdentifier +'-'+ kode;
         newItems.push([sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif]);
-
+        sku_id_inserted.push(sku_id);
       };
 
+      
       const namaBarangSet = new Set();
       for (const item of newItems) {
         if (namaBarangSet.has(item[1])) {
-          throw new Error('Duplicate nama_barang found in input.');
+          console.warn(`Duplicate nama_barang found: ${item[1]}`);
+        }else{
+          namaBarangSet.add(item[1]);
         }
-        namaBarangSet.add(item[1]);
+
+      }
+
+      const placeholder = newItems.map(() => '(?, ?, ?, ?, ?, ?, ?)').join(', ');
+      const query = `INSERT INTO nd_barang_sku (sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif) VALUES ${placeholder}`;
+
+      const params = newItems.flat();
+      /* const result = await queryTransaction.insert(context, "nd_barang_sku", query, params);
+      return result; */
+
+      const [result] = await pool.query(query, params);
+      const insertedId = result.insertId;
+      queryLogger(pool, `nd_barang_sku`, result.insertId, query, params);
+
+      await assignSingleBarangSKUToko(insertedId,pool);
+
+      return {id: insertedId, sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif};
+    }),
+    addBarangSKUBulk: handleResolverError(async(_, {input}, context) => {
+      const pool = context.pool;
+      
+      const newItems = [];
+      const sku_id_inserted = [];
+      
+      for (const item of input) {
+        
+        const { barang_id, warna_id, status_aktif } = item;
+  
+        const getNamaBarangQuery = 'SELECT nama_jual as nama FROM nd_barang WHERE id = ?';
+        const [namaBarangRows] = await pool.query(getNamaBarangQuery, [barang_id]);
+        const nama = namaBarangRows[0].nama;
+        const satuan_id = namaBarangRows[0].satuan_id;
+  
+        const getWarnaJualQuery = 'SELECT warna_jual FROM nd_warna WHERE id = ?';
+        const [warnaJualRows] = await pool.query(getWarnaJualQuery, [warna_id]);
+        const warna_jual = warnaJualRows[0].warna_jual;
+  
+        
+        const getSatuanQuery = 'SELECT nama FROM nd_satuan WHERE id = ?';
+        const [satuanRows] = await pool.query(getSatuanQuery, [satuan_id]);
+        const nama_satuan = satuanRows[0].nama;
+  
+  
+        const nama_jual = nama.toUpperCase()+' '+warna_jual.toUpperCase();
+        const nama_barang = nama.toUpperCase()+' '+warna_jual.toUpperCase()+' '+nama_satuan.toUpperCase();
+  
+          
+        const barangIdStr = String(barang_id).padStart(2, '0');
+        const warnaIdStr = String(warna_id).padStart(2, '0');
+        const satuanIdStr = String(satuan_id).padStart(2, '0');
+        const sixDigitIdentifier = barangIdStr + warnaIdStr + satuanIdStr;
+        const kode = uuidv4().substring(0, 13);
+        const sku_id = sixDigitIdentifier +'-'+ kode;
+        newItems.push([sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif]);
+        sku_id_inserted.push(sku_id);
+      };
+
+      
+      const namaBarangSet = new Set();
+      for (const item of newItems) {
+        if (namaBarangSet.has(item[1])) {
+          console.warn(`Duplicate nama_barang found: ${item[1]}`);
+        }else{
+          namaBarangSet.add(item[1]);
+        }
+
       }
 
       const placeholder = newItems.map(() => '(?, ?, ?, ?, ?, ?, ?)').join(', ');
