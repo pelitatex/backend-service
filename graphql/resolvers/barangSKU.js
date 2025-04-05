@@ -27,11 +27,12 @@ const barangSKUResolver = {
       const pool = context.pool;
       
       const { barang_id, warna_id, satuan_id } = input;
+      console.log('input awal',barang_id,warna_id, satuan_id);
+
 
       const getNamaBarangQuery = 'SELECT nama_jual as nama FROM nd_barang WHERE id = ?';
       const [namaBarangRows] = await pool.query(getNamaBarangQuery, [barang_id]);
       const nama = namaBarangRows.nama;
-      // const satuan_id = namaBarangRows[0].satuan_id;
 
       const getWarnaJualQuery = 'SELECT warna_jual FROM nd_warna WHERE id = ?';
       const [warnaJualRows] = await pool.query(getWarnaJualQuery, [warna_id]);
@@ -45,8 +46,8 @@ const barangSKUResolver = {
 
       const nama_jual = nama.toUpperCase()+' '+warna_jual.toUpperCase();
       const nama_barang = nama.toUpperCase()+' '+warna_jual.toUpperCase()+' '+nama_satuan.toUpperCase();
-        
-      console.log('test nama',nama_barang, nama_jual);
+
+      console.log('input',barang_id,warna_id, satuan_id);
 
       const barangIdStr = String(barang_id).padStart(2, '0');
       const warnaIdStr = String(warna_id).padStart(2, '0');
@@ -60,14 +61,23 @@ const barangSKUResolver = {
       /* const result = await queryTransaction.insert(context, "nd_barang_sku", query, params);
       return result; */
 
-      console.log('test bid wid',barang_id, warna_id)
+      try {
 
-      const params = [sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, 1];
-      const [result] = await pool.query(query, params);
-      const insertedId = result.insertId;
-      queryLogger(pool, `nd_barang_sku`, result.insertId, query, params);
+        const params = [sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, 1];
+        await pool.query("START TRANSACTION");
+        const [result] = await pool.query(query, params);
+        const insertedId = result.insertId;
+        await pool.query("COMMIT");
+        queryLogger(pool, `nd_barang_sku`, insertedId, query, params);
+        
+      } catch (error) {
+        await pool.query("ROLLBACK");
+        throw error;
+      }
 
       await assignSingleBarangSKUToko(insertedId,pool);
+
+      console.log('params',params);
 
       return {id: insertedId, sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif:1};
     }),
@@ -141,7 +151,7 @@ const barangSKUResolver = {
       
       return resultInserted;
     }),
-    updateBarangSKU: handleResolverError(async (_, {id, input}, context) => {
+    /*updateBarangSKU: handleResolverError(async (_, {id, input}, context) => {
       const pool = context.pool;
       
       const checkExistQuery = 'SELECT * FROM nd_barang_sku WHERE nama_barang = ? and id <> ?';
@@ -165,8 +175,6 @@ const barangSKUResolver = {
 
       const query = 'UPDATE nd_barang_sku SET nama_barang = ?, nama_jual = ?, status_aktif = ? WHERE id = ?';
       const params = [nama_barang.toUpperCase(), nama_jual.toUpperCase(), status_aktif, id];
-      /* const result = await queryTransaction.update(context, "nd_barang_sku", id, query, params);
-      return result; */
 
       const [result] = await pool.query(query, params);
       if (result.affectedRows === 0) {
@@ -177,7 +185,7 @@ const barangSKUResolver = {
       const updatedQuery = `SELECT * FROM nd_barang_sku WHERE id = ?`;
       const [rows] = await pool.query(updatedQuery, [id]);
       return rows[0];
-    }),
+    }),*/
   }
 }
 

@@ -64,8 +64,46 @@ describe('barangSKUResolver', () => {
 
   describe('Mutation.addBarangSKU', () => {
     it('should add new barangSKU and return the inserted data', async () => {
-      const input = [
-        { barang_id:1, warna_id:1, satuan_id: 1 },
+      const input ={ barang_id:1, warna_id:1, satuan_id: 1 };
+
+      const mockResult = { insertId: 1 };
+      const newItems = [
+        { sku_id:'123-1231-23', nama_barang: 'Barang Test Red', nama_jual:'Barang Test Red', barang_id:1, warna_id:1, satuan_id: 3, status_aktif:1 },
+      ]
+      // newItems.push([sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif]);
+      
+      pool.query.mockResolvedValueOnce([{ nama: 'Barang Test' }]);
+      pool.query.mockResolvedValueOnce([{ warna_jual: 'Merah' }]);
+      pool.query.mockResolvedValueOnce([{ nama: 'PCS' }]);
+      pool.query.mockResolvedValueOnce([mockResult]);
+
+      
+
+      const result = await barangSKUResolver.Mutation.addBarangSKU(
+        null,
+        { input },
+        { pool }
+      );
+
+      expect(pool.query).toHaveBeenCalledTimes(5);
+      expect(assignSingleBarangSKUToko).toHaveBeenCalledWith(1, pool);
+      expect(result).toMatchObject({
+        id: 1,
+        sku_id: expect.any(String),
+        nama_barang: expect.any(String),
+        nama_jual: expect.any(String),
+        barang_id: 1,
+        warna_id: 1,
+        satuan_id: 1,
+        status_aktif: 1,
+      });
+    });
+  });
+
+  describe('Mutation.addBarangSKUBulk', () => {
+    it('should add new barangSKUBulk and return the inserted data', async () => {
+      const input =[
+        { barang_id:1, warna_id:1, satuan_id: 1 }
       ];
 
       const mockResult = { insertId: 1 };
@@ -95,45 +133,11 @@ describe('barangSKUResolver', () => {
         nama_barang: expect.any(String),
         nama_jual: expect.any(String),
         barang_id: 1,
-        warna_id: 2,
-        satuan_id: 3,
+        warna_id: 1,
+        satuan_id: 1,
         status_aktif: 1,
       });
     });
   });
 
-  describe('Mutation.updateBarangSKU', () => {
-    it('should update an existing barangSKU and return the updated data', async () => {
-      const id = 1;
-      const input = { nama_barang: 'Updated Barang', status_aktif: true };
-      const mockResult = { affectedRows: 1 };
-      const mockUpdatedData = [{ id: 1, nama_barang: 'Updated Barang' }];
-
-      pool.query.mockResolvedValueOnce([[]]); // Check for duplicates
-      pool.query.mockResolvedValueOnce([mockResult]);
-      pool.query.mockResolvedValueOnce([mockUpdatedData]);
-
-      const result = await barangSKUResolver.Mutation.updateBarangSKU(
-        null,
-        { id, input },
-        { pool }
-      );
-
-      expect(pool.query).toHaveBeenCalledTimes(3);
-      expect(result).toEqual(mockUpdatedData[0]);
-    });
-
-    it('should throw an error if the barangSKU does not exist', async () => {
-      const id = 1;
-      const input = { nama_barang: 'Nonexistent Barang', status_aktif: true };
-      const mockResult = { affectedRows: 0 };
-
-      pool.query.mockResolvedValueOnce([[]]); // Check for duplicates
-      pool.query.mockResolvedValueOnce([mockResult]);
-
-      await expect(
-        barangSKUResolver.Mutation.updateBarangSKU(null, { id, input }, { pool })
-      ).rejects.toThrow('Barang SKU not found');
-    });
-  });
 });
