@@ -185,7 +185,7 @@ const barangSKUResolver = {
         throw error;
       }
 
-      queryLogger(pool, `nd_barang_sku`, 'result.insertId', query, params);
+      queryLogger(pool, `nd_barang_sku`, 0, query, params);
 
       // await assignSingleBarangSKUToko(insertedId,pool);
 
