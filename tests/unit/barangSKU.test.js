@@ -106,10 +106,7 @@ describe('barangSKUResolver', () => {
         { barang_id:1, warna_id:1, satuan_id: 1 }
       ];
 
-      const mockResult = [{ insertId: 1,affectedRows: 1 }];
-      const newItems = [
-        { sku_id:'123-1231-23', nama_barang: 'Barang Test Red', nama_jual:'Barang Test Red', barang_id:1, warna_id:1, satuan_id: 3, status_aktif:1 },
-      ]
+      const mockResult = { insertId: 1,affectedRows: 1 };
       // newItems.push([sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif]);
       
       pool.query.mockResolvedValueOnce([[{ id:1, nama: 'Barang Test' }]]);
