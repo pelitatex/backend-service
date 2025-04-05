@@ -85,25 +85,55 @@ const barangSKUResolver = {
       const pool = context.pool;
       
       const newItems = [];
-      const sku_id_inserted = [];
+      const barangIdSet = new Set();
+      const warnaIdSet = new Set();
+      const satuanIdSet = new Set();
+      const skuIidInserted = [];
+      const status_aktif = 1;
       
       for (const item of input) {
         
-        const { barang_id, warna_id, status_aktif } = item;
-  
-        const getNamaBarangQuery = 'SELECT nama_jual as nama FROM nd_barang WHERE id = ?';
-        const [namaBarangRows] = await pool.query(getNamaBarangQuery, [barang_id]);
-        const nama = namaBarangRows[0].nama;
-        const satuan_id = namaBarangRows[0].satuan_id;
-  
-        const getWarnaJualQuery = 'SELECT warna_jual FROM nd_warna WHERE id = ?';
-        const [warnaJualRows] = await pool.query(getWarnaJualQuery, [warna_id]);
-        const warna_jual = warnaJualRows[0].warna_jual;
-  
-        
-        const getSatuanQuery = 'SELECT nama FROM nd_satuan WHERE id = ?';
-        const [satuanRows] = await pool.query(getSatuanQuery, [satuan_id]);
-        const nama_satuan = satuanRows[0].nama;
+        const { barang_id, warna_id, satuan_id } = item;
+        if(!barangIdSet.has(barang_id)) {
+          barangIdSet.add(barang_id);
+        }
+        if(!warnaIdSet.has(warna_id)) {
+          warnaIdSet.add(warna_id);
+        }
+        if(!satuanIdSet.has(satuan_id)) {
+          satuanIdSet.add(satuan_id);
+        }
+
+      };
+
+      const barangIdKey = {};
+      const warnaIdKey = {};
+      const satuanIdKey = {};
+
+      const getNamaBarangQuery = 'SELECT nama_jual as nama FROM nd_barang WHERE id IN (?)';
+      const [namaBarangRows] = await pool.query(getNamaBarangQuery, [[...barangIdSet].join(',')]);
+      for (const row of namaBarangRows) {
+        barangIdKey[row.id] = row.nama;
+      }
+
+      const getWarnaJualQuery = 'SELECT warna_jual FROM nd_warna WHERE id IN (?)';
+      const [warnaJualRows] = await pool.query(getWarnaJualQuery, [[...warnaIdSet].join(',')]);
+      for (const row of warnaJualRows) {
+        warnaIdKey[row.id] = row.warna_jual;
+      }
+      
+      const getSatuanQuery = 'SELECT nama FROM nd_satuan WHERE id IN (?)';
+      const [satuanRows] = await pool.query(getSatuanQuery, [[...satuanIdSet].join(',')]);
+      for (const row of satuanRows) {
+        satuanIdKey[row.id] = row.nama;
+      }
+      
+      for (const item of input){
+
+        const { barang_id, warna_id, satuan_id } = item;
+        const nama = barangIdKey[barang_id];
+        const warna_jual = warnaIdKey[warna_id];        
+        const nama_satuan = satuanIdKey[satuan_id];
   
   
         const nama_jual = nama.toUpperCase()+' '+warna_jual.toUpperCase();
@@ -117,8 +147,8 @@ const barangSKUResolver = {
         const kode = uuidv4().substring(0, 13);
         const sku_id = sixDigitIdentifier +'-'+ kode;
         newItems.push([sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif]);
-        sku_id_inserted.push(sku_id);
-      };
+        skuIidInserted.push(sku_id);
+      }
 
       
       const namaBarangSet = new Set();
@@ -155,7 +185,7 @@ const barangSKUResolver = {
 
       // await assignSingleBarangSKUToko(insertedId,pool);
 
-      const [resultInserted] = await pool.query(`SELECT * from nd_barang_sku WHERE sku_id IN (?)`, sku_id_inserted.join(','));
+      const [resultInserted] = await pool.query(`SELECT * from nd_barang_sku WHERE sku_id IN (?)`, skuIidInserted.join(','));
       
       return resultInserted;
     }),
