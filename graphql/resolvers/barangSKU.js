@@ -61,12 +61,13 @@ const barangSKUResolver = {
       /* const result = await queryTransaction.insert(context, "nd_barang_sku", query, params);
       return result; */
 
+      let insertedId = null;
       try {
 
         const params = [sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, 1];
         await pool.query("START TRANSACTION");
         const [result] = await pool.query(query, params);
-        const insertedId = result.insertId;
+        insertedId = result.insertId;
         await pool.query("COMMIT");
         queryLogger(pool, `nd_barang_sku`, insertedId, query, params);
         
@@ -76,8 +77,6 @@ const barangSKUResolver = {
       }
 
       await assignSingleBarangSKUToko(insertedId,pool);
-
-      console.log('params',params);
 
       return {id: insertedId, sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif:1};
     }),
@@ -146,7 +145,15 @@ const barangSKUResolver = {
         const sixDigitIdentifier = barangIdStr + warnaIdStr + satuanIdStr;
         const kode = uuidv4().substring(0, 13);
         const sku_id = sixDigitIdentifier +'-'+ kode;
-        newItems.push([sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif]);
+        newItems.push({
+          sku_id:sku_id, 
+          nama_barang:nama_barang, 
+          nama_jual:nama_jual, 
+          barang_id:barang_id, 
+          warna_id:warna_id, 
+          satuan_id:satuan_id, 
+          status_aktif:status_aktif
+        });
         skuIidInserted.push(sku_id);
       }
 
@@ -163,12 +170,16 @@ const barangSKUResolver = {
 
       const placeholder = newItems.map(() => '(?, ?, ?, ?, ?, ?, ?)').join(', ');
       const query = `INSERT INTO nd_barang_sku (sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif) VALUES ${placeholder}`;
+      // console.log('placeholder',placeholder);
 
-      const params = newItems.flat();
+      const params = newItems.flatMap(item=>[item.sku_id, item.nama_barang, item.nama_jual, item.barang_id, item.warna_id, item.satuan_id, item.status_aktif]);
       /* const result = await queryTransaction.insert(context, "nd_barang_sku", query, params);
       return result; */
 
+      console.log('params',params);
       try {
+        console.log('query',query);
+        console.log('params',params);
         await pool.query("START TRANSACTION");
         const [result] = await pool.query(query, params);
         const affectedRows = result.affectedRows;
