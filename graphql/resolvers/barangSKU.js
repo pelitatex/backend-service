@@ -26,12 +26,14 @@ const barangSKUResolver = {
     addBarangSKU: handleResolverError(async(_, {input}, context) => {
       const pool = context.pool;
       
-      const { barang_id, warna_id, status_aktif } = item;
+      const { barang_id, warna_id, satuan_id } = {input};
+      console.log('test bid wid2',barang_id, warna_id, satuan_id)
+
 
       const getNamaBarangQuery = 'SELECT nama_jual as nama FROM nd_barang WHERE id = ?';
       const [namaBarangRows] = await pool.query(getNamaBarangQuery, [barang_id]);
       const nama = namaBarangRows[0].nama;
-      const satuan_id = namaBarangRows[0].satuan_id;
+      // const satuan_id = namaBarangRows[0].satuan_id;
 
       const getWarnaJualQuery = 'SELECT warna_jual FROM nd_warna WHERE id = ?';
       const [warnaJualRows] = await pool.query(getWarnaJualQuery, [warna_id]);
@@ -58,6 +60,8 @@ const barangSKUResolver = {
       /* const result = await queryTransaction.insert(context, "nd_barang_sku", query, params);
       return result; */
 
+      console.log('test bid wid',barang_id, warna_id)
+
       const params = [sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, 1];
       const [result] = await pool.query(query, params);
       const insertedId = result.insertId;
@@ -65,7 +69,7 @@ const barangSKUResolver = {
 
       await assignSingleBarangSKUToko(insertedId,pool);
 
-      return {id: insertedId, sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif};
+      return {id: insertedId, sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif:1};
     }),
     addBarangSKUBulk: handleResolverError(async(_, {input}, context) => {
       const pool = context.pool;

@@ -65,7 +65,7 @@ describe('barangSKUResolver', () => {
   describe('Mutation.addBarangSKU', () => {
     it('should add new barangSKU and return the inserted data', async () => {
       const input = [
-        { nama_barang: 'Barang Test Red', nama_jual:'Barang Test Red', barang_id:1, warna_id:1, satuan_id: 3, status_aktif:1 },
+        { barang_id:1, warna_id:1, satuan_id: 1 },
       ];
 
       const mockResult = { insertId: 1 };
@@ -87,7 +87,7 @@ describe('barangSKUResolver', () => {
         { pool }
       );
 
-      expect(pool.query).toHaveBeenCalledTimes(4);
+      expect(pool.query).toHaveBeenCalledTimes(5);
       expect(assignSingleBarangSKUToko).toHaveBeenCalledWith(1, pool);
       expect(result).toMatchObject({
         id: 1,
@@ -97,7 +97,7 @@ describe('barangSKUResolver', () => {
         barang_id: 1,
         warna_id: 2,
         satuan_id: 3,
-        status_aktif: true,
+        status_aktif: 1,
       });
     });
   });
