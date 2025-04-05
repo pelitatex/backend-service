@@ -25,10 +25,7 @@ const barangSKUResolver = {
   Mutation:{
     addBarangSKU: handleResolverError(async(_, {input}, context) => {
       const pool = context.pool;
-      
       const { barang_id, warna_id, satuan_id } = input;
-      console.log('input awal',barang_id,warna_id, satuan_id);
-
 
       const getNamaBarangQuery = 'SELECT nama_jual as nama FROM nd_barang WHERE id = ?';
       const [namaBarangRows] = await pool.query(getNamaBarangQuery, [barang_id]);
@@ -46,8 +43,6 @@ const barangSKUResolver = {
 
       const nama_jual = nama.toUpperCase()+' '+warna_jual.toUpperCase();
       const nama_barang = nama.toUpperCase()+' '+warna_jual.toUpperCase()+' '+nama_satuan.toUpperCase();
-
-      console.log('input',barang_id,warna_id, satuan_id);
 
       const barangIdStr = String(barang_id).padStart(2, '0');
       const warnaIdStr = String(warna_id).padStart(2, '0');
@@ -176,10 +171,8 @@ const barangSKUResolver = {
       /* const result = await queryTransaction.insert(context, "nd_barang_sku", query, params);
       return result; */
 
-      console.log('params',params);
+      let insertedId = null;
       try {
-        console.log('query',query);
-        console.log('params',params);
         await pool.query("START TRANSACTION");
         const [result] = await pool.query(query, params);
         const affectedRows = result.affectedRows;
@@ -192,7 +185,7 @@ const barangSKUResolver = {
         throw error;
       }
 
-      queryLogger(pool, `nd_barang_sku`, result.insertId, query, params);
+      queryLogger(pool, `nd_barang_sku`, 'result.insertId', query, params);
 
       // await assignSingleBarangSKUToko(insertedId,pool);
 

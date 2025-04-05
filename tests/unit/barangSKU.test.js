@@ -106,13 +106,15 @@ describe('barangSKUResolver', () => {
         { barang_id:1, warna_id:1, satuan_id: 1 }
       ];
 
-      const mockResult = { insertId: 1,affectedRows: 1 };
+      const mockResult = [{ insertId: 1,affectedRows: 1 }];
       // newItems.push([sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif]);
       
       pool.query.mockResolvedValueOnce([[{ id:1, nama: 'Barang Test' }]]);
       pool.query.mockResolvedValueOnce([[{ id:1, warna_jual: 'Merah' }]]);
       pool.query.mockResolvedValueOnce([[{ id:1, nama: 'PCS' }]]);
+      pool.query.mockResolvedValueOnce([[]]);
       pool.query.mockResolvedValueOnce([mockResult]);
+      pool.query.mockResolvedValueOnce([[]]);
       
 
       const result = await barangSKUResolver.Mutation.addBarangSKUBulk(
