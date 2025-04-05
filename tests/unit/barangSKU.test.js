@@ -106,7 +106,7 @@ describe('barangSKUResolver', () => {
         { barang_id:1, warna_id:1, satuan_id: 1 }
       ];
 
-      const mockResult = { insertId: 1,affectedRows: 1 };
+      const mockResult = [{ insertId: 1,affectedRows: 1 }];
       const newItems = [
         { sku_id:'123-1231-23', nama_barang: 'Barang Test Red', nama_jual:'Barang Test Red', barang_id:1, warna_id:1, satuan_id: 3, status_aktif:1 },
       ]
