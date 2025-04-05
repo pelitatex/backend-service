@@ -74,9 +74,9 @@ describe('barangSKUResolver', () => {
       ]
       // newItems.push([sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif]);
       
-      pool.query.mockResolvedValueOnce([[{ nama: 'Barang Test', satuan_id: 3 }]]);
-      pool.query.mockResolvedValueOnce([[{ warna_jual: 'Merah' }]]);
-      pool.query.mockResolvedValueOnce([[{ nama: 'PCS' }]]);
+      pool.query.mockResolvedValueOnce([{ nama: 'Barang Test' }]);
+      pool.query.mockResolvedValueOnce([{ warna_jual: 'Merah' }]);
+      pool.query.mockResolvedValueOnce([{ nama: 'PCS' }]);
       pool.query.mockResolvedValueOnce([mockResult]);
 
       

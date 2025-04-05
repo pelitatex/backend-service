@@ -26,28 +26,28 @@ const barangSKUResolver = {
     addBarangSKU: handleResolverError(async(_, {input}, context) => {
       const pool = context.pool;
       
-      const { barang_id, warna_id, satuan_id } = {input};
-      console.log('test bid wid2',barang_id, warna_id, satuan_id)
-
+      const { barang_id, warna_id, satuan_id } = input;
 
       const getNamaBarangQuery = 'SELECT nama_jual as nama FROM nd_barang WHERE id = ?';
       const [namaBarangRows] = await pool.query(getNamaBarangQuery, [barang_id]);
-      const nama = namaBarangRows[0].nama;
+      const nama = namaBarangRows.nama;
       // const satuan_id = namaBarangRows[0].satuan_id;
 
       const getWarnaJualQuery = 'SELECT warna_jual FROM nd_warna WHERE id = ?';
       const [warnaJualRows] = await pool.query(getWarnaJualQuery, [warna_id]);
-      const warna_jual = warnaJualRows[0].warna_jual;
+      const warna_jual = warnaJualRows.warna_jual;
 
       
       const getSatuanQuery = 'SELECT nama FROM nd_satuan WHERE id = ?';
       const [satuanRows] = await pool.query(getSatuanQuery, [satuan_id]);
-      const nama_satuan = satuanRows[0].nama;
+      const nama_satuan = satuanRows.nama;
 
 
       const nama_jual = nama.toUpperCase()+' '+warna_jual.toUpperCase();
       const nama_barang = nama.toUpperCase()+' '+warna_jual.toUpperCase()+' '+nama_satuan.toUpperCase();
         
+      console.log('test nama',nama_barang, nama_jual);
+
       const barangIdStr = String(barang_id).padStart(2, '0');
       const warnaIdStr = String(warna_id).padStart(2, '0');
       const satuanIdStr = String(satuan_id).padStart(2, '0');
