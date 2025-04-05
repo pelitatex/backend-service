@@ -124,13 +124,18 @@ const barangSKUResolver = {
       /* const result = await queryTransaction.insert(context, "nd_barang_sku", query, params);
       return result; */
 
+      await pool.query("START TRANSACTION");
       const [result] = await pool.query(query, params);
-      const insertedId = result.insertId;
+      const affectedRows = result.affectedRows;
+      await pool.query("COMMIT");
+
       queryLogger(pool, `nd_barang_sku`, result.insertId, query, params);
 
-      await assignSingleBarangSKUToko(insertedId,pool);
+      // await assignSingleBarangSKUToko(insertedId,pool);
 
-      return {id: insertedId, sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif};
+      const [resultInserted] = await pool.query(`SELECT * from nd_barang_sku WHERE sku_id IN (?)`, sku_id_inserted.join(','));
+      
+      return resultInserted;
     }),
     updateBarangSKU: handleResolverError(async (_, {id, input}, context) => {
       const pool = context.pool;
