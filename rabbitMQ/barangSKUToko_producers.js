@@ -239,3 +239,82 @@ export const assignSingleBarangSKUToko = async (barang_sku_id, pool) => {
 }
 
 
+export const assignSelectedBarangSKUToko = async (barang_sku_id, pool) => {
+    const {connection} = await getRabbitMQ();
+
+    if(connection === undefined)
+        throw new Error('No Connection');
+
+    if(!pool)
+        throw new Error('Database pool not available in context.');
+
+    // 1. ambil data barang_id dan warna_id dari barang_sku_id
+    // 2. cek toko apa saja yang terdaftar dari nd_toko_barang_assignment
+    // 3. kirim ke queue add_barang_sku_master_toko
+    try {
+
+        if(!Array.isArray(barang_sku_id)){
+            throw new Error('barang_sku_id should be an array');
+        }
+        
+        const ch = await connection.createConfirmChannel();
+        const q = await ch.assertQueue('', {exclusive:true});
+
+        const querySKU = `SELECT sku.*, nd_warna.nama as warna_jual_master
+            FROM (
+                SELECT *
+                FROM nd_barang_sku WHERE id IN (?)
+            ) sku
+            LEFT JOIN nd_warna ON sku.warna_id = nd_warna.id`;
+        const [rowSKU] = await pool.query(querySKU, [barang_sku_id]);
+        if(rowSKU.length === 0){
+            throw new Error('Barang SKU not found');
+        }
+
+
+        const skuData = rowSKU[0];
+        const queryToko = `SELECT toko.id as toko_id, toko.alias as company 
+            FROM (
+                SELECT * FROM nd_toko_barang_assignment WHERE barang_id IN (?) 
+            )sku_toko
+            LEFT JOIN nd_toko toko ON sku_toko.toko_id = toko.id
+            GROUP BY toko_id
+            WHERE toko_id is not null`;
+        const [rowsToko] = await pool.query(queryToko, [barangIdList]);
+        if(rowsToko.length === 0){
+            console.warn('Toko not found');
+            return;
+        }
+
+        const msg = {
+            sku:skuData,
+            company_list:[...rowsToko]
+        };
+        const correlationId = uuidv4();
+
+        ch.consume(q.queue, function(msg) {
+            if (msg.properties.correlationId === correlationId) {
+                console.log(' [.] Got %s registered', msg.content.toString());
+            }
+        }, {noAck:true});
+
+        ch.sendToQueue(`add_barang_sku_master_toko_multiple`,
+            Buffer.from(JSON.stringify(msg)),
+            {
+                correlationId:correlationId,
+                replyTo:q.queue,
+            },
+            async function(err, ok) {
+                if (err) {
+                    console.error(err);
+                } else {
+                    console.log('Message sent to queue');
+                }
+            }
+        );
+    }
+    catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
