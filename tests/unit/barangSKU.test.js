@@ -139,7 +139,7 @@ describe('barangSKUResolver', () => {
             nama_jual: 'Barang Test Merah',
             barang_id: 1,
             warna_id: 1,
-            satuan_id: 1,
+            satuan_id: 2,
             status_aktif: 1
           }
         ],undefined
@@ -153,7 +153,7 @@ describe('barangSKUResolver', () => {
       );
 
       expect(pool.query).toHaveBeenCalledTimes(8);
-      expect(assignSelectedBarangSKUToko).toHaveBeenCalledWith([1], pool);
+      expect(assignSelectedBarangSKUToko).toHaveBeenCalledWith([1,2], pool);
       // expect(assignSingleBarangSKUToko).toHaveBeenCalledWith(1, pool);
       expect(result).toMatchObject([{
         id: 1,
@@ -163,6 +163,16 @@ describe('barangSKUResolver', () => {
         barang_id: 1,
         warna_id: 1,
         satuan_id: 1,
+        status_aktif: 1,
+      },
+      {
+        id: 2,
+        sku_id: expect.any(String),
+        nama_barang: expect.any(String),
+        nama_jual: expect.any(String),
+        barang_id: 1,
+        warna_id: 1,
+        satuan_id: 2,
         status_aktif: 1,
       }]);
     });

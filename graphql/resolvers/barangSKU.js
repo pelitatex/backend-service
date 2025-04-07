@@ -186,10 +186,10 @@ const barangSKUResolver = {
 
       queryLogger(pool, `nd_barang_sku`, 0, query, params);
 
-      await assignSelectedBarangSKUToko(insertedId,pool);
       
       const [resultInserted] = await pool.query(`SELECT * from nd_barang_sku WHERE sku_id IN (?)`, [skuIdInserted]);
-      console.log('resultInserted',resultInserted);
+      const insertedIds = resultInserted.map(item => item.id);
+      await assignSelectedBarangSKUToko(insertedIds,pool);
       return resultInserted;
     }),
     /*updateBarangSKU: handleResolverError(async (_, {id, input}, context) => {
