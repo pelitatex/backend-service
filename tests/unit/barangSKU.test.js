@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import barangSKUResolver from '../../graphql/resolvers/barangSKU.js';
 import handleResolverError from '../../graphql/handleResolverError.js';
-import { assignSingleBarangSKUToko } from '../../rabbitMQ/barangSKUToko_producers.js';
+import { assignSingleBarangSKUToko, assignSelectedBarangSKUToko } from '../../rabbitMQ/barangSKUToko_producers.js';
 
 vi.mock('../handleResolverError.js', () => ({
   default: vi.fn((fn) => fn),
@@ -9,6 +9,7 @@ vi.mock('../handleResolverError.js', () => ({
 
 vi.mock('../../rabbitMQ/barangSKUToko_producers.js', () => ({
   assignSingleBarangSKUToko: vi.fn(),
+  assignSelectedBarangSKUToko: vi.fn(),
 }));
 
 describe('barangSKUResolver', () => {
@@ -103,7 +104,8 @@ describe('barangSKUResolver', () => {
   describe('Mutation.addBarangSKUBulk', () => {
     it('should add new barangSKUBulk and return the inserted data', async () => {
       const input =[
-        { barang_id:1, warna_id:1, satuan_id: 1 }
+        { barang_id:1, warna_id:1, satuan_id: 1 },
+        { barang_id:1, warna_id:1, satuan_id: 2 },
       ];
 
       const mockResult = { insertId: 1,affectedRows: 1 };
@@ -111,7 +113,7 @@ describe('barangSKUResolver', () => {
       
       pool.query.mockResolvedValueOnce([[{ id:1, nama: 'Barang Test' }]]);
       pool.query.mockResolvedValueOnce([[{ id:1, warna_jual: 'Merah' }]]);
-      pool.query.mockResolvedValueOnce([[{ id:1, nama: 'PCS' }]]);
+      pool.query.mockResolvedValueOnce([[{ id:1, nama: 'PCS' }, { id:2, nama: 'YARD' }]]);
 
       pool.query.mockResolvedValueOnce([[]]);
       pool.query.mockResolvedValueOnce([mockResult]);
@@ -129,6 +131,16 @@ describe('barangSKUResolver', () => {
             warna_id: 1,
             satuan_id: 1,
             status_aktif: 1
+          },
+          {
+            id: 2,
+            sku_id: '123-1231-231',
+            nama_barang: 'Barang Test Merah YARD',
+            nama_jual: 'Barang Test Merah',
+            barang_id: 1,
+            warna_id: 1,
+            satuan_id: 1,
+            status_aktif: 1
           }
         ],undefined
       ]);
@@ -141,6 +153,7 @@ describe('barangSKUResolver', () => {
       );
 
       expect(pool.query).toHaveBeenCalledTimes(8);
+      expect(assignSelectedBarangSKUToko).toHaveBeenCalledWith([1], pool);
       // expect(assignSingleBarangSKUToko).toHaveBeenCalledWith(1, pool);
       expect(result).toMatchObject([{
         id: 1,
