@@ -259,6 +259,8 @@ export const assignSelectedBarangSKUToko = async (barang_sku_id, pool) => {
         
         const ch = await connection.createConfirmChannel();
         const q = await ch.assertQueue('', {exclusive:true});
+        let barangIdList = [];
+
 
         const querySKU = `SELECT sku.*, nd_warna.nama as warna_jual_master
             FROM (
@@ -269,6 +271,10 @@ export const assignSelectedBarangSKUToko = async (barang_sku_id, pool) => {
         const [rowSKU] = await pool.query(querySKU, [barang_sku_id]);
         if(rowSKU.length === 0){
             throw new Error('Barang SKU not found');
+        }
+        barangIdList = rowSKU.map(row => row.barang_id);
+        if(barangIdList.length === 0){
+            throw new Error('Barang ID not found');
         }
 
 

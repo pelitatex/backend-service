@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { assignBarangToko, assignAllBarangSKUToko, assignSingleBarangSKUToko } from '../../rabbitMQ/barangSKUToko_producers.js';
+import { assignBarangToko, assignAllBarangSKUToko, assignSingleBarangSKUToko, assignSelectedBarangSKUToko } from '../../rabbitMQ/barangSKUToko_producers.js';
 
 const mockConfirmChannel = {
     createConfirmChannel: vi.fn(),
@@ -139,10 +139,10 @@ describe('assignSingleBarangSKUToko', () => {
 describe('assignSelectedBarangSKUToko', () => {
     it('menambah selected atau multiple barang sku kemudian assign ke toko tetapi belum affiliate ke toko manapun ', async () => {
         mockPool.query
-            .mockResolvedValueOnce([{ barang_id: 1, warna_id: 1 }])
+            .mockResolvedValueOnce([[{ barang_id: 1, warna_id: 1 }]])
             .mockResolvedValueOnce([[]]);
 
-        await assignSelectedBarangSKUToko(1, mockPool);
+        await assignSelectedBarangSKUToko([1], mockPool);
 
         expect(mockChannel.sendToQueue).toHaveBeenCalledTimes(0);
     });
@@ -161,7 +161,7 @@ describe('assignSelectedBarangSKUToko', () => {
             callback(msg);
         });
 
-        await assignSingleBarangSKUToko(1, mockPool);
+        await assignSingleBarangSKUToko([1,2], mockPool);
 
         expect(mockChannel.sendToQueue).toHaveBeenCalledTimes(1);
     });
