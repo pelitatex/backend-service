@@ -135,3 +135,35 @@ describe('assignSingleBarangSKUToko', () => {
     });
 
 });
+
+describe('assignSelectedBarangSKUToko', () => {
+    it('menambah selected atau multiple barang sku kemudian assign ke toko tetapi belum affiliate ke toko manapun ', async () => {
+        mockPool.query
+            .mockResolvedValueOnce([{ barang_id: 1, warna_id: 1 }])
+            .mockResolvedValueOnce([[]]);
+
+        await assignSelectedBarangSKUToko(1, mockPool);
+
+        expect(mockChannel.sendToQueue).toHaveBeenCalledTimes(0);
+    });
+
+    it('menambah selected atau multiple barang toko dan assign ke toko yang terdaftar ', async () => {
+        mockPool.query
+            .mockResolvedValueOnce([[{ barang_id: 1, warna_id: 1 }, { barang_id: 1, warna_id: 2 }]])
+            .mockResolvedValueOnce([[{toko_id: 1, company: 'test'}]]);
+
+        mockChannel.assertQueue.mockResolvedValue({ queue: 'test_queue' });
+        mockChannel.consume.mockImplementation((queue, callback) => {
+            const msg = {
+                content: Buffer.from(JSON.stringify({ status: 'success' })),
+                properties: { correlationId: 'test-correlation-id' },
+            };
+            callback(msg);
+        });
+
+        await assignSingleBarangSKUToko(1, mockPool);
+
+        expect(mockChannel.sendToQueue).toHaveBeenCalledTimes(1);
+    });
+
+});
