@@ -196,7 +196,9 @@ export const assignSingleBarangSKUToko = async (barang_sku_id, pool) => {
             FROM (
                 SELECT * FROM nd_toko_barang_assignment WHERE barang_id = ? 
             )sku_toko
-            LEFT JOIN nd_toko toko ON sku_toko.toko_id = toko.id`;
+            LEFT JOIN nd_toko toko ON sku_toko.toko_id = toko.id
+            GROUP BY toko_id
+            WHERE toko_id is not null `;
         const [rows] = await pool.query(query, [barang_id]);
         if(rows.length === 0){
             console.warn('Toko not found');
@@ -235,3 +237,5 @@ export const assignSingleBarangSKUToko = async (barang_sku_id, pool) => {
         throw error;
     }
 }
+
+

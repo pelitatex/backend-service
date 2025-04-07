@@ -82,7 +82,7 @@ const barangSKUResolver = {
       const barangIdSet = new Set();
       const warnaIdSet = new Set();
       const satuanIdSet = new Set();
-      const skuIidInserted = [];
+      const skuIdInserted = [];
       const status_aktif = 1;
       
       for (const item of input) {
@@ -149,7 +149,7 @@ const barangSKUResolver = {
           satuan_id:satuan_id, 
           status_aktif:status_aktif
         });
-        skuIidInserted.push(sku_id);
+        skuIdInserted.push(sku_id);
       }
 
       
@@ -171,7 +171,6 @@ const barangSKUResolver = {
       /* const result = await queryTransaction.insert(context, "nd_barang_sku", query, params);
       return result; */
 
-      let insertedId = null;
       try {
         await pool.query("START TRANSACTION");
         const [result] = await pool.query(query, params);
@@ -187,10 +186,10 @@ const barangSKUResolver = {
 
       queryLogger(pool, `nd_barang_sku`, 0, query, params);
 
-      // await assignSingleBarangSKUToko(insertedId,pool);
-
-      const [resultInserted] = await pool.query(`SELECT * from nd_barang_sku WHERE sku_id IN (?)`, skuIidInserted.join(','));
+      await assignSelectedBarangSKUToko(insertedId,pool);
       
+      const [resultInserted] = await pool.query(`SELECT * from nd_barang_sku WHERE sku_id IN (?)`, [skuIdInserted]);
+      console.log('resultInserted',resultInserted);
       return resultInserted;
     }),
     /*updateBarangSKU: handleResolverError(async (_, {id, input}, context) => {
