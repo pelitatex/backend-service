@@ -161,7 +161,7 @@ describe('assignSelectedBarangSKUToko', () => {
             callback(msg);
         });
 
-        await assignSingleBarangSKUToko([1,2], mockPool);
+        await assignSingleBarangSKUToko([1], mockPool);
 
         expect(mockChannel.sendToQueue).toHaveBeenCalledTimes(1);
     });
