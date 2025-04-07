@@ -2,7 +2,7 @@ import {v4 as uuidv4} from 'uuid';
 // import queryLogger from "../../helpers/queryTransaction.js";
 import { queryLogger } from "../../helpers/queryTransaction.js";
 import handleResolverError from '../handleResolverError.js';
-import { assignSingleBarangSKUToko } from '../../rabbitMQ/barangSKUToko_producers.js';
+import { assignSingleBarangSKUToko, assignSelectedBarangSKUToko } from '../../rabbitMQ/barangSKUToko_producers.js';
 
 const barangSKUResolver = {
   Query:{
