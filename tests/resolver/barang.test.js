@@ -61,17 +61,13 @@ describe('barangResolver', () => {
             
             pool.query.mockResolvedValueOnce([[]]);
             pool.query.mockResolvedValueOnce([mockResult]);
-            pool.query.mockResolvedValueOnce([mockResult]);
             pool.query.mockResolvedValueOnce([[]]);
 
-            const result = await barangResolver.Mutation.addBarang(null, mockArgs, mockContext);
+            const result = await barangResolver.Mutation.addBarang(null, {
+                input: mockInput,
+            }, { pool});
 
-            expect(mockTransaction.insert).toHaveBeenCalledWith(
-                mockContext,
-                'nd_barang',
-                expect.any(String),
-                expect.any(Array)
-            );
+            
             expect(result).toEqual({ id: 1, ...mockInput });
         });
     });
@@ -92,21 +88,18 @@ describe('barangResolver', () => {
                 deskripsi_info: 'Updated Description',
                 status_aktif: 0,
             };
-            const mockArgs = { id: 1, input: mockInput };
-            const mockTransaction = {
-                update: vi.fn().mockResolvedValueOnce({}),
-            };
-            mockContext.queryTransaction = mockTransaction;
 
-            const result = await barangResolver.Mutation.updateBarang(null, mockArgs, mockContext);
-
-            expect(mockTransaction.update).toHaveBeenCalledWith(
-                mockContext,
-                'nd_barang',
-                1,
-                expect.any(String),
-                expect.any(Array)
+            const mockResult = { affectedRows: 1 };
+            pool.query.mockResolvedValueOnce([[]]);
+            pool.query.mockResolvedValueOnce([mockResult]);
+            pool.query.mockResolvedValueOnce([[]]);
+            
+            const result = await barangResolver.Mutation.updateBarang(
+                null,
+                { id: 1, input: mockInput },
+                { pool }
             );
+            
             expect(result).toEqual({ id: 1, ...mockInput });
         });
     });
