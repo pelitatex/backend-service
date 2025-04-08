@@ -1,28 +1,29 @@
-import { describe, it, expect, vi, afterEach } from 'vitest';
+import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import barangResolver from '../../graphql/resolvers/barang.js';
 
 describe('barangResolver', () => {
-    const mockPool = {
-        query: vi.fn(),
-    };
+    let pool;
 
-    const mockContext = {
-        pool: mockPool,
-    };
+    beforeEach(() => {
+        pool = {
+        query: vi.fn(),
+        };
+    });
 
     afterEach(() => {
         vi.clearAllMocks();
     });
+    
 
     describe('Query.barang', () => {
         it('should return a single barang by id', async () => {
             const mockArgs = { id: 1 };
             const mockResult = [{ id: 1, name: 'Barang 1' }];
-            mockPool.query.mockResolvedValueOnce([mockResult]);
+            pool.query.mockResolvedValueOnce([mockResult]);
 
             const result = await barangResolver.Query.barang(null, mockArgs, mockContext);
 
-            expect(mockPool.query).toHaveBeenCalledWith('SELECT * FROM nd_barang WHERE id = ?', [1]);
+            expect(pool.query).toHaveBeenCalledWith('SELECT * FROM nd_barang WHERE id = ?', [1]);
             expect(result).toEqual(mockResult[0]);
         });
     });
@@ -30,7 +31,7 @@ describe('barangResolver', () => {
     describe('Query.allBarang', () => {
         it('should return all barang', async () => {
             const mockResult = [{ id: 1, name: 'Barang 1' }, { id: 2, name: 'Barang 2' }];
-            mockPool.query.mockResolvedValueOnce([mockResult]);
+            pool.query.mockResolvedValueOnce([mockResult]);
 
             const result = await barangResolver.Query.allBarang(null, {}, mockContext);
 
@@ -56,11 +57,12 @@ describe('barangResolver', () => {
                 status_aktif: 1,
             };
             const mockArgs = { input: mockInput };
-            const mockResult = { id: 1 };
-            const mockTransaction = {
-                insert: vi.fn().mockResolvedValueOnce(mockResult),
-            };
-            mockContext.queryTransaction = mockTransaction;
+            const mockResult = { id: 1, affectedRows: 1 };
+            
+            pool.query.mockResolvedValueOnce([[]]);
+            pool.query.mockResolvedValueOnce([mockResult]);
+            pool.query.mockResolvedValueOnce([mockResult]);
+            pool.query.mockResolvedValueOnce([[]]);
 
             const result = await barangResolver.Mutation.addBarang(null, mockArgs, mockContext);
 

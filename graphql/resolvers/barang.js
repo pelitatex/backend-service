@@ -80,7 +80,7 @@ const barangResolver = {
                 }
 
                 pool.query("COMMIT");
-                
+
             } catch (error) {
                 pool.query("ROLLBACK");
                 throw error;
@@ -93,7 +93,6 @@ const barangResolver = {
                 sku_id,
                 nama_jual,
                 satuan_id,
-                
                 jenis_barang,
                 grade,
                 bahan,
@@ -127,11 +126,22 @@ const barangResolver = {
                 id
             ];
 
-            // const [result] = await pool.query(query, params);
+            // const result = await queryTransaction.update(context, "nd_barang", id, query, params);
 
-            const result = await queryTransaction.update(context, "nd_barang", id, query, params);
+            try {
+                pool.query("START TRANSACTION");
+                const [result] = await pool.query(query, params);
+                if (result.affectedRows == 0) {
+                    throw new Error('Gagal Update Barang');
+                }
+                pool.query("COMMIT");
+                
+            } catch (error) {
+                pool.query("ROLLBACK");
+                throw error;
+            }
 
-            if (nama_beli != '') {
+            /* if (nama_beli != '') {
                 const checkBeli = `SELECT * FROM nd_barang_beli WHERE barang_id = ?`;
                 const queryBeliCheck = await pool.query(checkBeli, [id]);
                 const [rows] = queryBeliCheck;
@@ -142,7 +152,7 @@ const barangResolver = {
                     const queryBeli = `INSERT INTO nd_barang_beli (nama, barang_id, status_aktif ) VALUES (?, ?)`;
                     const resultBeli = await queryTransaction.insert(context, "nd_barang_beli", queryBeli, [nama_beli, id, 1]);
                 }                    
-            } 
+            }  */
 
             return {id,
                 sku_id,
