@@ -21,7 +21,7 @@ describe('barangResolver', () => {
             const mockResult = [{ id: 1, name: 'Barang 1' }];
             pool.query.mockResolvedValueOnce([mockResult]);
 
-            const result = await barangResolver.Query.barang(null, mockArgs, mockContext);
+            const result = await barangResolver.Query.barang(null, mockArgs, {pool});
 
             expect(pool.query).toHaveBeenCalledWith('SELECT * FROM nd_barang WHERE id = ?', [1]);
             expect(result).toEqual(mockResult[0]);
@@ -33,9 +33,9 @@ describe('barangResolver', () => {
             const mockResult = [{ id: 1, name: 'Barang 1' }, { id: 2, name: 'Barang 2' }];
             pool.query.mockResolvedValueOnce([mockResult]);
 
-            const result = await barangResolver.Query.allBarang(null, {}, mockContext);
+            const result = await barangResolver.Query.allBarang(null, {}, {pool});
 
-            expect(mockPool.query).toHaveBeenCalledWith('SELECT * FROM nd_barang');
+            expect(pool.query).toHaveBeenCalledWith('SELECT * FROM nd_barang');
             expect(result).toEqual(mockResult);
         });
     });
@@ -57,16 +57,13 @@ describe('barangResolver', () => {
                 status_aktif: 1,
             };
             const mockArgs = { input: mockInput };
-            const mockResult = { id: 1, affectedRows: 1 };
+            const mockResult = { insertId: 1, affectedRows: 1 };
             
             pool.query.mockResolvedValueOnce([[]]);
             pool.query.mockResolvedValueOnce([mockResult]);
             pool.query.mockResolvedValueOnce([[]]);
 
-            const result = await barangResolver.Mutation.addBarang(null, {
-                input: mockInput,
-            }, { pool});
-
+            const result = await barangResolver.Mutation.addBarang(null, mockArgs, { pool});
             
             expect(result).toEqual({ id: 1, ...mockInput });
         });

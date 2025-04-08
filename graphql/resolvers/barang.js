@@ -92,6 +92,7 @@ const barangResolver = {
             return {id: insertId,
                 sku_id,
                 nama_jual,
+                nama_beli,
                 satuan_id,
                 jenis_barang,
                 grade,
@@ -104,6 +105,7 @@ const barangResolver = {
             }
         }),
         updateBarang: handleResolverError(async (_, {id, input}, context) => {
+            const pool = context.pool;
             
             const {
                 sku_id, nama_jual, 
