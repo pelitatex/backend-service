@@ -42,25 +42,27 @@ describe('barangComponentResolver', () => {
             const mockResult = { insertId: 1 };
             const mockLastKode = [{ kode: '01' }];
             pool.query
-                .mockResolvedValueOnce([[]]) // Check if "nama" exists
                 .mockResolvedValueOnce([mockLastKode]) // Get last inserted kode
-                .mockResolvedValueOnce([mockResult]); // Insert new record
+                .mockResolvedValueOnce([[]]) 
+                .mockResolvedValueOnce([mockResult]) // Insert new record
+                .mockResolvedValueOnce([[]]);
 
             const result = await barangComponentResolver.Mutation.addBahan({}, mockInput, {pool});
             expect(result).toEqual({ id: 1, nama: 'BAHAN1', kode: '02', keterangan: 'Test' });
-            expect(pool.query).toHaveBeenCalledTimes(3);
+            expect(pool.query).toHaveBeenCalledTimes(5);
         });
 
         it('should update an existing "bahan" component', async () => {
             const mockArgs = { input: { nama: 'BahanUpdated', keterangan: 'Updated' }, id: 1 };
             const mockResult = { affectedRows: 1 };
             pool.query
-                .mockResolvedValueOnce([[]]) // Check if "nama" exists
-                .mockResolvedValueOnce([mockResult]); // Update record
+                .mockResolvedValueOnce([[]]) 
+                .mockResolvedValueOnce([mockResult]) 
+                .mockResolvedValueOnce([[]]); // commit transaction
 
             const result = await barangComponentResolver.Mutation.updateBahan({}, mockArgs, {pool});
             expect(result).toEqual(mockResult);
-            expect(pool.query).toHaveBeenCalledTimes(2);
+            expect(pool.query).toHaveBeenCalledTimes(4);
         });
 
         // ...similar tests for addFitur, updateFitur, addGrade, updateGrade, addTipe, updateTipe...

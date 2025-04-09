@@ -114,6 +114,14 @@ const addBarangComponent = async ({input}, table, context) => {
         throw new Error('Nama cannot be null or blank');
     }
 
+    const getLastInsertedKodeQuery = `SELECT kode FROM nd_barang_${table} ORDER BY kode DESC LIMIT 1`;
+    const [lastInsertedKodeRows] = await pool.query(getLastInsertedKodeQuery);
+    let paddedKode = '00';
+    if (lastInsertedKodeRows.length > 0) {
+        const lastInsertedKode = lastInsertedKodeRows[0].kode;
+        paddedKode = (parseInt(lastInsertedKode) + 1).toString().padStart(2, '0');
+    } 
+
     let insertId = 0;
     try {
         pool.query("START TRANSACTION");
@@ -125,15 +133,15 @@ const addBarangComponent = async ({input}, table, context) => {
         }
         insertId = result.insertId;
         pool.query("COMMIT");
+        queryLogger(pool, `nd_barang_${table}`, insertId ,query, [nama.toUpperCase(), paddedKode, keterangan]);
         
     } catch (error) {
         pool.query("ROLLBACK");
         console.error(error);
     }
     
-    queryLogger(pool, `nd_barang_${table}`, insertId ,query, [nama.toUpperCase(), paddedKode, keterangan]);
 
-    return { id: result.id, nama: nama.toUpperCase(), kode:paddedKode, keterangan };
+    return { id: insertId, nama: nama.toUpperCase(), kode:paddedKode, keterangan };
 }
 
 const updateBarangComponent = async (input, id, table, context) => {
@@ -146,21 +154,21 @@ const updateBarangComponent = async (input, id, table, context) => {
     
     // const result = await queryTransaction.update(context, `nd_barang_${table}`, id, query, [nama.toUpperCase(), keterangan, id]);
     
-
+    let result;
     try {
         pool.query("START TRANSACTION");
         const query = `UPDATE nd_barang_${table} SET nama = ?, keterangan = ? WHERE id = ?`;
-        const [result] = await pool.query(query, [nama.toUpperCase(), keterangan, id]);
+        [result] = await pool.query(query, [nama.toUpperCase(), keterangan, id]);
         if (result.affectedRows === 0) {
             throw new Error(`${table} with id ${id} not found.`);
         }
         pool.query("COMMIT");
+        queryLogger(pool, `nd_barang_${table}`,'id', query, [nama.toUpperCase(), keterangan, id]);
     } catch (error) {
         pool.query("ROLLBACK");
         console.error(error);
     }
 
-    queryLogger(pool, `nd_barang_${table}`,'id', query, [nama.toUpperCase(), keterangan, id]);
     return result;
     
     
