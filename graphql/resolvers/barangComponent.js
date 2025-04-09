@@ -108,6 +108,7 @@ const getAllBarangComponent = async (table, context) => {
 
 const addBarangComponent = async ({input}, table, context) => {
 
+    const pool = context.pool;
     const { nama, keterangan } = input;
     if (nama.trim() === '') {
         throw new Error('Nama cannot be null or blank');
@@ -138,6 +139,7 @@ const addBarangComponent = async ({input}, table, context) => {
 
 const updateBarangComponent = async (input, id, table, context) => {
     
+    const pool = context.pool;
     const {nama, keterangan} = input;
     if (nama.trim() === '') {
         throw new Error('Nama cannot be null or blank');
