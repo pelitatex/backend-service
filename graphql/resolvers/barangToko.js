@@ -56,7 +56,7 @@ const barangTokoResolver = {
         }
   
         const resId = insertQuery.insertId;
-  
+
         if(tokoAlias === ""){
           throw new Error('Toko Alias not found');
         }
