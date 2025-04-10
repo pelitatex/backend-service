@@ -5,11 +5,13 @@ import handleResolverError from "../handleResolverError.js";
 const warnaResolver = {
   Query : {
     warna: handleResolverError(async(_,args, context)=>{
+      const pool = context.pool;
       const query = `SELECT * FROM nd_warna WHERE id = ?`;
       const [rows] = await pool.query(query, [args.id]);
       return rows[0];
     }),
     allWarna: handleResolverError(async(_,args, context)=>{
+      const pool = context.pool;
       const query = 'SELECT * FROM nd_warna';
       const [rows] = await pool.query(query);
       return rows;
@@ -17,6 +19,7 @@ const warnaResolver = {
   },
   Mutation: {
     addWarna: handleResolverError(async (_, {input}, context) => {
+      const pool = context.pool;
       let { warna_jual, warna_beli, kode_warna, status_aktif } = input;
         
       if (!warna_jual || warna_jual.trim() === '') {
@@ -40,6 +43,7 @@ const warnaResolver = {
     }),
     
     updateWarna: handleResolverError(async (_, {id, input}, context) => {
+      const pool = context.pool;
       let { warna_jual, warna_beli, kode_warna, status_aktif } = input;
 
       if (!warna_jual || warna_jual.trim() === '') {
@@ -69,6 +73,7 @@ const warnaResolver = {
   },
   Warna:{
     barangSKU:handleResolverError(async(parent, args, context)=>{
+      const pool = context.pool;
       const query = 'SELECT * FROM nd_barang_sku WHERE warna_id = ?';
       const [rows] = await pool.query(query, [parent.id]);
       return rows;
