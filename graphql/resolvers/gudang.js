@@ -5,12 +5,14 @@ import handleResolverError from "../handleResolverError.js";
 const gudangResolver = {
   Query : {
     gudang: handleResolverError(async(_,args, context)=>{
+      const pool = context.pool;
       
       const query = `SELECT * FROM nd_gudang WHERE id = ?`;
       const [rows] = await pool.query(query, [args.id]);
       return rows[0];
     }),
     allGudang: handleResolverError(async(_,args, context)=>{
+      const pool = context.pool;
       const query = 'SELECT * FROM nd_gudang';
       const [rows] = await pool.query(query);
       return rows;  
@@ -19,17 +21,31 @@ const gudangResolver = {
   Mutation: {
     addGudang: handleResolverError(async (_, {input}, context) => {
       
+      const pool = context.pool;
       const {nama, lokasi, status_default, urutan, visible, gudang_group_id, status_aktif} = input;
 
+      
       const query = 'INSERT INTO nd_gudang (nama, lokasi, status_default, urutan, visible, gudang_group_id, status_aktif ) VALUES (?, ?, ?, ?, ?, ?, ?)';
       const params = [nama, lokasi, status_default, urutan, visible, gudang_group_id, status_aktif];
+      
+      let insertId = null;
+      try {
+        pool.query("START TRANSACTION;");
+        const [result] = await pool.query(query, params);
+        if(result.affectedRows === 0) {
+          throw new Error('Failed to insert gudang');
+        }
+        pool.query("COMMIT;");
+        insertId = result.insertId;
+        queryLogger(pool, `nd_gudang`, insertId, query, [
+          nama, lokasi, status_default, urutan, visible, gudang_group_id, status_aktif] );
+        
+      } catch (error) {
+        pool.query("ROLLBACK;");
+        throw error;
+      }
 
-      const [result] = await pool.query(query, params);
-      const insertedId = result.insertId;
-      queryLogger(pool, `nd_gudang`, result.insertId, query, [
-        nama, lokasi, status_default, urutan, visible, gudang_group_id, status_aktif] );
-
-      return {id: result.id, nama, lokasi, status_default, urutan, visible, gudang_group_id, status_aktif};
+      return {id: insertId, nama, lokasi, status_default, urutan, visible, gudang_group_id, status_aktif};
     }),
     updateGudang: handleResolverError(async (_, {id, input}, context) => {
       const {nama, lokasi, status_default, urutan, visible, gudang_group_id, status_aktif} = input;
