@@ -26,9 +26,7 @@ describe('satuanResolver', () => {
     describe(`Query.allsatuan`, () => {
         it('should return all satuan', async () => {
             const mockResult = [{ id: 1, name: 'satuan 1' }, { id: 2, name: 'satuan 2' }];
-            pool.query.mockResolvedValueOnce([[]]);
             pool.query.mockResolvedValueOnce([mockResult]);
-            pool.query.mockResolvedValueOnce([[]]);
 
             const result = await satuanResolver.Query.allSatuan(null, {}, {pool});
             expect(pool.query).toHaveBeenCalledWith('SELECT * FROM nd_satuan');
@@ -40,7 +38,6 @@ describe('satuanResolver', () => {
         it('should add a new satuan and return the created satuan', async () => {
             const mockInput = {
                 nama: 'satuan Baru',
-                alamat: 'Alamat satuan',
                 status_aktif: 1,
             };
             const mockArgs = { input: mockInput };
@@ -48,11 +45,10 @@ describe('satuanResolver', () => {
 
             pool.query.mockResolvedValueOnce([[]]);
             pool.query.mockResolvedValueOnce([mockResult]);
-            pool.query.mockResolvedValueOnce([{ id: 1, ...mockInput }]); // Simulate fetching the created satuan
             pool.query.mockResolvedValueOnce([[]]);
 
             const result = await satuanResolver.Mutation.addSatuan(null, mockArgs, {pool});
-            expect(pool.query).toHaveBeenCalledTimes(2);
+            expect(pool.query).toHaveBeenCalledTimes(4);
             expect(result).toEqual({ id: 1, ...mockInput });
         });
     });
@@ -64,9 +60,10 @@ describe('satuanResolver', () => {
 
             pool.query.mockResolvedValueOnce([[]]);
             pool.query.mockResolvedValueOnce([mockResult]);
+            pool.query.mockResolvedValueOnce([[]]);
             
             const result = await satuanResolver.Mutation.updateSatuan(null, mockArgs, {pool});
-            expect(pool.query).toHaveBeenCalledTimes(2);
+            expect(pool.query).toHaveBeenCalledTimes(4);
             expect(result).toEqual({ id: 1, ...mockArgs.input });
         });
     });
