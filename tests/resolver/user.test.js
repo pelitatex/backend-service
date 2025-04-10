@@ -5,7 +5,9 @@ import jwt from '../../helpers/jwt.js';
 import { has } from 'lodash';
 
 vi.mock('../../helpers/jwt.js', () => ({
-  generateToken: vi.fn(() => 'mocked-token'),
+  default: {
+    generateToken: vi.fn(() => 'mocked-token'),
+  },
 }));
 
 vi.mock('bcrypt', async () => {
@@ -37,11 +39,12 @@ describe('userResolver', () => {
   describe('Mutation.login', () => {
     it('should return a token and timeout on successful login', async () => {
       pool.query.mockResolvedValueOnce([[{ id: 1, username: 'test', password: 'hashed', roles: 'admin', status_aktif: 1 }]]);
+      pool.query.mockResolvedValueOnce([[]]); // Mock the query for logging in
       bcrypt.compare.mockResolvedValueOnce(true);
 
       const result = await userResolver.Mutation.login({}, { username: 'test', password: 'password' }, { pool });
 
-      expect(result).toEqual({ token: 'mocked-token', timeout: expect.any(Number) });
+      expect(result).toEqual({ token: 'mocked-token', timeout: expect.any(String) });
       expect(jwt.generateToken).toHaveBeenCalledWith(expect.objectContaining({ id: 1, username: 'test' }));
     });
 
