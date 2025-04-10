@@ -37,8 +37,18 @@ describe('tokoResolver', () => {
     describe('Mutation.addtoko', () => {
         it('should add a new toko and return the created toko', async () => {
             const mockInput = {
-                nama: 'toko Baru',
+                id: 1,
+                nama: 'Toko Baru',
+                alamat: 'Jl. Baru No. 1',
+                telepon: '08123456789',
+                email: 'test@toko.com',
+                kota: 'Test City',
+                kode_pos: '12345',
+                npwp: '1234567890',
+                kode_toko: 'TST01',
                 status_aktif: 1,
+                nama_domain: 'test.toko.com',
+                email_pajak: 'pajak@toko.com',
             };
             const mockArgs = { input: mockInput };
             const mockResult = { insertId: 1, affectedRows: 1 };

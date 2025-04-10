@@ -137,13 +137,22 @@ const userResolver = {
         kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp
       ];
 
-      const [result] = await pool.query(query, params);
-      if(result.affectedRows === 0){
-        throw new Error("Failed to insert user");
+      const insertId = null;
+      try {
+        pool.query('START TRANSACTION');
+        const [result] = await pool.query(query, params);
+        if(result.affectedRows === 0){
+          throw new Error("Failed to insert user");
+        }
+        insertId = result.insertId;
+        pool.query('COMMIT');
+      } catch (error) {
+        pool.query('ROLLBACK');
+        throw error;
       }
-      queryLogger(pool, 'nd_user', result.insertId, query, params);
+      queryLogger(pool, 'nd_user', insertId, query, params);
       
-      return { ...input, id: result.insertId };
+      return { ...input, id: insertId };
       
     }),
     updateUser: handleResolverError(async(_, { id, input }, context) => {
@@ -203,9 +212,17 @@ const userResolver = {
       const params = [username, hashedPassword, posisi_id, roles,time_start, time_end, status_aktif, 
         has_account, nama, alamat, telepon, jenis_kelamin,
         kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp, id];
-      const [result] = await pool.query(query, params);
-      if (result.affectedRows === 0) {
-        throw new Error('User not found');
+
+      try {
+        pool.query('START TRANSACTION');
+        const [result] = await pool.query(query, params);
+        if (result.affectedRows === 0) {
+          throw new Error('User not found');
+        }
+        pool.query('COMMIT');
+      }catch (error) {
+        pool.query('ROLLBACK');
+        throw error;
       }
       queryLogger(pool, 'nd_user', id, query, params);
       
