@@ -30,7 +30,7 @@ describe('satuanResolver', () => {
             pool.query.mockResolvedValueOnce([mockResult]);
             pool.query.mockResolvedValueOnce([[]]);
 
-            const result = await satuanResolver.Query.allsatuan(null, {}, {pool});
+            const result = await satuanResolver.Query.allSatuan(null, {}, {pool});
             expect(pool.query).toHaveBeenCalledWith('SELECT * FROM nd_satuan');
             expect(result).toEqual(mockResult);
         });
@@ -51,7 +51,7 @@ describe('satuanResolver', () => {
             pool.query.mockResolvedValueOnce([{ id: 1, ...mockInput }]); // Simulate fetching the created satuan
             pool.query.mockResolvedValueOnce([[]]);
 
-            const result = await satuanResolver.Mutation.addsatuan(null, mockArgs, {pool});
+            const result = await satuanResolver.Mutation.addSatuan(null, mockArgs, {pool});
             expect(pool.query).toHaveBeenCalledTimes(2);
             expect(result).toEqual({ id: 1, ...mockInput });
         });
@@ -65,7 +65,7 @@ describe('satuanResolver', () => {
             pool.query.mockResolvedValueOnce([[]]);
             pool.query.mockResolvedValueOnce([mockResult]);
             
-            const result = await satuanResolver.Mutation.updatesatuan(null, mockArgs, {pool});
+            const result = await satuanResolver.Mutation.updateSatuan(null, mockArgs, {pool});
             expect(pool.query).toHaveBeenCalledTimes(2);
             expect(result).toEqual({ id: 1, ...mockArgs.input });
         });
