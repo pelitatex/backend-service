@@ -32,7 +32,7 @@ const userResolver = {
       const query = `SELECT * FROM nd_user WHERE username = ? and has_account = 1`;
       const [rows] = await pool.query(query, [username]);
       
-      if (typeof rows[0] !== 'undefined') {
+      if (rows[0] === 1) {
         const result = await bcrypt.compare(password, rows[0].password);
         if (!result) {
           throw new Error("User and password not match");
