@@ -37,18 +37,10 @@ describe('warnaResolver', () => {
     describe('Mutation.addwarna', () => {
         it('should add a new warna and return the created warna', async () => {
             const mockInput = {
-                id: 1,
-                nama: 'Warna Baru',
-                alamat: 'Jl. Baru No. 1',
-                telepon: '08123456789',
-                email: 'test@warna.com',
-                kota: 'Test City',
-                kode_pos: '12345',
-                npwp: '1234567890',
-                kode_warna: 'TST01',
-                status_aktif: 1,
-                nama_domain: 'test.warna.com',
-                email_pajak: 'pajak@warna.com',
+                warna_jual:'Warna Updated',
+                warna_beli:'Warna Updated',
+                kode_warna:'',
+                status_aktif:1
             };
             const mockArgs = { input: mockInput };
             const mockResult = { insertId: 1, affectedRows: 1 };
@@ -67,18 +59,11 @@ describe('warnaResolver', () => {
         it('should update an existing warna and return the updated warna', async () => {
             const mockArgs = { id: 1, input: {
                 id: 1,
-                nama: 'Warna Test',
-                alamat: 'Jl. Test No. 1',
-                telepon: '08123456789',
-                email: 'test@warna.com',
-                kota: 'Test City',
-                kode_pos: '12345',
-                npwp: '1234567890',
-                kode_warna: 'TST01',
-                status_aktif: 1,
-                nama_domain: 'test.warna.com',
-                email_pajak: 'pajak@warna.com',
-            } };
+                warna_jual:'Warna Updated',
+                warna_beli:'Warna Updated',
+                kode_warna:'',
+                status_aktif:1
+            }};
             const mockResult = { affectedRows: 1 };
 
             pool.query.mockResolvedValueOnce([[]]);

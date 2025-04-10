@@ -33,13 +33,25 @@ const warnaResolver = {
       if (status_aktif == null) {
         status_aktif = true;
       }
-      
+
       const query = 'INSERT INTO nd_warna (warna_jual, warna_beli, kode_warna, status_aktif) VALUES (?, ?, ?, ?)';
       const params = [warna_jual, warna_beli, kode_warna, status_aktif];
+      let insertId = null;
+      try {
+        pool.query('START TRANSACTION');
+        const [result] = await pool.query(query, [warna_jual, warna_beli, kode_warna, status_aktif]);
+        if(result.affectedRows === 0) {
+          throw new Error('Failed to insert data into nd_warna');
+        }
+        insertId = result.insertId;
+        pool.query('COMMIT');
+      } catch (error) {
+        pool.query('ROLLBACK');
+        throw error;
+      }      
     
-      const [result] = await pool.query(query, [warna_jual, warna_beli, kode_warna, status_aktif]);
-      queryLogger(pool, `nd_warna`, result.insertId, query, params);
-      return { id: result.insertId, warna_jual, warna_beli, kode_warna, status_aktif };
+      queryLogger(pool, `nd_warna`, insertId, query, params);
+      return { id: insertId, warna_jual, warna_beli, kode_warna, status_aktif };
     }),
     
     updateWarna: handleResolverError(async (_, {id, input}, context) => {
@@ -57,15 +69,24 @@ const warnaResolver = {
       if (status_aktif == null) {
         status_aktif = true;
       }
+      
 
       const query = 'UPDATE nd_warna SET warna_jual = ?, warna_beli = ?, kode_warna = ?, status_aktif = ? WHERE id = ?';
       const params = [warna_jual, warna_beli, kode_warna, status_aktif, id];
-      const [result] = await pool.query(query, params);
-      if (result.affectedRows === 0) {
-        throw new Error('Warna not found');
+      try {
+        pool.query('START TRANSACTION');
+        const [result] = await pool.query(query, params);
+        if (result.affectedRows === 0) {
+          throw new Error('Warna not found');
+        }
+        pool.query('COMMIT');        
+      } catch (error) {
+        pool.query('ROLLBACK');
+        throw error;
+        
       }
 
-      queryLogger(pool, `nd_warna`, id, query, [warna_jual, warna_beli, kode_warna, status_aktif, id]);
+      queryLogger(pool, `nd_warna`, id, query, params);
 
       return { id, warna_jual, warna_beli, kode_warna, status_aktif };
 
