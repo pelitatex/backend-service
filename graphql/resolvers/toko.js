@@ -5,11 +5,13 @@ import handleResolverError from "../handleResolverError.js";
 const tokoResolver = {
   Query : {
     toko: handleResolverError (async(_,args, context)=>{
+      const pool = context.pool;
       const query = `SELECT * FROM nd_toko WHERE id = ?`;
       const [rows] = await pool.query(query, [args.id]);
       return rows[0];
     }),
     allToko: handleResolverError (async(_,args, context)=>{
+      const pool = context.pool;
       const query = 'SELECT * FROM nd_toko';
       const [rows] = await pool.query(query);
       return rows;
@@ -17,6 +19,7 @@ const tokoResolver = {
   },
   Mutation: {
     addToko: handleResolverError (async (_, {input}, context) => {
+      const pool = context.pool;
       let {
         nama,
         alamat,
@@ -81,6 +84,7 @@ const tokoResolver = {
     }),
     
     updateToko: handleResolverError(async (_, {id, input}, context) => {
+      const pool = context.pool;
       let { nama,
         alamat,
         telepon,
