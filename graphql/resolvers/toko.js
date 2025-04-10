@@ -33,44 +33,48 @@ const tokoResolver = {
         nama_domain,
         email_pajak } = input;
 
-      const query = `INSERT INTO nd_toko (
-        nama, alamat, telepon, email, 
-        kota, kode_pos,npwp,
-        kode_toko, status_aktif, nama_domain, email_pajak) 
-        VALUES (?,?,?,?,
-        ?,?,?,
-        ?,?,?,?)`;
-
-      const params = [
-        nama,
-        alamat,
-        telepon,
-        email,
-        kota,
-        kode_pos,
-        npwp,
-        kode_toko,
-        status_aktif,
-        nama_domain,
-        email_pajak];
-
-      const [result] = await pool.query(query, params);
+        let insertId = null
+        try {
+          const query = `INSERT INTO nd_toko (
+            nama, alamat, telepon, email, 
+            kota, kode_pos,npwp,
+            kode_toko, status_aktif, nama_domain, email_pajak) 
+            VALUES (?,?,?,?,
+            ?,?,?,
+            ?,?,?,?)`;
+    
+          const params = [
+            nama,
+            alamat,
+            telepon,
+            email,
+            kota,
+            kode_pos,
+            npwp,
+            kode_toko,
+            status_aktif,
+            nama_domain,
+            email_pajak];
+    
+          pool.query('START TRANSACTION');
+          const [result] = await pool.query(query, params);
+          if(result.affectedRows === 0) {
+            throw new Error('Failed to insert data into nd_toko');
+          }
+          insertId = result.insertId;
+          pool.query('COMMIT');
+          
+        } catch (error) {
+          pool.query('ROLLBACK');
+          throw error;
+          
+        }
       
-      queryLogger(pool, `nd_toko`, result.insertId, query, [
-        nama,
-        alamat,
-        telepon,
-        email,
-        kota,
-        kode_pos,
-        npwp,
-        kode_toko,
-        status_aktif,
-        nama_domain,
-        email_pajak] );
+      
+      queryLogger(pool, `nd_toko`, result.insertId, query, params );
 
       
-      return { id: result.insertId, nama,
+      return { id: insertId, nama,
         alamat,
         telepon,
         email,
@@ -113,15 +117,21 @@ const tokoResolver = {
         kode_toko, status_aktif, nama_domain, email_pajak, 
         id];
         
-      const [result] = await pool.query(query, [
-        nama, alamat, telepon, email,
-        kota, kode_pos, npwp, 
-        kode_toko, status_aktif, nama_domain, email_pajak, 
-        id]);
+      try {
 
-      if (result.affectedRows === 0) {
-        throw new Error('Toko not found');
+        pool.query('START TRANSACTION');
+        const [result] = await pool.query(query, params);
+        if (result.affectedRows === 0) {
+          throw new Error('Toko not found');
+        }
+        insertId = result.insertId;
+        pool.query('COMMIT');
+        
+      } catch (error) {
+        pool.query('ROLLBACK');
+        throw error;
       }
+
       queryLogger(pool, `nd_toko`, id, query, [
         nama, alamat, telepon, email,
         kota, kode_pos, npwp, 
