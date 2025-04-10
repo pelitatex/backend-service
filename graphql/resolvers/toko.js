@@ -71,7 +71,7 @@ const tokoResolver = {
         }
       
       
-      queryLogger(pool, `nd_toko`, result.insertId, query, params );
+      queryLogger(pool, `nd_toko`, insertId, query, params );
 
       
       return { id: insertId, nama,
@@ -124,7 +124,6 @@ const tokoResolver = {
         if (result.affectedRows === 0) {
           throw new Error('Toko not found');
         }
-        insertId = result.insertId;
         pool.query('COMMIT');
         
       } catch (error) {
