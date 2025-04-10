@@ -1,7 +1,8 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import customerResolver from '../../graphql/resolvers/customer.js';
-import { queryTransaction } from '../../helpers/queryTransaction.js';
+import { queryLogger, queryTransaction } from '../../helpers/queryTransaction.js';
 import { publishExchange } from '../../helpers/producers.js';
+import { before } from 'lodash';
 
 vi.mock('../../helpers/queryTransaction.js', () => ({
   queryTransaction: {
@@ -15,10 +16,18 @@ vi.mock('../../helpers/producers.js', () => ({
 }));
 
 describe('Customer Resolver', () => {
+    let pool;
+    
+    beforeEach(() => {
+        vi.clearAllMocks();
+        pool = {
+            query: vi.fn(),
+        };
+    }); 
   describe('Mutation: addCustomer', () => {
     it('should insert a new customer and return the result', async () => {
       const input = { name: 'John Doe', email: 'john.doe@example.com' };
-      const context = {};
+      const context = {pool};
       const mockResult = { insertId: 1 };
 
       queryTransaction.insert.mockResolvedValue(mockResult);
@@ -39,7 +48,7 @@ describe('Customer Resolver', () => {
     it('should update an existing customer and publish an event', async () => {
       const id = 1;
       const input = { name: 'Jane Doe', npwp: '123456789' };
-      const context = {};
+      const context = {pool};
       const mockResult = { affectedRows: 1 };
 
       queryTransaction.update.mockResolvedValue(mockResult);

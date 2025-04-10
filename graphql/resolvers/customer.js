@@ -5,13 +5,14 @@ import handleResolverError from "../handleResolverError.js";
 const customerResolver = {
   Query:{
     customer: handleResolverError(async(_,args, context)=>{
-      
+      const pool = context.pool;
       const query = `SELECT * FROM nd_customer WHERE id = ?`;
       const [rows] = await pool.query(query, [args.id]);
       return rows[0];
       
     }),
     allCustomer: handleResolverError(async(_,args,context)=>{
+      const pool = context.pool;
       
       const query = 'SELECT * FROM nd_customer';
       const [rows] = await pool.query(query);
@@ -21,6 +22,7 @@ const customerResolver = {
   Mutation: {
     addCustomer: handleResolverError(async (_, {input}, context) => {
       
+      const pool = context.pool;
       let columns = [];
       let params = [];
       let q = [];
@@ -38,6 +40,7 @@ const customerResolver = {
       return result;
     }),
     updateCustomer: handleResolverError(async (_, {id, input}, context) => {
+      const pool = context.pool;
       
       let columns = [];
       let params = [];
