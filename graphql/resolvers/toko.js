@@ -33,28 +33,28 @@ const tokoResolver = {
         nama_domain,
         email_pajak } = input;
 
+        const query = `INSERT INTO nd_toko (
+          nama, alamat, telepon, email, 
+          kota, kode_pos,npwp,
+          kode_toko, status_aktif, nama_domain, email_pajak) 
+          VALUES (?,?,?,?,
+          ?,?,?,
+          ?,?,?,?)`;
+        const params = [
+          nama,
+          alamat,
+          telepon,
+          email,
+          kota,
+          kode_pos,
+          npwp,
+          kode_toko,
+          status_aktif,
+          nama_domain,
+          email_pajak];
         let insertId = null
         try {
-          const query = `INSERT INTO nd_toko (
-            nama, alamat, telepon, email, 
-            kota, kode_pos,npwp,
-            kode_toko, status_aktif, nama_domain, email_pajak) 
-            VALUES (?,?,?,?,
-            ?,?,?,
-            ?,?,?,?)`;
     
-          const params = [
-            nama,
-            alamat,
-            telepon,
-            email,
-            kota,
-            kode_pos,
-            npwp,
-            kode_toko,
-            status_aktif,
-            nama_domain,
-            email_pajak];
     
           pool.query('START TRANSACTION');
           const [result] = await pool.query(query, params);
