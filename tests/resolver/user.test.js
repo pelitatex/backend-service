@@ -80,14 +80,13 @@ describe('userResolver', () => {
       };
 
       pool.query.mockResolvedValueOnce([[]]); // Mock the query for checking existing username
-      pool.query.mockResolvedValueOnce([{ insertId: 1 }]); // Mock the query for inserting user
-      pool.query.mockResolvedValueOnce([
-        { id: 1, username: 'newuser', nama: 'Test User', has_account: true, roles: 'user' },
-      ]); // Mock the query for fetching the created user
+      pool.query.mockResolvedValueOnce([{ insertId: 1, affectedRows: 1 }]); 
+      pool.query.mockResolvedValueOnce([[]]);
+
       const result = await userResolver.Mutation.addUser({}, { input }, { pool });
 
-      expect(result).toEqual(expect.objectContaining({ id: 1, username: 'newuser', nama: 'Test User' }));
-      expect(pool.query).toHaveBeenCalled();
+      expect(result).toEqual(expect.objectContaining({ ...input, id: 1 }));
+      expect(pool.query).toHaveBeenCalled(4);
     });
 
     it('should throw an error if nama is missing', async () => {

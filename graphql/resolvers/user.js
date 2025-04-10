@@ -7,11 +7,13 @@ import handleResolverError from "../handleResolverError.js";
 const userResolver = {
   Query : {
     user: handleResolverError(async(_,args, context)=>{
+      const pool = context.pool;
       const query = `SELECT * FROM nd_user WHERE id = ?`;
       const [rows] = await pool.query(query, [args.id]);
       return rows[0];
     }),
     allUser: handleResolverError(async(_,args, context)=>{
+      const pool = context.pool;
       const query = 'SELECT * FROM nd_user';
       const [rows] = await pool.query(query);
       return rows;
@@ -19,6 +21,7 @@ const userResolver = {
   },
   Mutation:{
     login: handleResolverError(async(_,{username,password}, context)=>{
+      const pool = context.pool;
         
       if (!password) {
         throw new Error('Password is required.');
@@ -62,6 +65,7 @@ const userResolver = {
       }
     }),
     pinChecker: handleResolverError(async(_,{input}, context)=>{
+      const pool = context.pool;
       const {pin} = input;
       if (!pin) {
         throw new Error('PIN is required.');
@@ -86,6 +90,7 @@ const userResolver = {
       }
     }),
     addUser: handleResolverError(async(_, {input}, context) => {
+      const pool = context.pool;
       let { username, password, posisi_id, roles, time_start, time_end, status_aktif,
         has_account, nama, alamat, telepon, jenis_kelamin, 
         kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp } = input;
@@ -156,6 +161,7 @@ const userResolver = {
       
     }),
     updateUser: handleResolverError(async(_, { id, input }, context) => {
+      const pool = context.pool;
       let { username, password, posisi_id, roles,time_start, time_end, status_aktif,
         has_account, nama, alamat, telepon, jenis_kelamin, 
         kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp
