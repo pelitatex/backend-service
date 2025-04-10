@@ -32,36 +32,34 @@ const userResolver = {
       const query = `SELECT * FROM nd_user WHERE username = ? and has_account = 1`;
       const [rows] = await pool.query(query, [username]);
       
-      if (rows[0] === 1) {
-        const result = await bcrypt.compare(password, rows[0].password);
-        if (!result) {
-          throw new Error("User and password not match");
-        }else{
-          const user = rows[0];
-          
-          if (!user.status_aktif) {
-            throw new Error ("User is inactive.");
-          }
-
-          const payload = {
-            id: user.id,
-            username: user.username,
-            roles: user.roles,
-            posisi_id: user.posisi_id,
-            time_start: user.time_start,
-            time_end: user.time_end
-          };
-          const token = jwt.generateToken(payload);
-
-          const queryLog = `INSERT INTO user_log (user_id, activity) VALUES (?, ?)`;
-          const [res] = await pool.query(queryLog, [user.id, 'login']);
-          return { token: token, timeout: LIFETIME };
-          
-        }
-        
-        
-      }else{
+      if (!rows.length) {
         throw new Error("User not found");
+      }
+
+      const result = await bcrypt.compare(password, rows[0].password);
+      if (!result) {
+        throw new Error("User and password not match");
+      }else{
+        const user = rows[0];
+        
+        if (!user.status_aktif) {
+          throw new Error ("User is inactive.");
+        }
+
+        const payload = {
+          id: user.id,
+          username: user.username,
+          roles: user.roles,
+          posisi_id: user.posisi_id,
+          time_start: user.time_start,
+          time_end: user.time_end
+        };
+        const token = jwt.generateToken(payload);
+
+        const queryLog = `INSERT INTO user_log (user_id, activity) VALUES (?, ?)`;
+        const [res] = await pool.query(queryLog, [user.id, 'login']);
+        return { token: token, timeout: LIFETIME };
+        
       }
     }),
     pinChecker: handleResolverError(async(_,{input}, context)=>{
@@ -105,9 +103,7 @@ const userResolver = {
         status_aktif=0;
       }
       else{
-        if (status_aktif == null) {
-          throw new Error('Status aktif is required.');          
-        }
+        status_aktif = 1;
 
         if (!username || username.trim() === '') {
           throw new Error('Password is required.');
@@ -142,7 +138,7 @@ const userResolver = {
         kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp
       ];
 
-      const insertId = null;
+      let insertId = null;
       try {
         pool.query('START TRANSACTION');
         const [result] = await pool.query(query, params);
@@ -184,9 +180,10 @@ const userResolver = {
         password = null;
       }
       else{
-        if (status_aktif == null) {
+        status_aktif = 1;
+        /* if (status_aktif == null) {
           throw new Error('Status aktif is required.');          
-        }
+        } */
         if (!username) {
           throw new Error('Username is required.');
         }

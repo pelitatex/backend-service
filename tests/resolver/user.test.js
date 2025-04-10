@@ -1,26 +1,39 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import userResolver from '../../graphql/resolvers/user.js';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcrypt';;
 import jwt from '../../helpers/jwt.js';
+import { has } from 'lodash';
 
 vi.mock('../../helpers/jwt.js', () => ({
   generateToken: vi.fn(() => 'mocked-token'),
 }));
 
-vi.mock('bcrypt', () => ({
-  compare: vi.fn(),
-  hash: vi.fn(),
-}));
+vi.mock('bcrypt', async () => {
+  const actual = await vi.importActual('bcrypt');
+  return {
+    ...actual,
+    default: {
+      ...actual.default,
+      compare: vi.fn(),
+      hash: vi.fn(),
+    },
+  };
+});
 
 vi.mock('../../helpers/queryTransaction.js', () => ({
   queryLogger: vi.fn(),
 }));
 
-const pool = {
-  query: vi.fn(),
-};
-
 describe('userResolver', () => {
+  let pool;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    pool = {
+      query: vi.fn(),
+    };
+  });
+
   describe('Mutation.login', () => {
     it('should return a token and timeout on successful login', async () => {
       pool.query.mockResolvedValueOnce([[{ id: 1, username: 'test', password: 'hashed', roles: 'admin', status_aktif: 1 }]]);
@@ -68,7 +81,6 @@ describe('userResolver', () => {
 
   describe('Mutation.addUser', () => {
     it('should add a user and return the user data', async () => {
-      pool.query.mockResolvedValueOnce([{ insertId: 1 }]);
       bcrypt.hash.mockResolvedValueOnce('hashed-password');
 
       const input = {
