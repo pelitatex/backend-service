@@ -39,6 +39,7 @@ const documentControlResolver = {
 
       let paddedKode = '01';
       let newKode = 1;
+      let newPaddedCode = "";
 
       let insertId = 0;
       let queryInsert = '';
@@ -62,12 +63,12 @@ const documentControlResolver = {
           paddedKode = newKode.toString().padStart(2, '0');
         }
   
-        const newPaddedCode = `${deptCode}${paddedKode}`;
+        newPaddedCode = `${deptCode}${paddedKode}`;
   
         queryInsert = `INSERT INTO nd_document_control (department_id, tipe_dokumen, nama, no_kode, kode, keterangan, status_aktif) VALUES (?, ?, ?, ?, ?, ?, ?)`;
         paramInsert = [department_id, tipe_dokumen, nama.toUpperCase(), newKode, newPaddedCode, keterangan, status_aktif];
         
-        const [result] = await pool.query(query, params);
+        const [result] = await pool.query(queryInsert, paramInsert);
         if(result.affectedRows === 0) {
           throw new Error("Document Control not found");
         }
@@ -81,7 +82,7 @@ const documentControlResolver = {
         
       }
 
-      queryLogger(pool, `nd_document_control`, insertId, query, params);
+      queryLogger(pool, `nd_document_control`, insertId, queryInsert, paramInsert);
 
       return { id: insertId, department_id, tipe_dokumen, nama : nama.toUpperCase(), kode : newPaddedCode, keterangan, status_aktif };
     }),
@@ -112,9 +113,11 @@ const documentControlResolver = {
         pool.query('ROLLBACK');
         throw error;        
       }
-      queryLogger(pool, `nd_document_control`, result.insertId, query, params);
+      queryLogger(pool, `nd_document_control`, id, query, params);
+      
+      const [resUpdate] = await pool.query(`SELECT * FROM nd_document_control WHERE id = ?`, [id]);
 
-      return { id: id, department_id, nama : nama.toUpperCase(), kode : paddedKode, keterangan, status_aktif }; 
+      return resUpdate[0]; 
     }),
     addDepartment: handleResolverError(async (_, {input}, context) => {
       const pool = context.pool;
@@ -127,17 +130,29 @@ const documentControlResolver = {
 
       const query = `INSERT INTO nd_department (nama, kode, status_aktif) VALUES (?, ?, ?)`;
       const params = [nama.toUpperCase(), paddedKode, status_aktif];
-      const [result] = await pool.query(query, params);
-      queryLogger(pool, `nd_department`, result.insertId, query, params);
+      let insertId = 0;
+      try {
 
-      return { id: result.insertId, nama: nama.toUpperCase(), kode : paddedKode, status_aktif }; 
+        pool.query('START TRANSACTION');
+        const [result] = await pool.query(query, params);
+        if(result.affectedRows === 0) {
+          throw new Error("Department not found");
+        }
+        insertId = result.insertId;
+        pool.query('COMMIT');
+        
+      } catch (error) {
+        pool.query('ROLLBACK');
+        throw error;        
+      }
+      
+      queryLogger(pool, `nd_department`, insertId, query, params);
+
+      return { id: insertId, nama: nama.toUpperCase(), kode : paddedKode, status_aktif }; 
     }),
     updateDepartment: handleResolverError(async (_, {id, input}, context) => {
       const pool = context.pool;
-      if (!pool) {
-        console.log('context', pool);
-        throw new Error('Database pool not available in context.');
-      }
+
       const { nama, kode, status_aktif } = input;
       if (kode.length > 2 || kode.length == 0) {
         throw new Error('Kode must be 2 characters');
@@ -146,10 +161,21 @@ const documentControlResolver = {
 
       const query = `UPDATE nd_department SET nama = ?, kode = ?, status_aktif = ? WHERE id = ?`;
       const params = [nama.toUpperCase(), paddedKode, status_aktif, id];
-      const [result] = await pool.query(query, [nama.toUpperCase(), paddedKode, status_aktif, id]);
-      if (result.affectedRows === 0) {
-        throw new Error("Department not found");
+
+      try {
+        pool.query('START TRANSACTION');
+        const [result] = await pool.query(query, params);
+        if (result.affectedRows === 0) {
+          throw new Error("Department not found");
+        }
+        pool.query('COMMIT');
+        
       }
+      catch (error) {
+        pool.query('ROLLBACK');
+        throw error;        
+      }
+      
       queryLogger(pool, `nd_department`, id, query,  params);
 
       return {id: id, nama : nama.toUpperCase(), kode: paddedKode, status_aktif};

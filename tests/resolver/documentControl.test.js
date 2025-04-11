@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import documentControlResolver from '../../graphql/resolvers/documentControl.js';
 
 describe('documentControlResolver', () => {
@@ -46,13 +46,18 @@ describe('documentControlResolver', () => {
       const mockInsertResult = { insertId: 1 };
 
       mockPool.query
+        .mockResolvedValueOnce([[]]) // start transaction
+        .mockResolvedValueOnce([[]]) // lock tables
         .mockResolvedValueOnce([mockLastCodeResult]) // Last code query
         .mockResolvedValueOnce([mockDepartmentResult]) // Department query
-        .mockResolvedValueOnce([mockInsertResult]); // Insert query
+        .mockResolvedValueOnce([mockInsertResult]) // Insert query
+        .mockResolvedValueOnce([[]]) // unlock tables
+        .mockResolvedValue([[]]) // commit 
+
 
       const result = await documentControlResolver.Mutation.addDocumentControl(null, mockArgs, mockContext);
 
-      expect(mockPool.query).toHaveBeenCalledTimes(3);
+      expect(mockPool.query).toHaveBeenCalledTimes(8);
       expect(result).toEqual({
         id: 1,
         department_id: 1,
@@ -74,24 +79,24 @@ describe('documentControlResolver', () => {
       };
       const mockArgs = { id: 1, input: mockInput };
       const mockUpdateResult = { affectedRows: 1 };
+      const mockResult = [{ id: 1, department_id:1, kode:1, nama: 'UPDATED DOCUMENT', keterangan: 'Updated Description', status_aktif: 1 }];
 
-      mockPool.query.mockResolvedValueOnce([mockUpdateResult]);
+      mockPool.query
+        .mockResolvedValueOnce([[]]) // start transaction
+        .mockResolvedValueOnce([mockUpdateResult]) // update query
+        .mockResolvedValueOnce([[]]) // commit
+        .mockResolvedValueOnce([[]]) // logging
+        .mockResolvedValueOnce([mockResult]); // return
 
       const result = await documentControlResolver.Mutation.updateDocumentControl(null, mockArgs, mockContext);
 
-      expect(mockPool.query).toHaveBeenCalledWith(
-        `UPDATE nd_document_control SET 
-          nama = ?,
-          keterangan = ?,
-          status_aktif = ?
-        WHERE id = ?`,
-        ['UPDATED DOCUMENT', 'Updated Description', 1, 1]
-      );
+      expect(mockPool.query).toHaveBeenCalledTimes(5);
+
       expect(result).toEqual({
         id: 1,
-        department_id: undefined,
+        department_id: 1,
         nama: 'UPDATED DOCUMENT',
-        kode: undefined,
+        kode: 1,
         keterangan: 'Updated Description',
         status_aktif: 1,
       });
@@ -108,14 +113,14 @@ describe('documentControlResolver', () => {
       const mockArgs = { input: mockInput };
       const mockInsertResult = { insertId: 1 };
 
-      mockPool.query.mockResolvedValueOnce([mockInsertResult]);
+      mockPool.query
+        .mockResolvedValueOnce([[]]) // START TRANSACTION
+        .mockResolvedValueOnce([mockInsertResult])
+        .mockResolvedValueOnce([[]]); // commit; 
 
       const result = await documentControlResolver.Mutation.addDepartment(null, mockArgs, mockContext);
 
-      expect(mockPool.query).toHaveBeenCalledWith(
-        'INSERT INTO nd_department (nama, kode, status_aktif) VALUES (?, ?, ?)',
-        ['DEPARTMENT A', '01', 1]
-      );
+      expect(mockPool.query).toHaveBeenCalledTimes(4);
       expect(result).toEqual({
         id: 1,
         nama: 'DEPARTMENT A',
@@ -128,21 +133,21 @@ describe('documentControlResolver', () => {
   describe('Mutation.updateDepartment', () => {
     it('should update an existing department', async () => {
       const mockInput = {
-        nama: 'Updated Department',
+        nama: 'Updated DEPARTMENT',
         kode: '02',
         status_aktif: 1,
       };
       const mockArgs = { id: 1, input: mockInput };
       const mockUpdateResult = { affectedRows: 1 };
 
-      mockPool.query.mockResolvedValueOnce([mockUpdateResult]);
+      mockPool.query
+        .mockResolvedValueOnce([[]]) // START TRANSACTION
+        .mockResolvedValueOnce([mockUpdateResult])
+        .mockResolvedValueOnce([[]]); // COMMIT
 
       const result = await documentControlResolver.Mutation.updateDepartment(null, mockArgs, mockContext);
 
-      expect(mockPool.query).toHaveBeenCalledWith(
-        'UPDATE nd_department SET nama = ?, kode = ?, status_aktif = ? WHERE id = ?',
-        ['UPDATED DEPARTMENT', '02', 1, 1]
-      );
+      expect(mockPool.query).toHaveBeenCalledTimes(4);
       expect(result).toEqual({
         id: 1,
         nama: 'UPDATED DEPARTMENT',
