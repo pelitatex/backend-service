@@ -2,6 +2,13 @@ import { describe, it, expect, vi } from 'vitest';
 import documentResolver from '../../graphql/resolvers/document';
 import zlib from 'zlib';
 
+vi.mock('zlib', () => ({
+  default:{
+    deflateSync: vi.fn(() => Buffer.from('compressed-data')),
+    inflateSync: vi.fn(() => "Test Description"),
+  }
+}));
+
 describe('documentResolver', () => {
   const mockPool = {
     query: vi.fn(),
@@ -10,6 +17,8 @@ describe('documentResolver', () => {
   const mockContext = {
     pool: mockPool,
   };
+
+  
 
   describe('Query.document', () => {
     it('should return a document when found', async () => {
@@ -84,9 +93,15 @@ describe('documentResolver', () => {
       };
 
       const mockArgs = { input: mockInput };
-      const mockInsertResult = { insertId: 1 };
-      mockPool.query.mockResolvedValueOnce([mockInsertResult]);
-      mockPool.query.mockResolvedValueOnce([]);
+      const mockInsertResult = { insertId: 1, afffectedRows: 1 };
+            
+      mockPool.query.mockResolvedValueOnce([[]]); // start transaction
+      mockPool.query.mockResolvedValueOnce([[]]); // lock table
+      mockPool.query.mockResolvedValueOnce([[]]); // cek no document
+      mockPool.query.mockResolvedValueOnce([mockInsertResult]); // insert document
+      mockPool.query.mockResolvedValueOnce([[]]); // unclock table
+      mockPool.query.mockResolvedValueOnce([[]]); // commit transaction
+      mockPool.query.mockResolvedValueOnce([[]]); // mock logging
 
       const result = await documentResolver.Mutation.addDocument(null, mockArgs, mockContext);
 
