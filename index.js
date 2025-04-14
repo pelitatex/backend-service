@@ -13,11 +13,13 @@ import { queryTransaction } from "./helpers/queryTransaction.js";
 import eSchema from "./graphql/index.js";
 import { publishExchange } from "./helpers/producers.js";
 import getPoolForRequest from "./config/mysqlCon.js";
+import { setPool } from "./utils/poolManager.js";
 import compressImage from "./helpers/image_compress.js";
 import path from 'path';
 import fs from 'fs';
 import fsPromises from 'fs/promises';
 import util from 'util';
+
 
 process.env.TZ = 'UTC';
 const app = express();
@@ -496,6 +498,7 @@ app.use(
         }
         
         let pool = await getPoolForRequest(xTenant);
+        setPool(pool);
         let retries = 0;
 
         while (!pool && retries < MAX_RETRIES) {

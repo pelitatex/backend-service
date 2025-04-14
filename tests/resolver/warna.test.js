@@ -44,6 +44,7 @@ describe('warnaResolver', () => {
             };
             const mockArgs = { input: mockInput };
             const mockResult = { insertId: 1, affectedRows: 1 };
+            
 
             pool.query.mockResolvedValueOnce([[]]);
             pool.query.mockResolvedValueOnce([mockResult]);
