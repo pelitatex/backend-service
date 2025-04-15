@@ -1,8 +1,6 @@
 import mysql from "mysql2/promise";
 import { DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT } from "../config/loadEnv.js";
 
-var pool = {};
-
 async function createPoolForTenant() {
 
   const dbConfig = {
@@ -31,20 +29,4 @@ async function createPoolForTenant() {
 
 }
 
-async function getPoolForRequest(tenant) {
-  const tenantFromHeader = tenant;
-
-  if (!tenantFromHeader) {
-    return null;
-  }
-
-  if (typeof pool[tenantFromHeader] === 'undefined' || pool[tenantFromHeader] === null) {
-    pool[tenantFromHeader] = await createPoolForTenant();
-    console.log('creating pool for tenant', tenantFromHeader, (pool[tenantFromHeader] == null ? "failed" : 'success'));
-  }
-  
-  return pool[tenantFromHeader];
-}
-
-
-export default getPoolForRequest;
+export default createPoolForTenant;
