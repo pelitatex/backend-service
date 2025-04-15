@@ -2,7 +2,16 @@ export const queryLogger = async (pool, table, affected_id, query, params, usern
 
     try {
         const queryLog = `INSERT INTO query_log (table_name, affected_id, query, params, username) VALUES (?, ?, ?, ?, ?)`;
-        const [result] = await pool.query(queryLog, [table, affected_id, query, JSON.stringify(params), username]);
+
+        let stringifiedParams;
+        try {
+            stringifiedParams = JSON.stringify(params);
+        } catch (stringifyError) {
+            console.error("Failed to stringify params:", stringifyError.message || stringifyError);
+            stringifiedParams = null; 
+        }
+
+        const [result] = await pool.query(queryLog, [table, affected_id, query, stringifiedParams, username]);
         return result;
     } catch (error) {
         console.error(error.message || "Error on query logging");
