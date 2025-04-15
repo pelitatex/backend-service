@@ -18,7 +18,7 @@ async function createPoolForTenant() {
     const poolGet = await mysql.createPool(dbConfig);
 
     // Test the connection
-    console.log('dbConfig', dbConfig);
+    // console.log('dbConfig', dbConfig);
     await poolGet.query('SELECT 1');
     
     return poolGet;

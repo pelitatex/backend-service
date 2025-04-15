@@ -2,8 +2,6 @@ import createPoolForTenant from "../config/mysqlCon.js";
 
 let _pools = {};
 
-
-
 export const setPool = async(tenant = 'default') => {
   try {
     if(!_pools[tenant]) {
@@ -17,8 +15,8 @@ export const setPool = async(tenant = 'default') => {
 };
 
 export const getPool = (tenant = 'default') => {
-  if (!_pool[tenant]) {
+  if (!_pools[tenant]) {
     throw new Error('Database connection pool has not been initialized.');
   }
-  return _pool[tenant];
+  return _pools[tenant];
 };
