@@ -1,6 +1,6 @@
 import { stat } from 'fs';
 import zlib from 'zlib';
-import handleResolverError from '../handleResolverError';
+import handleResolverError from '../handleResolverError.js';
 
 // import queryLogger from "../../helpers/queryTransaction.js";
 // import queryTransaction from "../../helpers/queryTransaction.js";

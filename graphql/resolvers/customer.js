@@ -1,5 +1,5 @@
 import { queryLogger, queryTransaction } from "../../helpers/queryTransaction.js";
-import { publishExchange } from '../../helpers/producers.js';
+import { publishExchange } from '../../rabbitMQ/producers.js';
 import handleResolverError from "../handleResolverError.js";
 
 const customerResolver = {

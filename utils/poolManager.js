@@ -1,21 +1,24 @@
-import createPoolForTenant from "../config/mysqlCon";
+import createPoolForTenant from "../config/mysqlCon.js";
 
 let _pools = {};
 
-export const setPool = async (tenant = 'default') => {
+
+
+export const setPool = async(tenant = 'default') => {
   try {
-    if (!_pools[tenant]) { // Fixed incorrect variable name from `pools` to `_pools`
-      _pools[tenant] = await createPoolForTenant(tenant); // Added `await` for async function
+    if(!_pools[tenant]) {
+      _pools[tenant] = createPoolForTenant(tenant);
     }
+    
   } catch (error) {
-    console.error('Error setting pool for tenant:', tenant, error);
+    console.error('Error setting pool for tenant', error);
   }
   return _pools[tenant];
 };
 
-export const getPool = async (tenant = 'default') => {
-  if (!_pools[tenant]) { // Fixed incorrect variable name from `_pool` to `_pools`
-    await setPool(tenant); // Ensure the pool is initialized if not already
+export const getPool = (tenant = 'default') => {
+  if (!_pool[tenant]) {
+    throw new Error('Database connection pool has not been initialized.');
   }
-  return _pools[tenant];
+  return _pool[tenant];
 };

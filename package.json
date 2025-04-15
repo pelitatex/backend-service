@@ -28,7 +28,6 @@
     "ws": "^8.14.2"
   },
   "scripts": {
-    "start": "node ./bin/www",
     "test": "vitest"
   },
   "devDependencies": {

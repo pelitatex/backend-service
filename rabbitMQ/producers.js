@@ -1,4 +1,8 @@
-import { channel, connection } from "./connection.js";
+import { getRabbitMQ } from "./connection.js";
+
+let channel = await getRabbitMQ.channel;
+let confirmChannel = await getRabbitMQ.confirmChannel;
+let connection = await getRabbitMQ.connection;
 
 export const publishExchange = async (exchange, routingKey, message, timeout = 0, needConfirm = false) => {
     if (connection === undefined) {

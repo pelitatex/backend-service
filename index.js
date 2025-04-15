@@ -11,14 +11,14 @@ import multer from 'multer';
 // built in modules
 import { queryTransaction } from "./helpers/queryTransaction.js";
 import eSchema from "./graphql/index.js";
-import { publishExchange } from "./helpers/producers.js";
-import getPoolForRequest from "./config/mysqlCon.js";
-import { setPool } from "./utils/poolManager.js";
+import { publishExchange } from "./rabbitMQ/producers.js";
+import { setPool, getPool } from "./utils/poolManager.js";
 import compressImage from "./helpers/image_compress.js";
 import path from 'path';
 import fs from 'fs';
 import fsPromises from 'fs/promises';
 import util from 'util';
+
 
 
 process.env.TZ = 'UTC';
@@ -58,6 +58,18 @@ app.use(expressjwt({
 .unless({
     path:['/login','/graphql','/websocket']
 }));
+
+(async () => {
+    try {
+      // Initialize the default pool
+      await setPool('default');
+      console.log('Default database pool initialized successfully.');
+    } catch (error) {
+      console.error('Failed to initialize database pool:', error);
+      process.exit(1); // Exit the process if the pool cannot be initialized
+    }
+  })();
+
 
 let isAccessFromOffice = false;
 
@@ -222,7 +234,7 @@ app.post('/customers-legacy/verifikasi_oleh_user', async (req, res) => {
         console.log('headers', req.headers);
     }
 
-    const pool = await getPoolForRequest(xTenant); 
+    const pool = await getPool('default'); 
     const data = req.body;
 
     const company_indexes = data.company_indexes;
@@ -439,7 +451,7 @@ app.post('/upload-image/customer_ids', async (req, res) => {
         console.log('headers', req.headers);
     }
     
-    const pool = await getPoolForRequest(xTenant);
+    const pool = await getPool('default');
     
     try {
         if (!image_name || !customer_id) {
@@ -493,17 +505,19 @@ app.use(
     '/graphql',
     graphqlHTTP( async (req, res) => {
         let xTenant = "default";
-        if (req.headers['x-tenant']) {
+        /* if (req.headers['x-tenant']) {
             xTenant = req.headers['x-tenant'];
         }
         
-        let pool = await getPoolForRequest(xTenant);
-        setPool(pool);
+        
+        setPool(pool[xTenant]);
+        console.log('xTenant', xTenant); */
+        let pool = await getPool('default');
         let retries = 0;
 
         while (!pool && retries < MAX_RETRIES) {
             console.warn(`Pool is null, retrying connection... (${retries + 1}/${MAX_RETRIES})`);
-            pool = await getPoolForRequest(xTenant);
+            pool = await getPool('default');
             retries++;
         }
 
