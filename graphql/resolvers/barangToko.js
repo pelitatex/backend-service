@@ -31,10 +31,6 @@ const barangTokoResolver = {
       const { pool } = context;
       const {toko_id, barang_id} = input;
       let tokoAlias = "";
-
-      if(ENVIRONMENT === 'development'){
-        await pool.query(`TRUNCATE nd_toko_barang_assignment`);
-      }
       
       // this row needed to get alias for rabbitMQ send company value
       const getToko = 'SELECT * FROM nd_toko WHERE id = ?';

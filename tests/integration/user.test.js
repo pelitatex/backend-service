@@ -12,7 +12,7 @@ vi.mock('bcrypt', async () => {
     ...actual,
     default: {
       ...actual.default,
-      compare: vi.fn(),
+      compare: vi.fn(), 
       hash: vi.fn(),
     },
   };
@@ -60,7 +60,7 @@ describe('User Resolver Integration Tests', () => {
       roles: 'user',
     };
 
-
+    bcrypt.hash.mockResolvedValueOnce('hashed_new_password');
     const result = await userResolver.Mutation.addUser(null, { input }, context);
 
     expect(result).toBeDefined();
@@ -77,7 +77,7 @@ describe('User Resolver Integration Tests', () => {
       roles: 'admin',
     };
 
-    const result = await userResolver.Mutation.updateUser(null, { id: 1, input }, context);
+    const result = await userResolver.Mutation.updateUser(null, { id: 2, input }, context);
 
     expect(result).toBeDefined();
     expect(result.affectedRows).toBeGreaterThan(0);
@@ -86,6 +86,8 @@ describe('User Resolver Integration Tests', () => {
   it('should login a user with valid credentials', async () => {
     const context = { pool };
     const args = { username: 'new_user', password: 'new_password' };
+
+    bcrypt.compare.mockResolvedValueOnce(true);
 
     const result = await userResolver.Mutation.login(null, args, context);
 
@@ -100,8 +102,5 @@ describe('User Resolver Integration Tests', () => {
 
     await expect(userResolver.Mutation.login(null, args, context)).rejects.toThrow('User not found');
   });
-
-  
-
   
 });

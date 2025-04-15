@@ -216,9 +216,10 @@ const userResolver = {
         has_account, nama, alamat, telepon, jenis_kelamin,
         kota_lahir, tgl_lahir, status_perkawinan, jumlah_anak, agama, nik, npwp, id];
 
+      let result = null;
       try {
         pool.query('START TRANSACTION');
-        const [result] = await pool.query(query, params);
+        [result] = await pool.query(query, params);
         if (result.affectedRows === 0) {
           throw new Error('User not found');
         }
@@ -228,6 +229,7 @@ const userResolver = {
         throw error;
       }
       queryLogger(pool, 'nd_user', id, query, params);
+      
       
       return result;
     }),
