@@ -81,13 +81,13 @@ describe('barangToko Resolver Integration Tests', () => {
       console.log('run resolver');
       const result = await barangTokoResolver.Mutation.addBarangToko(null, { input }, { pool });
 
-      /* expect(result).toBeDefined();
+      expect(result).toBeDefined();
       expect(result.id).toBeGreaterThan(0);
       
       console.log('get message');
       const messages = getPublishedMessages();
       expect(messages).toHaveLength(1);
-      expect(messages[0].company).toBe('testAlias'); */
+      expect(messages[0].company).toBe('testAlias');
       
     } catch (error) {
       console.error('Error in test:', error);
