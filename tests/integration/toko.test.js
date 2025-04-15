@@ -1,6 +1,6 @@
 import { describe, it, beforeAll, afterAll, expect } from 'vitest';
 import request from 'supertest';
-import mysql from 'mysql2/promise';
+import { getPool } from '../../utils/poolManager.js';
 import app from '../../app.js'; // Adjust the path to your app entry point
 
 let pool;
