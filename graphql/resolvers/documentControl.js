@@ -82,7 +82,7 @@ const documentControlResolver = {
         
       }
 
-      queryLogger(pool, `nd_document_control`, insertId, queryInsert, paramInsert);
+      await queryLogger(pool, `nd_document_control`, insertId, queryInsert, paramInsert);
 
       return { id: insertId, department_id, tipe_dokumen, nama : nama.toUpperCase(), kode : newPaddedCode, keterangan, status_aktif };
     }),
@@ -113,7 +113,7 @@ const documentControlResolver = {
         pool.query('ROLLBACK');
         throw error;        
       }
-      queryLogger(pool, `nd_document_control`, id, query, params);
+      await queryLogger(pool, `nd_document_control`, id, query, params);
       
       const [resUpdate] = await pool.query(`SELECT * FROM nd_document_control WHERE id = ?`, [id]);
 
@@ -146,7 +146,7 @@ const documentControlResolver = {
         throw error;        
       }
       
-      queryLogger(pool, `nd_department`, insertId, query, params);
+      await queryLogger(pool, `nd_department`, insertId, query, params);
 
       return { id: insertId, nama: nama.toUpperCase(), kode : paddedKode, status_aktif }; 
     }),
@@ -176,7 +176,7 @@ const documentControlResolver = {
         throw error;        
       }
       
-      queryLogger(pool, `nd_department`, id, query,  params);
+      await queryLogger(pool, `nd_department`, id, query,  params);
 
       return {id: id, nama : nama.toUpperCase(), kode: paddedKode, status_aktif};
     }),

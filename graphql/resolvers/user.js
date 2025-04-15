@@ -151,7 +151,7 @@ const userResolver = {
         pool.query('ROLLBACK');
         throw error;
       }
-      queryLogger(pool, 'nd_user', insertId, query, params);
+      await queryLogger(pool, 'nd_user', insertId, query, params);
       
       return { ...input, id: insertId };
       
@@ -228,7 +228,7 @@ const userResolver = {
         pool.query('ROLLBACK');
         throw error;
       }
-      queryLogger(pool, 'nd_user', id, query, params);
+      await queryLogger(pool, 'nd_user', id, query, params);
       
       
       return result;

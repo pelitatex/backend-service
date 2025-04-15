@@ -37,7 +37,7 @@ const gudangResolver = {
         }
         pool.query("COMMIT;");
         insertId = result.insertId;
-        queryLogger(pool, `nd_gudang`, insertId, query, [
+        await queryLogger(pool, `nd_gudang`, insertId, query, [
           nama, lokasi, status_default, urutan, visible, gudang_group_id, status_aktif] );
         
       } catch (error) {
@@ -57,7 +57,7 @@ const gudangResolver = {
       if (result.affectedRows === 0) {
         throw new Error('Gudang not found');
       }
-      queryLogger(pool, `nd_gudang`, id, query, params); 
+      await queryLogger(pool, `nd_gudang`, id, query, params); 
       return {id, nama, lokasi, status_default, urutan, visible, gudang_group_id, status_aktif};
     }),
   },

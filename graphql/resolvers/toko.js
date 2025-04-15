@@ -71,7 +71,7 @@ const tokoResolver = {
         }
       
       
-      queryLogger(pool, `nd_toko`, insertId, query, params );
+      await queryLogger(pool, `nd_toko`, insertId, query, params );
 
       
       return { id: insertId, nama,
@@ -131,7 +131,7 @@ const tokoResolver = {
         throw error;
       }
 
-      queryLogger(pool, `nd_toko`, id, query, [
+      await queryLogger(pool, `nd_toko`, id, query, [
         nama, alamat, telepon, email,
         kota, kode_pos, npwp, 
         kode_toko, status_aktif, nama_domain, email_pajak, 

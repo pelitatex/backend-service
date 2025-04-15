@@ -64,7 +64,7 @@ const barangSKUResolver = {
         const [result] = await pool.query(query, params);
         insertedId = result.insertId;
         await pool.query("COMMIT");
-        queryLogger(pool, `nd_barang_sku`, insertedId, query, params);
+        await queryLogger(pool, `nd_barang_sku`, insertedId, query, params);
         
       } catch (error) {
         await pool.query("ROLLBACK");

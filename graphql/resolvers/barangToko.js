@@ -58,16 +58,16 @@ const barangTokoResolver = {
         }
         await pool.query('COMMIT');
         
-        queryLogger(pool, `nd_toko_barang_assignment`, resId, query, [toko_id, barang_id]);
+        await queryLogger(pool, `nd_toko_barang_assignment`, resId, query, [toko_id, barang_id]);
 
-        /* const dataRMQ = {
+        const dataRMQ = {
           company:tokoAlias, 
           toko_id: toko_id, 
           barang_id: barang_id,
           pool: pool
         }
 
-        await assignBarangToko(dataRMQ); */
+        await assignBarangToko(dataRMQ);
       
         return {id:resId};
       } catch (error) {

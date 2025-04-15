@@ -68,7 +68,7 @@ const supplierResolver = {
           pool.query('ROLLBACK');
           throw error;
         }
-        queryLogger(pool, `nd_supplier`, insertId, query, [kode, nama, alamat, telepon, fax, kota, kode_pos, nama_bank, no_rek_bank, email, website, status_aktif]);
+        await queryLogger(pool, `nd_supplier`, insertId, query, [kode, nama, alamat, telepon, fax, kota, kode_pos, nama_bank, no_rek_bank, email, website, status_aktif]);
 
         return { id: insertId, kode, nama, alamat, telepon, fax, kota, kode_pos, nama_bank, no_rek_bank, email, website, status_aktif };
       } catch (error) {
@@ -123,7 +123,7 @@ const supplierResolver = {
           pool.query('ROLLBACK');
           throw error;
         }
-        queryLogger(pool, `nd_supplier`, id, query, [kode, nama, alamat, telepon, fax, kota, kode_pos, nama_bank, no_rek_bank, email, website, status_aktif]);
+        await queryLogger(pool, `nd_supplier`, id, query, [kode, nama, alamat, telepon, fax, kota, kode_pos, nama_bank, no_rek_bank, email, website, status_aktif]);
         return { id, kode, nama, alamat, telepon, fax, kota, kode_pos, nama_bank, no_rek_bank, email, website, status_aktif };
 
     })

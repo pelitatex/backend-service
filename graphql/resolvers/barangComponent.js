@@ -163,7 +163,7 @@ const updateBarangComponent = async (input, id, table, context) => {
             throw new Error(`${table} with id ${id} not found.`);
         }
         pool.query("COMMIT");
-        queryLogger(pool, `nd_barang_${table}`,'id', query, [nama.toUpperCase(), keterangan, id]);
+        await queryLogger(pool, `nd_barang_${table}`,'id', query, [nama.toUpperCase(), keterangan, id]);
     } catch (error) {
         pool.query("ROLLBACK");
         console.error(error);

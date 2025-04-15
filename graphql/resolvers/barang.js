@@ -137,7 +137,7 @@ const barangResolver = {
                     throw new Error('Gagal Update Barang');
                 }
                 pool.query("COMMIT");
-                queryLogger(pool, `nd_barang`, id, query, params);
+                await queryLogger(pool, `nd_barang`, id, query, params);
             } catch (error) {
                 pool.query("ROLLBACK");
                 throw error;

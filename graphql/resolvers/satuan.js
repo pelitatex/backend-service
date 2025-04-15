@@ -32,7 +32,7 @@ const satuanResolver = {
         }
         insertId = result.insertId;
         pool.query('COMMIT');
-        queryLogger(pool, 'nd_satuan', result.insertId ,query, [nama, status_aktif]);
+        await queryLogger(pool, 'nd_satuan', result.insertId ,query, [nama, status_aktif]);
         
       } catch (error) {
         pool.query('ROLLBACK');
@@ -53,7 +53,7 @@ const satuanResolver = {
           throw new Error(`Satuan with id ${id} not found.`);
         }
         pool.query('COMMIT');
-        queryLogger(pool, 'nd_satuan' ,query, [nama, status_aktif,id]);
+        await queryLogger(pool, 'nd_satuan' ,query, [nama, status_aktif,id]);
         
       } catch (error) {
         pool.query('ROLLBACK');

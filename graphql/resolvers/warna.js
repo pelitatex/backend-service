@@ -50,7 +50,7 @@ const warnaResolver = {
         throw error;
       }      
     
-      queryLogger(pool, `nd_warna`, insertId, query, params);
+      await queryLogger(pool, `nd_warna`, insertId, query, params);
       return { id: insertId, warna_jual, warna_beli, kode_warna, status_aktif };
     }),
     
@@ -86,7 +86,7 @@ const warnaResolver = {
         
       }
 
-      queryLogger(pool, `nd_warna`, id, query, params);
+      await queryLogger(pool, `nd_warna`, id, query, params);
 
       return { id, warna_jual, warna_beli, kode_warna, status_aktif };
 
