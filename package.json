@@ -28,7 +28,9 @@
     "ws": "^8.14.2"
   },
   "scripts": {
-    "test": "vitest"
+    "test": "vitest",
+    "test:file": "set:NODE_ENV=test && vitest run"
+
   },
   "devDependencies": {
     "vitest": "^3.0.9",

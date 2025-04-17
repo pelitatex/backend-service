@@ -140,13 +140,15 @@ const userResolver = {
 
       let insertId = null;
       try {
+        console.log('start transaction');
         pool.query('START TRANSACTION');
         const [result] = await pool.query(query, params);
         if(result.affectedRows === 0){
           throw new Error("Failed to insert user");
         }
-        insertId = result.insertId;
         pool.query('COMMIT');
+        console.log('commit transaction');
+        insertId = result.insertId;
       } catch (error) {
         pool.query('ROLLBACK');
         throw error;

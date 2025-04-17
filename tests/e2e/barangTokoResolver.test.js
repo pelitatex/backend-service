@@ -1,7 +1,7 @@
 import request from 'supertest';
 import app from '../../index.js';
 import { getPool, setPool } from '../../utils/poolManager.js';
-import dbToko from './getTokoDb.js';
+import dbToko from './utils/getTokoDb.js'; // Fixed typo in the import path
 
 let server;
 let pool;
@@ -68,6 +68,7 @@ describe('barangTokoResolver', () => {
         }
       }
     `;
+
     const variables = { input: { toko_id: tokoId, barang_id: barangId } };
 
     const addResponse = await request(server)

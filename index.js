@@ -28,7 +28,7 @@ const allowedCors = FRONTEND_URL.split(',');
 
 const corsOptions= {
     origin: function (origin, callback) {
-        if (ENVIRONMENT === "development") {
+        if (ENVIRONMENT === "development" || ENVIRONMENT === "test") {
             if (allowedCors.indexOf('*') === -1) {
                 allowedCors.push('*');   
             }
@@ -51,13 +51,80 @@ app.use(cors(corsOptions));
 app.use(morgan('dev'));
 app.use(helmet());
 
-app.use(expressjwt({
-    secret:TOKENSECRET,
-    algorithms: ['HS256']
-})
-.unless({
-    path:['/login','/graphql','/websocket']
-}));
+let isAccessFromOffice = false;
+
+console.log('environment', process.env.NODE_ENV);
+if(process.env.NODE_ENV !== 'test'){
+    app.use(expressjwt({
+        secret:TOKENSECRET,
+        algorithms: ['HS256']
+    })
+    .unless({
+        path:['/login','/graphql','/websocket']
+    }));
+
+    app.use((req, res, next) => {
+        const allowedIPs = ALLOWED_IPS.split(',');
+        let clientIP = req.headers['x-forwarded-for'] 
+            ? req.headers['x-forwarded-for'].split(',')[0].trim() 
+            : req.connection.remoteAddress;
+    
+        if (clientIP.startsWith('::ffff:')) {
+            clientIP = clientIP.substring(7);
+        }
+        const trustedOrigins = FRONTEND_URL.split(',');
+        
+        const hostname = req.headers.origin ? new URL(req.headers.origin).hostname : '';
+        console.log(`Mode: ${clientIP}, ${hostname}`);
+    
+    
+        res.header('Access-Control-Allow-Origin', req.headers.origin); // Ensure this header is set
+        res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+        if (ENVIRONMENT === "development") {
+            // In development, allow all access
+            console.log(`Development Mode: Access granted to IP - ${clientIP}, Hostname - ${hostname}`);
+            next();
+        } else if (ENVIRONMENT === "testing") {
+            // In testing, restrict access only to allowed IPs
+            if (allowedIPs.includes(clientIP) || hostname === "localhost" || trustedOrigins.includes(req.headers.origin)) {
+                console.log(`Testing Mode: Access granted to IP - ${clientIP}, Hostname - ${hostname} `);
+                next();
+            } else {
+                /* console.log(`Allowed IPs:`);
+                console.log(allowedIPs);
+                console.log(`clientIP:${clientIP}`);
+                console.log(`test: ${allowedIPs.includes(clientIP.toString().trim())}`);
+                console.error(`Testing Mode: Access denied to IP - ${clientIP}, Hostname - ${hostname}`); */
+                // return res.status(403).json({ error: 'Forbidden: IP not allowed in testing environment' });
+                return res.status(403).send( {error:`Forbidden: IP not allowed in testing environment`} );
+            }
+        }else if (ENVIRONMENT === "production") {
+            // In production, restrict to allowed IPs and trusted origins
+            if (allowedIPs.includes(clientIP) || trustedOrigins.includes(req.headers.origin)) {
+                console.log(`Production Mode: Access granted to IP - ${clientIP}, Origin - ${req.headers.origin}`);
+                isAccessFromOffice = true;
+                next();
+            } else {
+                console.error(`Production Mode: Access denied to IP - ${clientIP}, Origin - ${req.headers.origin}`);
+                
+                // return res.status(403).json({ error: 'Forbidden: Access denied in production environment' });
+                return res.status(403).send({error:`Request blocked`});
+            }
+        }else if (err.name === 'CorsError') {
+            return res.status(403).json({
+              error: 'CORS error: The origin is not allowed.'+error.message,
+            });
+        } else {
+            return res.status(500).send({error:`Invalid environment configuration`} );
+        }
+    
+    });
+}else{
+    console.log('environment2', process.env.NODE_ENV);
+    isAccessFromOffice = true;
+}
+
+
 
 (async () => {
     try {
@@ -69,65 +136,6 @@ app.use(expressjwt({
       process.exit(1); // Exit the process if the pool cannot be initialized
     }
   })();
-
-
-let isAccessFromOffice = false;
-
-app.use((req, res, next) => {
-    const allowedIPs = ALLOWED_IPS.split(',');
-    let clientIP = req.headers['x-forwarded-for'] 
-        ? req.headers['x-forwarded-for'].split(',')[0].trim() 
-        : req.connection.remoteAddress;
-
-    if (clientIP.startsWith('::ffff:')) {
-        clientIP = clientIP.substring(7);
-    }
-    const trustedOrigins = FRONTEND_URL.split(',');
-    
-    const hostname = req.headers.origin ? new URL(req.headers.origin).hostname : '';
-    console.log(`Mode: ${clientIP}, ${hostname}`);
-
-
-    res.header('Access-Control-Allow-Origin', req.headers.origin); // Ensure this header is set
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-    if (ENVIRONMENT === "development") {
-        // In development, allow all access
-        console.log(`Development Mode: Access granted to IP - ${clientIP}, Hostname - ${hostname}`);
-        next();
-    } else if (ENVIRONMENT === "testing") {
-        // In testing, restrict access only to allowed IPs
-        if (allowedIPs.includes(clientIP) || hostname === "localhost" || trustedOrigins.includes(req.headers.origin)) {
-            console.log(`Testing Mode: Access granted to IP - ${clientIP}, Hostname - ${hostname} `);
-            next();
-        } else {
-            /* console.log(`Allowed IPs:`);
-            console.log(allowedIPs);
-            console.log(`clientIP:${clientIP}`);
-            console.log(`test: ${allowedIPs.includes(clientIP.toString().trim())}`);
-            console.error(`Testing Mode: Access denied to IP - ${clientIP}, Hostname - ${hostname}`); */
-            // return res.status(403).json({ error: 'Forbidden: IP not allowed in testing environment' });
-            return res.status(403).send( {error:`Forbidden: IP not allowed in testing environment`} );
-        }
-    }else if (ENVIRONMENT === "production") {
-        // In production, restrict to allowed IPs and trusted origins
-        if (allowedIPs.includes(clientIP) || trustedOrigins.includes(req.headers.origin)) {
-            console.log(`Production Mode: Access granted to IP - ${clientIP}, Origin - ${req.headers.origin}`);
-            isAccessFromOffice = true;
-            next();
-        } else {
-            console.error(`Production Mode: Access denied to IP - ${clientIP}, Origin - ${req.headers.origin}`);
-            
-            // return res.status(403).json({ error: 'Forbidden: Access denied in production environment' });
-            return res.status(403).send({error:`Request blocked`});
-        }
-    }else if (err.name === 'CorsError') {
-        return res.status(403).json({
-          error: 'CORS error: The origin is not allowed.'+error.message,
-        });
-    } else {
-        return res.status(500).send({error:`Invalid environment configuration`} );
-    }
-});
 
 app.get('/uploads/customer/ids/:filename', (req, res) => {
     const filename = req.params.filename;
@@ -531,7 +539,7 @@ app.use(
             console.log('headers', req.headers);
         }
 
-        const graphiql = (isAccessFromOffice || ENVIRONMENT === "development" || ENVIRONMENT === 'testing' ? true : false);
+        const graphiql = (isAccessFromOffice || ENVIRONMENT === "development" || ENVIRONMENT === 'test' ? true : false);
 
         return{
             schema:eSchema,
@@ -540,5 +548,11 @@ app.use(
         }
     })
 );
+
+app.use((err, req, res, next) => {
+    console.error('🔥 Express Error:', err.stack);
+    res.status(500).json({ error: err.message });
+  });
+  
 
 export default app;

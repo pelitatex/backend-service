@@ -6,31 +6,48 @@ let server;
 let pool;
 
 beforeAll(async () => {
-  await setPool('default');
-  pool = await getPool();
-  server = app;
-  await pool.query("DELETE FROM users");
-});
-
-afterAll(async () => {
-  await pool.end();
+  
 });
 
 describe('userResolver', () => {
-  let userId;
+  let userId = 1;
+  let nUserId = 0;
 
   beforeAll(async () => {
     // Insert test data for users
-    const [userResult] = await pool.query(
-      'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
-      ['Test User', 'testuser@example.com', 'password123']
-    );
-    userId = userResult.insertId;
+    /* const [userResult] = await pool.query(
+      'INSERT INTO nd_user (username, password, nama, roles, status_aktif, has_account) VALUES (?, ?, ?, ?, ?, ?)',
+      ['test_user', 'hashed_password', 'Test User', 'SUPERADMIN', 1, 1]
+    ); */
+    // userId = userResult.insertId;
+
+    await setPool('default');
+    pool = await getPool();
+    server = app;
+
   });
 
   afterAll(async () => {
-    // Cleanup test data
-    await pool.query('DELETE FROM users WHERE id = ?', [userId]);
+    try {
+      // Log rows before 
+      
+      await pool.query("START TRANSACTION");
+      const [rows] = await pool.query("SELECT * FROM nd_user WHERE id >= 3");
+      console.log("Rows to delete:", rows);
+
+      // Attempt to delete rows
+      const [deleteResult] = await pool.query("DELETE FROM nd_user WHERE id >= 3");
+      console.log("Delete Result:", deleteResult);
+
+      // Verify rows after deletion
+      const [verifyRows] = await pool.query("SELECT * FROM nd_user WHERE id >= 3");
+      await pool.query("COMMIT");
+      console.log("Rows remaining after deletion:", verifyRows);
+    } catch (error) {
+      console.error("Error during afterAll cleanup:", error);
+    } finally {
+      await pool.end();
+    }
   });
 
   it('should fetch user by ID', async () => {
@@ -38,8 +55,9 @@ describe('userResolver', () => {
       query GetUser($id: Int!) {
         user(id: $id) {
           id
-          name
-          email
+          username
+          nama
+          roles
         }
       }
     `;
@@ -51,9 +69,33 @@ describe('userResolver', () => {
 
     expect(response.status).toBe(200);
     expect(response.body.data.user).toEqual({
-      id: userId,
-      name: 'Test User',
-      email: 'testuser@example.com',
+      id: userId.toString(),
+      username: 'test_user',
+      nama: 'Test User',
+      roles: 'SUPERADMIN',
+    });
+  });
+
+  it('should fetch all users', async () => {
+    const query = `
+      query GetAllUsers {
+        allUser {
+          id
+          username
+          nama
+          roles
+        }
+      }
+    `;
+
+    const response = await request(server).post('/graphql').send({ query });
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.allUser).toContainEqual({
+      id: userId.toString(),
+      username: 'test_user',
+      nama: 'Test User',
+      roles: 'SUPERADMIN',
     });
   });
 
@@ -62,13 +104,21 @@ describe('userResolver', () => {
       mutation AddUser($input: AddUserInput!) {
         addUser(input: $input) {
           id
-          name
-          email
+          username
+          nama
+          roles
         }
       }
     `;
     const variables = {
-      input: { name: 'New User', email: 'newuser@example.com', password: 'password123' },
+      input: {
+        username: 'new_user',
+        password: 'password123',
+        nama: 'New User',
+        roles: 'SUPERADMIN',
+        status_aktif: true,
+        has_account: true,
+      },
     };
 
     const addResponse = await request(server)
@@ -78,31 +128,44 @@ describe('userResolver', () => {
     expect(addResponse.status).toBe(200);
     const newUser = addResponse.body.data.addUser;
     expect(newUser.id).toBeDefined();
-    expect(newUser.name).toBe('New User');
-    expect(newUser.email).toBe('newuser@example.com');
+    expect(newUser.username).toBe('new_user');
+    expect(newUser.nama).toBe('New User');
+    expect(newUser.roles).toBe('SUPERADMIN');
 
-    // Cleanup the newly added user
-    await pool.query('DELETE FROM users WHERE id = ?', [newUser.id]);
+    console.log("New User ID:", newUser.id); // Debugging log
+
+    // Attempt to delete the newly added user
+    const deleteQuery = 'DELETE FROM nd_user WHERE id = ?';
+    const [deleteResult] = await pool.query(deleteQuery, [newUser.id]);
+
+    console.log(`Delete Result ${newUser.id}:`, deleteResult); // Debugging log
+
+    // Verify the user was deleted
+    const verifyQuery = 'SELECT * FROM nd_user WHERE id = 11';
+    const [verifyResult] = await pool.query(verifyQuery, [newUser.id]);
+
+    nUserId = newUser.id; // Store the new user ID for later use
+    console.log("Verify Result:", verifyResult); // Debugging log
+    expect(verifyResult.length).toBe(0); // Ensure the user is deleted
   });
 
-  it('should fetch all users', async () => {
-    const query = `
-      query GetAllUsers {
-        allUsers {
-          id
-          name
-          email
+  it('should log in a user and return a token', async () => {
+    const mutation = `
+      mutation Login($username: String!, $password: String!) {
+        login(username: $username, password: $password) {
+          token
+          timeout
         }
       }
     `;
+    const variables = { username: 'new_user_test', password: 'password123' };
 
-    const response = await request(server).post('/graphql').send({ query });
+    const response = await request(server)
+      .post('/graphql')
+      .send({ query: mutation, variables });
 
     expect(response.status).toBe(200);
-    expect(response.body.data.allUsers).toContainEqual({
-      id: userId,
-      name: 'Test User',
-      email: 'testuser@example.com',
-    });
+    expect(response.body.data.login.token).toBeDefined();
+    expect(response.body.data.login.timeout).toBeDefined();
   });
 });

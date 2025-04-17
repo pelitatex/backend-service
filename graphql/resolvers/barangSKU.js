@@ -75,7 +75,7 @@ const barangSKUResolver = {
 
       return {id: insertedId, sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif:1};
     }),
-    addBarangSKUBulk: handleResolverError(async(_, {input}, context) => {
+    /* addBarangSKUBulk: handleResolverError(async(_, {input}, context) => {
       const pool = context.pool;
       
       const newItems = [];
@@ -165,12 +165,9 @@ const barangSKUResolver = {
 
       const placeholder = newItems.map(() => '(?, ?, ?, ?, ?, ?, ?)').join(', ');
       const query = `INSERT INTO nd_barang_sku (sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif) VALUES ${placeholder}`;
-      // console.log('placeholder',placeholder);
-
+      
       const params = newItems.flatMap(item=>[item.sku_id, item.nama_barang, item.nama_jual, item.barang_id, item.warna_id, item.satuan_id, item.status_aktif]);
-      /* const result = await queryTransaction.insert(context, "nd_barang_sku", query, params);
-      return result; */
-
+      
       try {
         await pool.query("START TRANSACTION");
         const [result] = await pool.query(query, params);
@@ -191,7 +188,7 @@ const barangSKUResolver = {
       const insertedIds = resultInserted.map(item => item.id);
       await assignSelectedBarangSKUToko(insertedIds,pool);
       return resultInserted;
-    }),
+    }), */
     /*updateBarangSKU: handleResolverError(async (_, {id, input}, context) => {
       const pool = context.pool;
       
