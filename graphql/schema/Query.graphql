@@ -12,7 +12,7 @@ type Query{
     allTipe: [BarangComponent]
     barangSKU(id: ID!): BarangSKU
     allBarangSKU: [BarangSKU]
-    barangToko(id: ID!): BarangToko
+    barangToko(toko_id: Int!): BarangToko
     allBarangToko: [BarangToko]
     barang(id: ID!): Barang
     allBarang: [Barang]

@@ -1,7 +1,7 @@
 import request from 'supertest';
 import app from '../../index.js';
 import { getPool, setPool } from '../../utils/poolManager.js';
-import dbToko from './utils/getTokoDb.js'; // Fixed typo in the import path
+import dbToko from './utils/getTokoDb.js';
 
 let server;
 let pool;
@@ -10,7 +10,7 @@ let poolToko;
 beforeAll(async () => {
     await setPool('default');
     pool = await getPool();
-    server = await createTestServer();
+    server = app;
     poolToko = await dbToko();
     await pool.query("DELETE FROM nd_toko_barang_assignment");
     await pool.query("DELETE FROM nd_toko");
@@ -18,7 +18,6 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await server.close();
   await pool.end();
 });
 
@@ -27,24 +26,26 @@ describe('barangTokoResolver', () => {
 
   beforeAll(async () => {
     // Insert test data for toko and barang
-    const [tokoResult] = await pool.query('INSERT INTO nd_toko (name, alias) VALUES (?, ?)', ['Test Toko', 'test_alias']);
+    const [tokoResult] = await pool.query('INSERT INTO nd_toko (nama, alias) VALUES (?, ?)', ['Test Toko', 'test_alias']);
     tokoId = tokoResult.insertId;
 
-    const [barangResult] = await pool.query(`INSERT INTO nd_barang (nama_jual, satuan_id, status_aktif) VALUES (?)`, ['Test Barang',1]);
+    const [barangResult] = await pool.query(`INSERT INTO nd_barang (nama_jual, satuan_id, status_aktif) VALUES (?,?,?)`, ['Test Barang',1, 1]);
     barangId = barangResult.insertId;
   });
 
   afterAll(async () => {
     // Cleanup test data
+    await pool.query('start transaction');
     await pool.query('DELETE FROM nd_toko_barang_assignment WHERE toko_id = ?', [tokoId]);
     await pool.query('DELETE FROM nd_toko WHERE id = ?', [tokoId]);
     await pool.query('DELETE FROM nd_barang WHERE id = ?', [barangId]);
+    await pool.query('commit');
   });
 
   it('should fetch barangToko by toko_id', async () => {
     const query = `
       query GetBarangToko($toko_id: Int!) {
-        barangToko(toko_id: ${toko_id}) {
+        barangToko(toko_id: $toko_id) {
           toko_id
           barang_id
         }
@@ -95,6 +96,9 @@ describe('barangTokoResolver', () => {
       toko_id: tokoId,
       barang_id: barangId,
     });
+
+    const tokoResponse = await poolToko.query('SELECT * FROM nd_barang WHERE toko_id = ? AND barang_id = ?', [barangId]);
+
   });
 
   it('should fetch all barangToko', async () => {
