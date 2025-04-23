@@ -24,14 +24,15 @@ export const assignBarangToko = async (data) => {
             throw new Error('Barang not found');
         }
 
+        const nama_barang = barangRows[0].nama_jual;
+        const satuan_id = barangRows[0].satuan_id;
+
         const satuanQuery = `SELECT * FROM nd_satuan WHERE id=?`;
         const [satuanRows] = await pool.query(satuanQuery, [satuan_id]);
         if(satuanRows.length === 0){
             throw new Error('Satuan not found');
         }
 
-        const nama_barang = barangRows[0].nama_jual;
-        const satuan_id = barangRows[0].satuan_id;
         const nama_satuan = satuanRows[0].nama;
 
         const msg = {
@@ -49,7 +50,7 @@ export const assignBarangToko = async (data) => {
                 console.log(`response for ${correlationId}`, response);
                 if(response.status === 'success'){
                     console.log(' [.] ', response.message);
-                    assignAllBarangSKUToko(company, toko_id, barang_id, pool);
+                    assignAllBarangSKUToko(company, toko_id, barang_id, satuan_id, pool);
                 }else{
                     console.error(' [.] ', response.message);
                 }
@@ -77,7 +78,7 @@ export const assignBarangToko = async (data) => {
     }
 }
 
-export const assignAllBarangSKUToko = async (tokoAlias, toko_id, barang_id, pool) => {
+export const assignAllBarangSKUToko = async (tokoAlias, toko_id, barang_id, satuan_id, pool) => {
     const {connection} = await getRabbitMQ();
 
     if (typeof connection === 'undefined') 
@@ -104,12 +105,12 @@ export const assignAllBarangSKUToko = async (tokoAlias, toko_id, barang_id, pool
             SELECT sku.*, nd_warna.nama as warna_jual_master
             FROM (
                 SELECT *
-                FROM nd_barang_sku WHERE barang_id = ? LIMIT ?,?
+                FROM nd_barang_sku WHERE barang_id = ? AND satuan_id = ? LIMIT ?,?
             ) sku
             LEFT JOIN nd_warna ON sku.warna_id = nd_warna.id
             `;
 
-            const [rows] = await pool.query(query, [barang_id, offset, limit]); 
+            const [rows] = await pool.query(query, [barang_id, satuan_id, offset, limit]); 
             if(rows.length === 0){
                 hasRows = false;
                 return;
@@ -127,7 +128,7 @@ export const assignAllBarangSKUToko = async (tokoAlias, toko_id, barang_id, pool
             }
 
             
-            const msg = {company:tokoAlias, barang_id:barang_id, data:[...rows]};
+            const msg = {company:tokoAlias, barang_id:barang_id, satuan_id, data:[...rows]};
             const correlationId = uuidv4();
     
             ch.consume(q.queue, function(msg) {
