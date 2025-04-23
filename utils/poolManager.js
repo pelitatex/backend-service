@@ -20,3 +20,17 @@ export const getPool = (tenant = 'default') => {
   }
   return _pools[tenant];
 };
+
+export const closeAllPools = async () => {
+  console.log('Closing database connection pools...');
+  try {
+    for (const tenant in _pools) {
+      if (_pools[tenant]) {
+        await _pools[tenant].end();
+        console.log(`Connection pool for ${tenant} closed.`);
+      }
+    }
+  } catch (error) {
+    console.error('Error during graceful shutdown:', error);
+  }
+}

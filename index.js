@@ -12,7 +12,7 @@ import multer from 'multer';
 import { queryTransaction } from "./helpers/queryTransaction.js";
 import eSchema from "./graphql/index.js";
 import { publishExchange } from "./rabbitMQ/producers.js";
-import { setPool, getPool } from "./utils/poolManager.js";
+import { setPool, getPool, closeAllPools } from "./utils/poolManager.js";
 import compressImage from "./helpers/image_compress.js";
 import path from 'path';
 import fs from 'fs';
@@ -554,5 +554,16 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: err.message });
   });
   
+
+const gracefulShutdown = async () => {
+    console.log('shuttning down gracefully...');
+    closeAllPools();
+    console.log('All pools closed.');
+    process.exit(0);
+}   
+
+process.on('SIGINT', gracefulShutdown); // Listen for Ctrl+C
+process.on('SIGTERM', gracefulShutdown); // Listen for termination signal
+process.on('beforeExit', gracefulShutdown); // Listen for process exit
 
 export default app;

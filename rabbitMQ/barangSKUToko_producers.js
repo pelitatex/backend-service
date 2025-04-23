@@ -24,14 +24,22 @@ export const assignBarangToko = async (data) => {
             throw new Error('Barang not found');
         }
 
+        const satuanQuery = `SELECT * FROM nd_satuan WHERE id=?`;
+        const [satuanRows] = await pool.query(satuanQuery, [satuan_id]);
+        if(satuanRows.length === 0){
+            throw new Error('Satuan not found');
+        }
+
         const nama_barang = barangRows[0].nama_jual;
         const satuan_id = barangRows[0].satuan_id;
+        const nama_satuan = satuanRows[0].nama;
 
         const msg = {
             company:company,
             barang_id:barang_id,
             satuan_id:satuan_id,
-            nama_barang:nama_barang
+            nama_barang:nama_barang,
+            nama_satuan:nama_satuan,
         };
         const correlationId = uuidv4();
 
