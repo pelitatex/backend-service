@@ -102,7 +102,7 @@ export const assignAllBarangSKUToko = async (tokoAlias, toko_id, barang_id, satu
         
         while(hasRows){
             const query = `
-            SELECT sku.*, nd_warna.nama as warna_jual_master
+            SELECT sku.*, nd_warna.warna_jual as warna_jual_master
             FROM (
                 SELECT *
                 FROM nd_barang_sku WHERE barang_id = ? AND satuan_id = ? LIMIT ?,?
