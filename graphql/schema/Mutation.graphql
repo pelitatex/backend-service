@@ -43,5 +43,6 @@ type Mutation {
     addDocument(input: AddDocumentInput!): Document
     updateDocument(id: ID!, input: UpdateDocumentInput!): Document
     uploadDocument(input: UploadDocumentInput!): [Document]
-    addBarangToko(input: AddBarangTokoInput!): InsertIdResponse
+    addBarangToko(input: AddBarangTokoInput!): InsertIdResponse,
+    confirmPenerimaanBarang(id: ID!, input: ConfirmPenerimaanBarangInput!): BlankResponse
 }

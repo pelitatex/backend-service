@@ -20,6 +20,8 @@ import barangSKUResolver from './resolvers/barangSKU.js';
 import barangTokoResolver from './resolvers/barangToko.js';
 import gudangResolver from './resolvers/gudang.js';
 
+import penerimaanBarangResolver from './resolvers/penerimaanBarang.js';
+
 
 const resolvers = _.merge(
     helloResolver,
@@ -36,7 +38,9 @@ const resolvers = _.merge(
     barangResolver,
     barangSKUResolver,
     barangTokoResolver,
-    gudangResolver
+    gudangResolver,
+
+    penerimaanBarangResolver
 );
 
 // console.log('resolver', resolvers);
