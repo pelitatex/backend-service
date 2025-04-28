@@ -1,0 +1,8 @@
+type PenerimaanBarang {
+    id: ID!
+    tanggal: String!
+    no_plat: String!
+    jam_input: String!
+    nama_supplier: String!
+    supplier_id: ID!
+}
