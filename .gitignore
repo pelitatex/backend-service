@@ -26,7 +26,7 @@ dist/
 
 # Optional: Environment variables
 .env
-.env.testing
+.env.test
 .env.production
 
 # mysql data

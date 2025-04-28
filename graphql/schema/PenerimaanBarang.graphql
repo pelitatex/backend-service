@@ -3,10 +3,8 @@ type PenerimaanBarang {
     tanggal: String!
     no_plat: String!
     jam_input: String!
-    nama_supplier: String!
-    supplier_id: ID!
 }
 
-type ConfirmPenerimaanBarangInput {
+input ConfirmPenerimaanBarangInput {
     confirmationStatus: Boolean!
 }

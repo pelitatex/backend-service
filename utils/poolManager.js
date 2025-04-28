@@ -5,6 +5,7 @@ let _pools = {};
 export const setPool = async(tenant = 'default') => {
   try {
     if(!_pools[tenant]) {
+      console.log('Creating new pool for tenant:', tenant);
       _pools[tenant] = createPoolForTenant(tenant);
     }
     
