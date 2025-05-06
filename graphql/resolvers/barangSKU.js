@@ -27,17 +27,23 @@ const barangSKUResolver = {
       const pool = context.pool;
       const { barang_id, warna_id, satuan_id } = input;
 
+      console.log(input);
+
       const getNamaBarangQuery = 'SELECT nama_jual as nama FROM nd_barang WHERE id = ?';
       const [namaBarangRows] = await pool.query(getNamaBarangQuery, [barang_id]);
-      const nama = namaBarangRows[0].nama;
+      const nama = namaBarangRows.nama;
 
       const getWarnaJualQuery = 'SELECT warna_jual as nama_warna FROM nd_warna WHERE id = ?';
       const [warnaJualRows] = await pool.query(getWarnaJualQuery, [warna_id]);
-      const warna_jual = warnaJualRows[0].nama_warna;
+      const warna_jual = warnaJualRows.warna_jual;
+
       
       const getSatuanQuery = 'SELECT nama FROM nd_satuan WHERE id = ?';
       const [satuanRows] = await pool.query(getSatuanQuery, [satuan_id]);
-      const nama_satuan = satuanRows[0].nama;
+      const nama_satuan = satuanRows.nama;
+
+      console.log('nama_barang', nama);
+      console.log('warna_jual', warna_jual);
 
       const nama_jual = nama.toUpperCase()+' '+warna_jual.toUpperCase();
       const nama_barang = nama.toUpperCase()+' '+warna_jual.toUpperCase()+' '+nama_satuan.toUpperCase();

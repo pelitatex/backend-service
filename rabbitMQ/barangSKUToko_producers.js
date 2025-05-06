@@ -201,13 +201,14 @@ export const assignSingleBarangSKUToko = async (barang_sku_id, pool) => {
             throw new Error('Barang SKU not found');
         }
         const skuData = rowSKU[0];
+        barang_id = skuData.barang_id;
         const query = `SELECT toko.id as toko_id, toko.alias as company 
             FROM (
                 SELECT * FROM nd_toko_barang_assignment WHERE barang_id = ? 
             )sku_toko
             LEFT JOIN nd_toko toko ON sku_toko.toko_id = toko.id
-            GROUP BY toko_id
-            WHERE toko_id is not null `;
+            WHERE toko_id is not null 
+            GROUP BY toko_id`;
         const [rows] = await pool.query(query, [barang_id]);
         if(rows.length === 0){
             console.warn('Toko not found');
