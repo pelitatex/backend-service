@@ -190,7 +190,7 @@ export const assignSingleBarangSKUToko = async (barang_sku_id, pool) => {
         const q = await ch.assertQueue('', {exclusive:true});
 
         let barang_id = null;
-        const querySKU = `SELECT sku.*, nd_warna.nama as warna_jual_master
+        const querySKU = `SELECT sku.*, nd_warna.warna_jual as warna_jual_master
             FROM (
                 SELECT *
                 FROM nd_barang_sku WHERE id = ?

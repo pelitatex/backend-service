@@ -19,7 +19,7 @@ const getAlias = async (context, id) => {
 
 const penerimaanBarangResolver = {
   Query:{
-    penerimaanBarangById: handleResolverError(async(_,args, context)=>{
+    penerimaanBarangById: handleResolverError(async(_,args, context)=>{ 
       const alias = await getAlias(context, args.toko_id);
       const otherAppUrl = `${NODE2_URL}/penerimaan_barang_by_id/${alias}`;
       let rows = await axios.get(otherAppUrl,{params: {id: args.id}});
@@ -27,11 +27,13 @@ const penerimaanBarangResolver = {
       const responseData = rows?.data?.data || {};
   
       // Transform into the expected format
+
       const transformedData = {
         id: responseData.id || 0,
         tanggal: responseData.tanggal || '',
         no_plat: responseData.no_plat || '',
-        jam_input: responseData.jam_input || ''
+        jam_input: responseData.jam_input || '',
+        daftarBarang: responseData.daftarBarang || [],
       };
       
       return transformedData;
@@ -40,8 +42,23 @@ const penerimaanBarangResolver = {
     penerimaanBarangByTanggal: handleResolverError(async(_,args, context)=>{
       const alias = await getAlias(context, args.toko_id);
       const otherAppUrl = `${NODE2_URL}/penerimaan_barang_by_tanggal/${alias}`;
-      let rows = await axios.get(otherAppUrl,{params: {tanggal_start: args.tanggal_start, tanggal_start: args.tanggal_end}});
-      return rows;
+      let rows = await axios.get(otherAppUrl,{params: {tanggal_start: args.tanggal_start, tanggal_end: args.tanggal_end}});
+      
+      const responseData = rows?.data?.data || [];
+  
+      // Transform into the expected format
+
+      const transformedData =  responseData.map((item) =>{
+        return {
+          id: item.id || 0,
+          tanggal: item.tanggal || '',
+          no_plat: item.no_plat || '',
+          jam_input: item.jam_input || '',
+          daftarBarang: item.daftarBarang || [],
+        };
+      });
+
+      return transformedData;
 
     })
   },

@@ -3,6 +3,14 @@ type PenerimaanBarang {
     tanggal: String!
     no_plat: String!
     jam_input: String!
+    daftarBarang: [PenerimaanBarangDetail]
+}
+
+type PenerimaanBarangDetail {
+    nama_barang: String!
+    nama_warna: String!
+    qty: Float!
+    jumlah_roll: Int!
 }
 
 input ConfirmPenerimaanBarangInput {
