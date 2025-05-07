@@ -113,6 +113,12 @@ if(process.env.NODE_ENV !== 'test'){
     
     });
 
+    if(isAccessFromOffice){
+        if (!req.headers['x-api-key'] || req.headers['x-api-key'] !== API_KEY) {
+            isAccessFromOffice = false;
+        }
+    }
+
     if(!isAccessFromOffice){
         console.log('isAccessFromOffice', isAccessFromOffice);
 
