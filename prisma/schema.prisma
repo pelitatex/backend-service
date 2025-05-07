@@ -1,0 +1,315 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DB_URL")
+}
+
+model nd_barang {
+  id             Int        @id @default(autoincrement())
+  jenis_barang   String?    @default(dbgenerated("(POLYESTER)")) @db.VarChar(100)
+  nama_jual      String?    @db.VarChar(100)
+  satuan_id      Int?
+  qty_warning    Int        @default(500)
+  deskripsi_info String?    @db.VarChar(500)
+  status_aktif   Int?       @default(1)
+  tipe_qty       Boolean?   @default(true)
+  grade          String?    @db.VarChar(4)
+  bahan          String?    @db.VarChar(50)
+  fitur          String?    @db.VarChar(50)
+  tipe           String?    @db.VarChar(50)
+  created_at     DateTime   @default(now()) @db.DateTime(0)
+  updated_at     DateTime   @default(now()) @db.DateTime(0)
+  nd_satuan      nd_satuan? @relation(fields: [satuan_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "fk_barang_satuan")
+
+  @@unique([nama_jual, satuan_id], map: "nama_unik")
+  @@index([satuan_id], map: "fk_barang_satuan")
+  @@index([nama_jual], map: "nama_jual")
+}
+
+model nd_barang_bahan {
+  id           Int     @id @default(autoincrement())
+  nama         String  @default(dbgenerated("()")) @db.VarChar(50)
+  kode         String  @default(dbgenerated("()")) @db.VarChar(2)
+  keterangan   String? @db.VarChar(100)
+  status_aktif Int     @default(1) @db.TinyInt
+}
+
+model nd_barang_beli {
+  id           Int      @id @default(autoincrement())
+  nama         String?  @db.VarChar(100)
+  barang_id    Int?     @db.SmallInt
+  status_aktif Int?     @default(1) @db.TinyInt
+  created_at   DateTime @default(now()) @db.DateTime(0)
+  updated_at   DateTime @default(now()) @db.DateTime(0)
+
+  @@unique([nama, barang_id], map: "nama")
+}
+
+model nd_barang_fitur {
+  id           Int     @id @default(autoincrement())
+  nama         String  @unique(map: "nama") @default(dbgenerated("()")) @db.VarChar(50)
+  kode         String  @unique(map: "kode") @default(dbgenerated("()")) @db.VarChar(2)
+  keterangan   String? @db.VarChar(100)
+  status_aktif Int     @default(1) @db.TinyInt
+}
+
+model nd_barang_grade {
+  id           Int     @id @default(autoincrement())
+  nama         String  @unique(map: "nama") @default(dbgenerated("()")) @db.VarChar(50)
+  kode         String  @unique(map: "kode") @default(dbgenerated("()")) @db.VarChar(2)
+  keterangan   String? @db.VarChar(100)
+  status_aktif Int     @default(1) @db.TinyInt
+}
+
+model nd_barang_sku {
+  id           Int      @id @default(autoincrement())
+  sku_id       String   @unique(map: "sku_id") @default(dbgenerated("(0)")) @db.Char(36)
+  nama_barang  String   @default(dbgenerated("(0)")) @db.VarChar(100)
+  nama_jual    String   @default(dbgenerated("(0)")) @db.VarChar(100)
+  barang_id    Int      @default(0)
+  warna_id     Int      @default(0)
+  satuan_id    Int      @default(0)
+  status_aktif Int      @default(1) @db.TinyInt
+  created_at   DateTime @default(now()) @db.Timestamp(0)
+  updated_at   DateTime @default(now()) @db.Timestamp(0)
+
+  @@unique([barang_id, warna_id, satuan_id], map: "barang_unik")
+  @@index([barang_id], map: "barang_id")
+  @@index([warna_id], map: "barang_warna_id")
+}
+
+model nd_barang_tipe {
+  id           Int     @id @default(autoincrement())
+  nama         String  @unique(map: "nama") @default(dbgenerated("()")) @db.VarChar(50)
+  kode         String  @unique(map: "kode") @default(dbgenerated("()")) @db.VarChar(2)
+  keterangan   String? @db.VarChar(100)
+  status_aktif Int     @default(1) @db.TinyInt
+}
+
+model nd_customer {
+  id                   Int      @id @default(autoincrement())
+  customer_type_id     Boolean  @default(true)
+  nama                 String?  @db.VarChar(70)
+  alias                String   @db.VarChar(300)
+  alamat               String?  @db.VarChar(1000)
+  telepon              String?  @db.VarChar(200)
+  telepon1             String?  @db.VarChar(500)
+  telepon2             String?  @db.VarChar(50)
+  npwp                 String?  @db.VarChar(200)
+  nik                  String?  @db.VarChar(16)
+  kota                 String?  @db.VarChar(200)
+  provinsi             String?  @db.VarChar(100)
+  kode_pos             String?  @db.VarChar(20)
+  email                String?  @db.VarChar(200)
+  contact_person       String   @db.VarChar(500)
+  tempo_kredit         Int?     @db.TinyInt
+  warning_kredit       Int?     @db.TinyInt
+  limit_warning_type   Int?     @db.TinyInt
+  limit_amount         Int?
+  limit_atas           Int?
+  limit_warning_amount Int?
+  status_aktif         Boolean  @default(true)
+  img_link             String?  @db.VarChar(500)
+  npwp_link            String?  @db.VarChar(500)
+  ktp_link             String?  @db.VarChar(500)
+  medsos_link          String?  @db.VarChar(2000)
+  updated_at           DateTime @default(now()) @db.DateTime(0)
+  tipe_company         String?  @db.VarChar(3)
+  blok                 String   @default(dbgenerated("(-)")) @db.VarChar(100)
+  no                   String?  @default(dbgenerated("(-)")) @db.VarChar(100)
+  rt                   String   @default(dbgenerated("(000)")) @db.VarChar(4)
+  rw                   String   @default(dbgenerated("(000)")) @db.VarChar(4)
+  kecamatan            String   @default(dbgenerated("(-)")) @db.VarChar(100)
+  kelurahan            String   @default(dbgenerated("(-)")) @db.VarChar(100)
+  locked_status        Boolean  @default(true)
+  jenis_pekerjaan      String?  @db.VarChar(500)
+  jenis_produk         String?  @db.VarChar(500)
+  user_id              Int      @default(0) @db.TinyInt
+}
+
+model nd_department {
+  id           Int      @id @default(autoincrement())
+  kode         String   @db.VarChar(2)
+  nama         String   @db.VarChar(100)
+  status_aktif Int      @default(1)
+  created_at   DateTime @default(now()) @db.Timestamp(0)
+  updated_at   DateTime @default(now()) @db.Timestamp(0)
+
+  @@unique([kode, nama], map: "kode-nama")
+}
+
+model nd_document {
+  id                  Int       @id @default(autoincrement())
+  toko_id             Int       @default(0)
+  tanggal             DateTime? @db.Date
+  document_control_id Int       @default(0)
+  document_number_raw Int?
+  document_number     String?   @db.VarChar(50)
+  document_status     String    @db.VarChar(50)
+  judul               String    @default(dbgenerated("()")) @db.VarChar(100)
+  dari                String    @default(dbgenerated("()")) @db.VarChar(100)
+  kepada              String    @default(dbgenerated("()")) @db.VarChar(100)
+  keterangan          String    @default(dbgenerated("(0)")) @db.VarChar(3000)
+  penanggung_jawab    String    @default(dbgenerated("()")) @db.VarChar(50)
+  username            String    @default(dbgenerated("()")) @db.VarChar(50)
+  status_aktif        Int       @default(1) @db.TinyInt
+}
+
+model nd_document_control {
+  id            Int      @id @default(autoincrement())
+  department_id Int
+  tipe_dokumen  String?  @default(dbgenerated("()")) @db.VarChar(50)
+  no_kode       Int?     @db.SmallInt
+  kode          String   @db.VarChar(4)
+  nama          String   @db.VarChar(100)
+  keterangan    String?  @db.VarChar(100)
+  status_aktif  Int      @default(1)
+  created_at    DateTime @default(now()) @db.Timestamp(0)
+  updated_at    DateTime @default(now()) @db.Timestamp(0)
+
+  @@unique([kode, nama], map: "kode-nama")
+  @@index([department_id], map: "department_id")
+}
+
+model nd_gudang {
+  id              Int     @id @default(autoincrement())
+  nama            String? @unique(map: "nama") @db.VarChar(70)
+  lokasi          String? @db.VarChar(20)
+  status_default  Int     @default(0)
+  visible         Boolean @default(true)
+  gudang_group_id Int?    @db.SmallInt
+  urutan          Int
+  status_aktif    Int     @default(1)
+}
+
+model nd_posisi {
+  id      Int       @id @default(autoincrement())
+  name    String?   @db.VarChar(50)
+  nd_user nd_user[]
+}
+
+model nd_satuan {
+  id           Int         @id @default(autoincrement())
+  nama         String?     @unique(map: "nama") @db.VarChar(100)
+  status_aktif Int?        @default(1)
+  nd_barang    nd_barang[]
+}
+
+model nd_supplier {
+  id           Int     @id @default(autoincrement())
+  kode         String? @unique(map: "kode") @db.VarChar(2)
+  nama         String? @unique(map: "nama") @db.VarChar(70)
+  alamat       String? @db.VarChar(100)
+  telepon      String? @db.VarChar(50)
+  kota         String? @db.VarChar(100)
+  fax          String? @db.VarChar(50)
+  kode_pos     String? @db.VarChar(20)
+  nama_bank    String? @db.VarChar(200)
+  no_rek_bank  String? @db.VarChar(200)
+  email        String? @db.VarChar(70)
+  website      String? @db.VarChar(50)
+  status_aktif Int     @default(1)
+}
+
+model nd_toko {
+  id           Int     @id @default(autoincrement())
+  nama         String? @unique(map: "nama") @db.VarChar(70)
+  alias        String  @unique(map: "alias") @default(dbgenerated("()")) @db.VarChar(50)
+  alamat       String? @db.VarChar(100)
+  telepon      String? @db.VarChar(50)
+  email        String? @db.VarChar(100)
+  fax          String? @db.VarChar(100)
+  kota         String? @db.VarChar(20)
+  kode_pos     String? @db.VarChar(20)
+  NPWP         String? @unique(map: "NPWP") @db.VarChar(100)
+  pre_faktur   String? @db.VarChar(2)
+  kode_toko    String? @unique(map: "kode_toko") @db.VarChar(2)
+  status_aktif Int     @default(1)
+  nama_domain  String? @db.VarChar(100)
+  email_pajak  String? @db.VarChar(100)
+  index        Int?    @db.TinyInt
+}
+
+model nd_toko_barang_assignment {
+  id          Int       @id @default(autoincrement())
+  toko_id     Int       @default(0)
+  barang_id   Int       @default(0)
+  is_synced   Int       @default(0) @db.TinyInt
+  last_synced DateTime? @db.DateTime(0)
+  createdAt   DateTime  @default(now()) @db.DateTime(0)
+  updatedAt   DateTime  @default(now()) @db.DateTime(0)
+
+  @@unique([toko_id, barang_id], map: "toko_barang")
+}
+
+model nd_toko_user {
+  id              Int      @id @default(autoincrement())
+  toko_id         Int
+  user_id         Int
+  user_id_creator Int
+  created_at      DateTime @db.DateTime(0)
+  updated_at      DateTime @db.DateTime(0)
+}
+
+model nd_user {
+  id                Int        @id @default(autoincrement())
+  username          String?    @unique(map: "username") @db.VarChar(50)
+  password          String?    @db.VarChar(70)
+  roles             String?    @db.VarChar(70)
+  has_account       Int        @default(0) @db.TinyInt
+  nama              String?    @db.VarChar(70)
+  alamat            String?    @db.VarChar(100)
+  telepon           String?    @db.VarChar(50)
+  jenis_kelamin     String?    @db.VarChar(100)
+  kota_lahir        String?    @db.VarChar(100)
+  tgl_lahir         DateTime?  @db.Date
+  status_perkawinan String?    @db.VarChar(100)
+  jumlah_anak       Int?       @db.SmallInt
+  agama             String?    @db.VarChar(50)
+  nik               String?    @db.VarChar(50)
+  npwp              String?    @db.VarChar(50)
+  profile_picture   String?    @db.VarChar(200)
+  ktp_picture       String?    @db.VarChar(500)
+  npwp_picture      String?    @db.VarChar(500)
+  posisi_id         Int?
+  time_start        DateTime?  @default(dbgenerated("(07:00:00)")) @db.Time(0)
+  time_end          DateTime?  @default(dbgenerated("(18:00:00)")) @db.Time(0)
+  printer_list_id   Int?
+  status_aktif      Int?       @default(0)
+  PIN               String?    @db.VarChar(10)
+  created_at        DateTime   @default(now()) @db.DateTime(0)
+  updated_at        DateTime   @default(now()) @db.DateTime(0)
+  nd_posisi         nd_posisi? @relation(fields: [posisi_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "fk_user_posisi")
+
+  @@unique([username, nama], map: "username ifnull")
+  @@index([posisi_id], map: "fk_user_posisi")
+}
+
+model nd_warna {
+  id           Int     @id @default(autoincrement())
+  warna_beli   String? @db.VarChar(50)
+  warna_jual   String? @unique(map: "warna_jual") @db.VarChar(50)
+  kode_warna   String? @db.VarChar(7)
+  status_aktif Int     @default(1)
+}
+
+model query_log {
+  id          Int      @id @default(autoincrement())
+  table_name  String   @default(dbgenerated("()")) @db.VarChar(50)
+  affected_id Int      @default(0)
+  query       String   @default(dbgenerated("()")) @db.VarChar(500)
+  params      String   @default(dbgenerated("()")) @db.VarChar(3500)
+  username    String?  @db.VarChar(100)
+  timestamp   DateTime @default(now()) @db.DateTime(0)
+}
+
+model user_log {
+  id        Int      @id @default(autoincrement())
+  user_id   Int      @default(0)
+  activity  String   @default(dbgenerated("()")) @db.VarChar(200)
+  timestamp DateTime @default(now()) @db.DateTime(0)
+}

@@ -30,11 +30,12 @@
   "scripts": {
     "test": "vitest",
     "test:file": "set:NODE_ENV=test && vitest run"
-
   },
   "devDependencies": {
-    "vitest": "^3.0.9",
     "@vitest/ui": "^3.0.9",
-    "supertest": "^7.1.0"
+    "dotenv-cli": "^8.0.0",
+    "prisma": "^6.7.0",
+    "supertest": "^7.1.0",
+    "vitest": "^3.0.9"
   }
 }

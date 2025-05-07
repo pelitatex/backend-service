@@ -38,6 +38,9 @@ type Mutation {
     updateSatuan(id: ID!, input: UpdateSatuanInput!): Satuan
     addBarangSKU(input: AddBarangSKUInput!): BarangSKU
     updateBarangSKU(id: ID!, input: UpdateBarangSKUInput!): BarangSKU
+    """
+    - hanya generate tidak saved ke database
+    """
     generateBarangSKUBulk(input: BulkAddBarangSKUInput!): [GeneratedSKU]
     addGudang(input: AddGudangInput!): Gudang
     updateGudang(id: ID!, input: UpdateGudangInput!): Gudang
