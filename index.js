@@ -109,7 +109,7 @@ if(process.env.NODE_ENV !== 'test'){
             });
         } else {
             return res.status(500).send({error:`Invalid environment configuration`} );
-        }
+        }   
     
     });
 

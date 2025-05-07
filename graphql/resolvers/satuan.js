@@ -14,6 +14,8 @@ const satuanResolver = {
       const pool = context.pool;
       const query = 'SELECT * FROM nd_satuan';
       const [rows] = await pool.query(query);
+      console.log('rows', rows);
+
       return rows;
     })
   },
