@@ -25,6 +25,7 @@ process.env.TZ = 'UTC';
 const app = express();
 const PORT_GW = PORT_GATEWAY;
 const allowedCors = FRONTEND_URL.split(',');
+const allowedIPs = ALLOWED_IPS.split(',');
 
 const corsOptions= {
     origin: function (origin, callback) {
