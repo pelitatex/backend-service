@@ -17,8 +17,18 @@ input AddBarangSKUInput{
     status_aktif: Boolean!
 } 
 
+type GeneratedSKU {
+    sku_id: String!
+    nama_barang: String!
+    nama_jual: String!
+    barang_id: Int!
+    warna_id: Int!
+    satuan_id: Int!
+    status_aktif: Boolean!
+}
+
 input BulkAddBarangSKUInput{
-    barangSKU: [AddBarangSKUInput!]!
+    barangSKU: [AddBarangSKUInput]!
 }
 
 input UpdateBarangSKUInput{
