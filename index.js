@@ -56,6 +56,8 @@ let isAccessFromOffice = false;
 console.log('environment', process.env.NODE_ENV);
 if(process.env.NODE_ENV !== 'test'){
 
+    const allowedIPs = ALLOWED_IPS.split(',');
+
     if (allowedIPs.includes(clientIP) || trustedOrigins.includes(req.headers.origin)) {
         console.log(`Access granted to IP - ${clientIP}, Origin - ${req.headers.origin}`);
         isAccessFromOffice = true;
@@ -84,7 +86,6 @@ if(process.env.NODE_ENV !== 'test'){
     }
 
     app.use((req, res, next) => {
-        const allowedIPs = ALLOWED_IPS.split(',');
         let clientIP = req.headers['x-forwarded-for'] 
             ? req.headers['x-forwarded-for'].split(',')[0].trim() 
             : req.connection.remoteAddress;
