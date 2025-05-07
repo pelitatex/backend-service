@@ -113,6 +113,8 @@ if(process.env.NODE_ENV !== 'test'){
     });
 
     if(!isAccessFromOffice){
+        console.log('isAccessFromOffice', isAccessFromOffice);
+
         app.use(expressjwt({
             secret:TOKENSECRET,
             algorithms: ['HS256']
