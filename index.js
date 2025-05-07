@@ -56,34 +56,6 @@ let isAccessFromOffice = false;
 console.log('environment', process.env.NODE_ENV);
 if(process.env.NODE_ENV !== 'test'){
 
-    const allowedIPs = ALLOWED_IPS.split(',');
-
-    if (allowedIPs.includes(clientIP) || trustedOrigins.includes(req.headers.origin)) {
-        console.log(`Access granted to IP - ${clientIP}, Origin - ${req.headers.origin}`);
-        isAccessFromOffice = true;
-    }
-
-    if(isAccessFromOffice){
-        console.log('isAccessFromOfficeMode', isAccessFromOffice);
-        console.log('API key', req.headers['x-api-key']);
-        if (!req.headers['x-api-key'] || req.headers['x-api-key'] !== API_KEY) {
-            isAccessFromOffice = false;
-        }
-    }
-
-    if(isAccessFromOffice){
-        console.log('Granted from office', isAccessFromOffice);
-    }else{
-        console.log('isAccessFromOffice1', isAccessFromOffice);
-
-        app.use(expressjwt({
-            secret:TOKENSECRET,
-            algorithms: ['HS256']
-        })
-        .unless({
-            path:['/login','/graphql','/websocket']
-        }));
-    }
 
     app.use((req, res, next) => {
         let clientIP = req.headers['x-forwarded-for'] 
@@ -123,6 +95,7 @@ if(process.env.NODE_ENV !== 'test'){
             // In production, restrict to allowed IPs and trusted origins
             if (allowedIPs.includes(clientIP) || trustedOrigins.includes(req.headers.origin)) {
                 console.log(`Production Mode: Access granted to IP - ${clientIP}, Origin - ${req.headers.origin}`);
+                isAccessFromOffice = true;
                 next();
             } else {
                 console.error(`Production Mode: Access denied to IP - ${clientIP}, Origin - ${req.headers.origin}`);
@@ -140,8 +113,25 @@ if(process.env.NODE_ENV !== 'test'){
     
     });
 
+    if(isAccessFromOffice){
+        console.log('isAccessFromOfficeMode', isAccessFromOffice);
+        console.log('API key', req.headers['x-api-key']);
+        if (!req.headers['x-api-key'] || req.headers['x-api-key'] !== API_KEY) {
+            isAccessFromOffice = false;
+        }else{
+            console.log('Granted from office', isAccessFromOffice);
+        }
+    }else{
+        console.log('isAccessFromOffice1', isAccessFromOffice);
     
-
+        app.use(expressjwt({
+            secret:TOKENSECRET,
+            algorithms: ['HS256']
+        })
+        .unless({
+            path:['/login','/graphql','/websocket']
+        }));
+    }    
     
 }else{
     console.log('environment2', process.env.NODE_ENV);
