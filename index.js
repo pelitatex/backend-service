@@ -121,7 +121,7 @@ if(process.env.NODE_ENV !== 'test'){
     }
 
     if(!isAccessFromOffice){
-        console.log('isAccessFromOffice', isAccessFromOffice);
+        console.log('isAccessFromOffice1', isAccessFromOffice);
 
         app.use(expressjwt({
             secret:TOKENSECRET,
@@ -131,7 +131,7 @@ if(process.env.NODE_ENV !== 'test'){
             path:['/login','/graphql','/websocket']
         }));
     }else{
-        console.log('isAccessFromOffice', isAccessFromOffice);
+        console.log('isAccessFromOffice2', isAccessFromOffice);
     }
 }else{
     console.log('environment2', process.env.NODE_ENV);
