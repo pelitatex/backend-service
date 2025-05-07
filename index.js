@@ -55,14 +55,6 @@ let isAccessFromOffice = false;
 
 console.log('environment', process.env.NODE_ENV);
 if(process.env.NODE_ENV !== 'test'){
-    app.use(expressjwt({
-        secret:TOKENSECRET,
-        algorithms: ['HS256']
-    })
-    .unless({
-        path:['/login','/graphql','/websocket']
-    }));
-
     app.use((req, res, next) => {
         const allowedIPs = ALLOWED_IPS.split(',');
         let clientIP = req.headers['x-forwarded-for'] 
@@ -119,6 +111,18 @@ if(process.env.NODE_ENV !== 'test'){
         }
     
     });
+
+    if(!isAccessFromOffice){
+        app.use(expressjwt({
+            secret:TOKENSECRET,
+            algorithms: ['HS256']
+        })
+        .unless({
+            path:['/login','/graphql','/websocket']
+        }));
+    }else{
+        console.log('isAccessFromOffice', isAccessFromOffice);
+    }
 }else{
     console.log('environment2', process.env.NODE_ENV);
     isAccessFromOffice = true;
