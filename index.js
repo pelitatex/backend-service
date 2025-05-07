@@ -54,89 +54,88 @@ app.use(helmet());
 let isAccessFromOffice = false;
 
 console.log('environment', process.env.NODE_ENV);
-if(process.env.NODE_ENV !== 'test'){
+
+app.use((req, res, next) => {
+    let clientIP = req.headers['x-forwarded-for'] 
+        ? req.headers['x-forwarded-for'].split(',')[0].trim() 
+        : req.connection.remoteAddress;
+
+    if (clientIP.startsWith('::ffff:')) {
+        clientIP = clientIP.substring(7);
+    }
+    const trustedOrigins = FRONTEND_URL.split(',');
+    
+    const hostname = req.headers.origin ? new URL(req.headers.origin).hostname : '';
+    console.log(`Mode: ${clientIP}, ${hostname}`);
+
+    if(process.env.NODE_ENV === 'test'){
+        console.log('environment2', process.env.NODE_ENV);
+        isAccessFromOffice = true;
+        next();
+    }
 
 
-    app.use((req, res, next) => {
-        let clientIP = req.headers['x-forwarded-for'] 
-            ? req.headers['x-forwarded-for'].split(',')[0].trim() 
-            : req.connection.remoteAddress;
-    
-        if (clientIP.startsWith('::ffff:')) {
-            clientIP = clientIP.substring(7);
-        }
-        const trustedOrigins = FRONTEND_URL.split(',');
-        
-        const hostname = req.headers.origin ? new URL(req.headers.origin).hostname : '';
-        console.log(`Mode: ${clientIP}, ${hostname}`);
-    
-    
-        res.header('Access-Control-Allow-Origin', req.headers.origin); // Ensure this header is set
-        res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-        if (ENVIRONMENT === "development") {
-            // In development, allow all access
-            console.log(`Development Mode: Access granted to IP - ${clientIP}, Hostname - ${hostname}`);
+    res.header('Access-Control-Allow-Origin', req.headers.origin); // Ensure this header is set
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    if (ENVIRONMENT === "development") {
+        // In development, allow all access
+        console.log(`Development Mode: Access granted to IP - ${clientIP}, Hostname - ${hostname}`);
+        next();
+    } else if (ENVIRONMENT === "testing") {
+        // In testing, restrict access only to allowed IPs
+        if (allowedIPs.includes(clientIP) || hostname === "localhost" || trustedOrigins.includes(req.headers.origin)) {
+            console.log(`Testing Mode: Access granted to IP - ${clientIP}, Hostname - ${hostname} `);
             next();
-        } else if (ENVIRONMENT === "testing") {
-            // In testing, restrict access only to allowed IPs
-            if (allowedIPs.includes(clientIP) || hostname === "localhost" || trustedOrigins.includes(req.headers.origin)) {
-                console.log(`Testing Mode: Access granted to IP - ${clientIP}, Hostname - ${hostname} `);
-                next();
-            } else {
-                /* console.log(`Allowed IPs:`);
-                console.log(allowedIPs);
-                console.log(`clientIP:${clientIP}`);
-                console.log(`test: ${allowedIPs.includes(clientIP.toString().trim())}`);
-                console.error(`Testing Mode: Access denied to IP - ${clientIP}, Hostname - ${hostname}`); */
-                // return res.status(403).json({ error: 'Forbidden: IP not allowed in testing environment' });
-                return res.status(403).send( {error:`Forbidden: IP not allowed in testing environment`} );
-            }
-        }else if (ENVIRONMENT === "production") {
-            // In production, restrict to allowed IPs and trusted origins
-            if (allowedIPs.includes(clientIP) || trustedOrigins.includes(req.headers.origin)) {
-                console.log(`Production Mode: Access granted to IP - ${clientIP}, Origin - ${req.headers.origin}`);
-                isAccessFromOffice = true;
-                next();
-            } else {
-                console.error(`Production Mode: Access denied to IP - ${clientIP}, Origin - ${req.headers.origin}`);
-                
-                // return res.status(403).json({ error: 'Forbidden: Access denied in production environment' });
-                return res.status(403).send({error:`Request blocked`});
-            }
-        }else if (err.name === 'CorsError') {
-            return res.status(403).json({
-              error: 'CORS error: The origin is not allowed.'+error.message,
-            });
         } else {
-            return res.status(500).send({error:`Invalid environment configuration`} );
-        }   
-    
-    });
-
-    if(isAccessFromOffice){
-        console.log('isAccessFromOfficeMode', isAccessFromOffice);
-        console.log('API key', req.headers['x-api-key']);
-        if (!req.headers['x-api-key'] || req.headers['x-api-key'] !== API_KEY) {
-            isAccessFromOffice = false;
-        }else{
-            console.log('Granted from office', isAccessFromOffice);
+            /* console.log(`Allowed IPs:`);
+            console.log(allowedIPs);
+            console.log(`clientIP:${clientIP}`);
+            console.log(`test: ${allowedIPs.includes(clientIP.toString().trim())}`);
+            console.error(`Testing Mode: Access denied to IP - ${clientIP}, Hostname - ${hostname}`); */
+            // return res.status(403).json({ error: 'Forbidden: IP not allowed in testing environment' });
+            return res.status(403).send( {error:`Forbidden: IP not allowed in testing environment`} );
         }
+    }else if (ENVIRONMENT === "production") {
+        // In production, restrict to allowed IPs and trusted origins
+        if (allowedIPs.includes(clientIP) || trustedOrigins.includes(req.headers.origin)) {
+            console.log(`Production Mode: Access granted to IP - ${clientIP}, Origin - ${req.headers.origin}`);
+            isAccessFromOffice = true;
+            next();
+        } else {
+            console.error(`Production Mode: Access denied to IP - ${clientIP}, Origin - ${req.headers.origin}`);
+            
+            // return res.status(403).json({ error: 'Forbidden: Access denied in production environment' });
+            return res.status(403).send({error:`Request blocked`});
+        }
+    }else if (err.name === 'CorsError') {
+        return res.status(403).json({
+          error: 'CORS error: The origin is not allowed.'+error.message,
+        });
+    } else {
+        return res.status(500).send({error:`Invalid environment configuration`} );
+    }   
+
+});
+
+if(isAccessFromOffice){
+    console.log('isAccessFromOfficeMode', isAccessFromOffice);
+    console.log('API key', req.headers['x-api-key']);
+    if (!req.headers['x-api-key'] || req.headers['x-api-key'] !== API_KEY) {
+        isAccessFromOffice = false;
     }else{
-        console.log('isAccessFromOffice1', isAccessFromOffice);
-    
-        app.use(expressjwt({
-            secret:TOKENSECRET,
-            algorithms: ['HS256']
-        })
-        .unless({
-            path:['/login','/graphql','/websocket']
-        }));
-    }    
-    
+        console.log('Granted from office', isAccessFromOffice);
+    }
 }else{
-    console.log('environment2', process.env.NODE_ENV);
-    isAccessFromOffice = true;
-}
+    console.log('isAccessFromOffice1', isAccessFromOffice);
+
+    app.use(expressjwt({
+        secret:TOKENSECRET,
+        algorithms: ['HS256']
+    })
+    .unless({
+        path:['/login','/graphql','/websocket']
+    }));
+}    
 
 
 
