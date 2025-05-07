@@ -95,6 +95,7 @@ if(process.env.NODE_ENV !== 'test'){
             if (allowedIPs.includes(clientIP) || trustedOrigins.includes(req.headers.origin)) {
                 console.log(`Production Mode: Access granted to IP - ${clientIP}, Origin - ${req.headers.origin}`);
                 isAccessFromOffice = true;
+                console.log('isAccessFromOfficeMode', isAccessFromOffice);
                 next();
             } else {
                 console.error(`Production Mode: Access denied to IP - ${clientIP}, Origin - ${req.headers.origin}`);
