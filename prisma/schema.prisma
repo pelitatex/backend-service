@@ -10,11 +10,11 @@ datasource db {
 
 model nd_barang {
   id             Int        @id @default(autoincrement())
-  jenis_barang   String?    @default(dbgenerated("(POLYESTER)")) @db.VarChar(100)
+  jenis_barang   String?    @default("''") @db.VarChar(100)
   nama_jual      String?    @db.VarChar(100)
   satuan_id      Int?
   qty_warning    Int        @default(500)
-  
+
   deskripsi_info String?    @db.VarChar(500)
   status_aktif   Int?       @default(1)
   tipe_qty       Boolean?   @default(true)
@@ -33,8 +33,8 @@ model nd_barang {
 
 model nd_barang_bahan {
   id           Int     @id @default(autoincrement())
-  nama         String  @default(dbgenerated("()")) @db.VarChar(50)
-  kode         String  @default(dbgenerated("()")) @db.VarChar(2)
+  nama         String  @default(dbgenerated("''")) @db.VarChar(50)
+  kode         String  @default(dbgenerated("''")) @db.VarChar(2)
   keterangan   String? @db.VarChar(100)
   status_aktif Int     @default(1) @db.TinyInt
 }
@@ -52,25 +52,25 @@ model nd_barang_beli {
 
 model nd_barang_fitur {
   id           Int     @id @default(autoincrement())
-  nama         String  @unique(map: "nama") @default(dbgenerated("()")) @db.VarChar(50)
-  kode         String  @unique(map: "kode") @default(dbgenerated("()")) @db.VarChar(2)
+  nama         String  @unique(map: "nama") @default(dbgenerated("''")) @db.VarChar(50)
+  kode         String  @unique(map: "kode") @default(dbgenerated("''")) @db.VarChar(2)
   keterangan   String? @db.VarChar(100)
   status_aktif Int     @default(1) @db.TinyInt
 }
 
 model nd_barang_grade {
   id           Int     @id @default(autoincrement())
-  nama         String  @unique(map: "nama") @default(dbgenerated("()")) @db.VarChar(50)
-  kode         String  @unique(map: "kode") @default(dbgenerated("()")) @db.VarChar(2)
+  nama         String  @unique(map: "nama") @default(dbgenerated("''")) @db.VarChar(50)
+  kode         String  @unique(map: "kode") @default(dbgenerated("''")) @db.VarChar(2)
   keterangan   String? @db.VarChar(100)
   status_aktif Int     @default(1) @db.TinyInt
 }
 
 model nd_barang_sku {
   id           Int      @id @default(autoincrement())
-  sku_id       String   @unique(map: "sku_id") @default(dbgenerated("(0)")) @db.Char(36)
-  nama_barang  String   @default(dbgenerated("(0)")) @db.VarChar(100)
-  nama_jual    String   @default(dbgenerated("(0)")) @db.VarChar(100)
+  sku_id       String   @unique(map: "sku_id") @default(dbgenerated("''")) @db.Char(36)
+  nama_barang  String   @default(dbgenerated("''")) @db.VarChar(100)
+  nama_jual    String   @default(dbgenerated("''")) @db.VarChar(100)
   barang_id    Int      @default(0)
   warna_id     Int      @default(0)
   satuan_id    Int      @default(0)
@@ -85,8 +85,8 @@ model nd_barang_sku {
 
 model nd_barang_tipe {
   id           Int     @id @default(autoincrement())
-  nama         String  @unique(map: "nama") @default(dbgenerated("()")) @db.VarChar(50)
-  kode         String  @unique(map: "kode") @default(dbgenerated("()")) @db.VarChar(2)
+  nama         String  @unique(map: "nama") @default(dbgenerated("''")) @db.VarChar(50)
+  kode         String  @unique(map: "kode") @default(dbgenerated("''")) @db.VarChar(2)
   keterangan   String? @db.VarChar(100)
   status_aktif Int     @default(1) @db.TinyInt
 }
@@ -120,16 +120,16 @@ model nd_customer {
   medsos_link          String?  @db.VarChar(2000)
   updated_at           DateTime @default(now()) @db.DateTime(0)
   tipe_company         String?  @db.VarChar(3)
-  blok                 String   @default(dbgenerated("(-)")) @db.VarChar(100)
-  no                   String?  @default(dbgenerated("(-)")) @db.VarChar(100)
-  rt                   String   @default(dbgenerated("(000)")) @db.VarChar(4)
-  rw                   String   @default(dbgenerated("(000)")) @db.VarChar(4)
-  kecamatan            String   @default(dbgenerated("(-)")) @db.VarChar(100)
-  kelurahan            String   @default(dbgenerated("(-)")) @db.VarChar(100)
+  blok                 String   @default(dbgenerated("'-'")) @db.VarChar(100)
+  no                   String?  @default(dbgenerated("'-'")) @db.VarChar(100)
+  rt                   String   @default(dbgenerated("'000'")) @db.VarChar(4)
+  rw                   String   @default(dbgenerated("'000'")) @db.VarChar(4)
+  kecamatan            String   @default(dbgenerated("'-'")) @db.VarChar(100)
+  kelurahan            String   @default(dbgenerated("'-'")) @db.VarChar(100)
   locked_status        Boolean  @default(true)
   jenis_pekerjaan      String?  @db.VarChar(500)
   jenis_produk         String?  @db.VarChar(500)
-  user_id              Int      @default(0) @db.TinyInt
+  user_id              Int?
 }
 
 model nd_department {
@@ -151,19 +151,19 @@ model nd_document {
   document_number_raw Int?
   document_number     String?   @db.VarChar(50)
   document_status     String    @db.VarChar(50)
-  judul               String    @default(dbgenerated("()")) @db.VarChar(100)
-  dari                String    @default(dbgenerated("()")) @db.VarChar(100)
-  kepada              String    @default(dbgenerated("()")) @db.VarChar(100)
-  keterangan          String    @default(dbgenerated("(0)")) @db.VarChar(3000)
-  penanggung_jawab    String    @default(dbgenerated("()")) @db.VarChar(50)
-  username            String    @default(dbgenerated("()")) @db.VarChar(50)
+  judul               String    @default(dbgenerated("''")) @db.VarChar(100)
+  dari                String    @default(dbgenerated("''")) @db.VarChar(100)
+  kepada              String    @default(dbgenerated("''")) @db.VarChar(100)
+  keterangan          String    @default(dbgenerated("''")) @db.VarChar(3000)
+  penanggung_jawab    String    @default(dbgenerated("''")) @db.VarChar(50)
+  username            String    @default(dbgenerated("''")) @db.VarChar(50)
   status_aktif        Int       @default(1) @db.TinyInt
 }
 
 model nd_document_control {
   id            Int      @id @default(autoincrement())
   department_id Int
-  tipe_dokumen  String?  @default(dbgenerated("()")) @db.VarChar(50)
+  tipe_dokumen  String?  @default(dbgenerated("''")) @db.VarChar(50)
   no_kode       Int?     @db.SmallInt
   kode          String   @db.VarChar(4)
   nama          String   @db.VarChar(100)
@@ -219,7 +219,7 @@ model nd_supplier {
 model nd_toko {
   id           Int     @id @default(autoincrement())
   nama         String? @unique(map: "nama") @db.VarChar(70)
-  alias        String  @unique(map: "alias") @default(dbgenerated("()")) @db.VarChar(50)
+  alias        String  @unique(map: "alias") @default(dbgenerated("''")) @db.VarChar(50)
   alamat       String? @db.VarChar(100)
   telepon      String? @db.VarChar(50)
   email        String? @db.VarChar(100)
@@ -277,8 +277,8 @@ model nd_user {
   ktp_picture       String?    @db.VarChar(500)
   npwp_picture      String?    @db.VarChar(500)
   posisi_id         Int?
-  time_start        DateTime?  @default(dbgenerated("(07:00:00)")) @db.Time(0)
-  time_end          DateTime?  @default(dbgenerated("(18:00:00)")) @db.Time(0)
+  time_start        DateTime?  @default(dbgenerated("'07:00:00'")) @db.Time(0)
+  time_end          DateTime?  @default(dbgenerated("'18:00:00'")) @db.Time(0)
   printer_list_id   Int?
   status_aktif      Int?       @default(0)
   PIN               String?    @db.VarChar(10)
@@ -300,10 +300,10 @@ model nd_warna {
 
 model query_log {
   id          Int      @id @default(autoincrement())
-  table_name  String   @default(dbgenerated("()")) @db.VarChar(50)
+  table_name  String   @default(dbgenerated("''")) @db.VarChar(50)
   affected_id Int      @default(0)
-  query       String   @default(dbgenerated("()")) @db.VarChar(500)
-  params      String   @default(dbgenerated("()")) @db.VarChar(3500)
+  query       String   @default(dbgenerated("''")) @db.VarChar(500)
+  params      String   @default(dbgenerated("''")) @db.VarChar(3500)
   username    String?  @db.VarChar(100)
   timestamp   DateTime @default(now()) @db.DateTime(0)
 }
@@ -311,6 +311,6 @@ model query_log {
 model user_log {
   id        Int      @id @default(autoincrement())
   user_id   Int      @default(0)
-  activity  String   @default(dbgenerated("()")) @db.VarChar(200)
+  activity  String   @default(dbgenerated("''")) @db.VarChar(200)
   timestamp DateTime @default(now()) @db.DateTime(0)
 }

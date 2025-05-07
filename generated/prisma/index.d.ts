@@ -9789,7 +9789,7 @@ export namespace Prisma {
     locked_status: boolean
     jenis_pekerjaan: string | null
     jenis_produk: string | null
-    user_id: number
+    user_id: number | null
     _count: Nd_customerCountAggregateOutputType | null
     _avg: Nd_customerAvgAggregateOutputType | null
     _sum: Nd_customerSumAggregateOutputType | null
@@ -9938,7 +9938,7 @@ export namespace Prisma {
       locked_status: boolean
       jenis_pekerjaan: string | null
       jenis_produk: string | null
-      user_id: number
+      user_id: number | null
     }, ExtArgs["result"]["nd_customer"]>
     composites: {}
   }
@@ -25624,7 +25624,7 @@ export namespace Prisma {
     locked_status?: BoolFilter<"nd_customer"> | boolean
     jenis_pekerjaan?: StringNullableFilter<"nd_customer"> | string | null
     jenis_produk?: StringNullableFilter<"nd_customer"> | string | null
-    user_id?: IntFilter<"nd_customer"> | number
+    user_id?: IntNullableFilter<"nd_customer"> | number | null
   }
 
   export type nd_customerOrderByWithRelationInput = {
@@ -25665,7 +25665,7 @@ export namespace Prisma {
     locked_status?: SortOrder
     jenis_pekerjaan?: SortOrderInput | SortOrder
     jenis_produk?: SortOrderInput | SortOrder
-    user_id?: SortOrder
+    user_id?: SortOrderInput | SortOrder
     _relevance?: nd_customerOrderByRelevanceInput
   }
 
@@ -25710,7 +25710,7 @@ export namespace Prisma {
     locked_status?: BoolFilter<"nd_customer"> | boolean
     jenis_pekerjaan?: StringNullableFilter<"nd_customer"> | string | null
     jenis_produk?: StringNullableFilter<"nd_customer"> | string | null
-    user_id?: IntFilter<"nd_customer"> | number
+    user_id?: IntNullableFilter<"nd_customer"> | number | null
   }, "id">
 
   export type nd_customerOrderByWithAggregationInput = {
@@ -25751,7 +25751,7 @@ export namespace Prisma {
     locked_status?: SortOrder
     jenis_pekerjaan?: SortOrderInput | SortOrder
     jenis_produk?: SortOrderInput | SortOrder
-    user_id?: SortOrder
+    user_id?: SortOrderInput | SortOrder
     _count?: nd_customerCountOrderByAggregateInput
     _avg?: nd_customerAvgOrderByAggregateInput
     _max?: nd_customerMaxOrderByAggregateInput
@@ -25800,7 +25800,7 @@ export namespace Prisma {
     locked_status?: BoolWithAggregatesFilter<"nd_customer"> | boolean
     jenis_pekerjaan?: StringNullableWithAggregatesFilter<"nd_customer"> | string | null
     jenis_produk?: StringNullableWithAggregatesFilter<"nd_customer"> | string | null
-    user_id?: IntWithAggregatesFilter<"nd_customer"> | number
+    user_id?: IntNullableWithAggregatesFilter<"nd_customer"> | number | null
   }
 
   export type nd_departmentWhereInput = {
@@ -27386,7 +27386,7 @@ export namespace Prisma {
     locked_status?: boolean
     jenis_pekerjaan?: string | null
     jenis_produk?: string | null
-    user_id?: number
+    user_id?: number | null
   }
 
   export type nd_customerUncheckedCreateInput = {
@@ -27427,7 +27427,7 @@ export namespace Prisma {
     locked_status?: boolean
     jenis_pekerjaan?: string | null
     jenis_produk?: string | null
-    user_id?: number
+    user_id?: number | null
   }
 
   export type nd_customerUpdateInput = {
@@ -27467,7 +27467,7 @@ export namespace Prisma {
     locked_status?: BoolFieldUpdateOperationsInput | boolean
     jenis_pekerjaan?: NullableStringFieldUpdateOperationsInput | string | null
     jenis_produk?: NullableStringFieldUpdateOperationsInput | string | null
-    user_id?: IntFieldUpdateOperationsInput | number
+    user_id?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type nd_customerUncheckedUpdateInput = {
@@ -27508,7 +27508,7 @@ export namespace Prisma {
     locked_status?: BoolFieldUpdateOperationsInput | boolean
     jenis_pekerjaan?: NullableStringFieldUpdateOperationsInput | string | null
     jenis_produk?: NullableStringFieldUpdateOperationsInput | string | null
-    user_id?: IntFieldUpdateOperationsInput | number
+    user_id?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type nd_customerCreateManyInput = {
@@ -27549,7 +27549,7 @@ export namespace Prisma {
     locked_status?: boolean
     jenis_pekerjaan?: string | null
     jenis_produk?: string | null
-    user_id?: number
+    user_id?: number | null
   }
 
   export type nd_customerUpdateManyMutationInput = {
@@ -27589,7 +27589,7 @@ export namespace Prisma {
     locked_status?: BoolFieldUpdateOperationsInput | boolean
     jenis_pekerjaan?: NullableStringFieldUpdateOperationsInput | string | null
     jenis_produk?: NullableStringFieldUpdateOperationsInput | string | null
-    user_id?: IntFieldUpdateOperationsInput | number
+    user_id?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type nd_customerUncheckedUpdateManyInput = {
@@ -27630,7 +27630,7 @@ export namespace Prisma {
     locked_status?: BoolFieldUpdateOperationsInput | boolean
     jenis_pekerjaan?: NullableStringFieldUpdateOperationsInput | string | null
     jenis_produk?: NullableStringFieldUpdateOperationsInput | string | null
-    user_id?: IntFieldUpdateOperationsInput | number
+    user_id?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type nd_departmentCreateInput = {
