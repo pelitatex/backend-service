@@ -38,6 +38,7 @@ type Mutation {
     updateSatuan(id: ID!, input: UpdateSatuanInput!): Satuan
     addBarangSKU(input: AddBarangSKUInput!): BarangSKU
     updateBarangSKU(id: ID!, input: UpdateBarangSKUInput!): BarangSKU
+    generateBarangSKUBulk(input: BulkAddBarangSKUInput!): [BarangSKU]
     addGudang(input: AddGudangInput!): Gudang
     updateGudang(id: ID!, input: UpdateGudangInput!): Gudang
     addDocument(input: AddDocumentInput!): Document

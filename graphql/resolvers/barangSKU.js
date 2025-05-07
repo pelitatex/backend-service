@@ -4,6 +4,17 @@ import { queryLogger } from "../../helpers/queryTransaction.js";
 import handleResolverError from '../handleResolverError.js';
 import { assignSingleBarangSKUToko, assignSelectedBarangSKUToko } from '../../rabbitMQ/barangSKUToko_producers.js';
 
+function chunckArray(array, chunkSize) {
+  const result = [];
+  for (let i = 0; i < array.length; i += chunkSize) {
+    const {barang_id, warna_id, satuan_id} = array[i];
+    const chunk = array.slice(i, i + chunkSize);
+    result.push(chunk);
+  }
+  return result;
+}
+
+
 const barangSKUResolver = {
   Query:{
     barangSKU: handleResolverError(async(_,args, context)=>{
@@ -79,6 +90,106 @@ const barangSKUResolver = {
 
       return {id: insertedId, sku_id, nama_barang, nama_jual, barang_id, warna_id, satuan_id, status_aktif:1};
     }),
+    generateBarangSKUBulk: handleResolverError(async(_, {input}, context) => {
+      const pool = context.pool;
+      const { barang_id, warna_id, satuan_id } = input;
+      const inputLength = input.length;
+      if(inputLength > 3000){
+        throw new Error('Input array exceeds the maximum length of 5000 items.');
+      }
+      
+      let batchSize = 40;
+      
+      const chunkedInput = chunckArray(input, batchSize);
+      
+      const barangIdList = [];
+      const warnaIdList = [];
+      const satuanIdList = [];
+
+      const result = [];
+
+      for (const [index, chunk] of array.entries(chunkedInput.dataInput) ) {
+
+        barangIdList[index] = new Set();
+        warnaIdList[index] = new Set();
+        satuanIdList[index] = new Set();
+
+        for (const item of chunk) {
+          const { barang_id, warna_id, satuan_id } = item;
+          barangIdList[index].add(barang_id);
+          warnaIdList[index].add(warna_id);
+          satuanIdList[index].add(satuan_id);
+        }
+
+
+        const getNamaBarangQuery = 'SELECT nama_jual as nama FROM nd_barang WHERE id IN (?)';
+        const [namaBarangRows] = await pool.query(getNamaBarangQuery, [barangIdList[index]]);
+
+                
+        const getWarnaJualQuery = 'SELECT warna_jual as nama_warna FROM nd_warna WHERE id = ?';
+        const [warnaJualRows] = await pool.query(getWarnaJualQuery, [warnaIdList[index]]);
+        
+        const getSatuanQuery = 'SELECT nama FROM nd_satuan WHERE id = ?';
+        const [satuanRows] = await pool.query(getSatuanQuery, [satuanIdList[index]]);
+
+        
+        const daftarBarang = {};
+        const daftarWarna = {};
+        const daftarSatuan = {};
+
+
+        for (const row of namaBarangRows) {
+          daftarBarang[row.id] = row.nama_jual;
+        }
+
+        for (const row of warnaJualRows) {
+          daftarWarna[row.id] = row.warna_jual;
+        }
+
+        for (const row of satuanRows) {
+          daftarSatuan[row.id] = row.nama;
+        }
+        
+
+        /* const nama = namaBarangRows[0].nama;
+        const warna_jual = warnaJualRows[0].nama_warna;
+        const nama_satuan = satuanRows[0].nama; 
+  
+        const nama_jual = nama.toUpperCase()+' '+warna_jual.toUpperCase();
+        const nama_barang = nama.toUpperCase()+' '+warna_jual.toUpperCase()+' '+nama_satuan.toUpperCase();*/
+
+        chunk.Promise.all(chunk.map(async (item) => {
+          const { barang_id, warna_id, satuan_id } = item;
+          const nama = daftarBarang[barang_id].toUpperCase();
+          const warna_jual = daftarWarna[warna_id].toUpperCase();
+          const nama_satuan = daftarSatuan[satuan_id].toUpperCase();
+
+          const nama_jual = nama+' '+warna_jual;
+          const nama_barang = nama+' '+warna_jual+' '+nama_satuan;
+
+          const barangIdStr = String(barang_id).padStart(2, '0');
+          const warnaIdStr = String(warna_id).padStart(2, '0');
+          const satuanIdStr = String(satuan_id).padStart(2, '0');
+          const sixDigitIdentifier = barangIdStr + warnaIdStr + satuanIdStr;
+          const kode = uuidv4().substring(0, 13);
+          const sku_id = sixDigitIdentifier +'-'+ kode;
+
+          result.push({
+            sku_id:sku_id,
+            nama_barang:nama_barang,
+            nama_jual:nama_jual,
+            barang_id:barang_id,
+            warna_id:warna_id,
+            satuan_id:satuan_id,
+            status_aktif:1
+          });
+
+        }));
+      }
+
+      return result;
+    })
+      
     /* addBarangSKUBulk: handleResolverError(async(_, {input}, context) => {
       const pool = context.pool;
       

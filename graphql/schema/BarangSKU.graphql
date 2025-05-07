@@ -17,6 +17,10 @@ input AddBarangSKUInput{
     status_aktif: Boolean!
 } 
 
+input BulkAddBarangSKUInput{
+    barangSKU: [AddBarangSKUInput!]!
+}
+
 input UpdateBarangSKUInput{
     nama_barang: String!
     nama_jual: String
