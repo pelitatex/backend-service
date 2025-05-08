@@ -89,26 +89,12 @@ app.use((req, res, next) => {
             console.log(`Testing Mode: Access granted to IP - ${clientIP}, Hostname - ${hostname} `);
             next();
         } else {
-            /* console.log(`Allowed IPs:`);
-            console.log(allowedIPs);
-            console.log(`clientIP:${clientIP}`);
-            console.log(`test: ${allowedIPs.includes(clientIP.toString().trim())}`);
-            console.error(`Testing Mode: Access denied to IP - ${clientIP}, Hostname - ${hostname}`); */
-            // return res.status(403).json({ error: 'Forbidden: IP not allowed in testing environment' });
             return res.status(403).send( {error:`Forbidden: IP not allowed in testing environment`} );
         }
     }else if (ENVIRONMENT === "production") {
         // In production, restrict to allowed IPs and trusted origins
         if (allowedIPs.includes(clientIP) || trustedOrigins.includes(req.headers.origin)) {
             console.log(`Production Mode: Access granted to IP - ${clientIP}, Origin - ${req.headers.origin}`);
-            
-            console.log('isAccessFromOfficeMode', isAccessFromOffice);
-            console.log('API key', req.headers['x-api-key']);
-            if (req.headers['x-api-key'] && req.headers['x-api-key'] === API_KEY) {
-                isAccessFromMachine = true;
-            }else{
-                console.log('Rejected api key:', req.headers['x-api-key']);
-            }
             next();
         } else {
             console.error(`Production Mode: Access denied to IP - ${clientIP}, Origin - ${req.headers.origin}`);
