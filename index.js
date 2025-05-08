@@ -105,7 +105,7 @@ app.use((req, res, next) => {
 
             console.log('isAccessFromOfficeMode', isAccessFromOffice);
             console.log('API key', req.headers['x-api-key']);
-            if (!req.headers['x-api-key'] || req.headers['x-api-key'] !== API_KEY) {
+            if (req.headers['x-api-key'] && req.headers['x-api-key'] === API_KEY) {
                 isAccessFromMachine = true;
             }else{
                 console.log('Granted from office', isAccessFromOffice);
