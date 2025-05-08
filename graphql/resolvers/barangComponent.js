@@ -76,7 +76,7 @@ const barangComponentResolver = {
 const getBarangComponent = async (args, table, context) => {
     const pool = context.pool;
     if (!pool) {
-        console.log('context', pool);
+        //console.log('context', pool);
         throw new Error('Database pool not available in context.');
     }
     try {
@@ -92,13 +92,12 @@ const getBarangComponent = async (args, table, context) => {
 const getAllBarangComponent = async (table, context) => {
     const pool = context.pool;
     if (!pool) {
-        console.log('context', pool);
+        //console.log('context', pool);
         throw new Error('Database pool not available in context.');
     }
     try {
         const query = `SELECT * FROM nd_barang_${table}`;
         const [rows] = await pool.query(query);
-        console.log('result',rows);
         return rows;
     } catch (error) {
         console.error(error);

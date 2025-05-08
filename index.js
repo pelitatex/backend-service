@@ -101,6 +101,14 @@ app.use((req, res, next) => {
         if (allowedIPs.includes(clientIP) || trustedOrigins.includes(req.headers.origin)) {
             console.log(`Production Mode: Access granted to IP - ${clientIP}, Origin - ${req.headers.origin}`);
             isAccessFromOffice = true;
+
+            console.log('isAccessFromOfficeMode', isAccessFromOffice);
+            console.log('API key', req.headers['x-api-key']);
+            /* if (!req.headers['x-api-key'] || req.headers['x-api-key'] !== API_KEY) {
+                isAccessFromOffice = false;
+            }else{
+                console.log('Granted from office', isAccessFromOffice);
+            } */
             next();
         } else {
             console.error(`Production Mode: Access denied to IP - ${clientIP}, Origin - ${req.headers.origin}`);
@@ -119,24 +127,19 @@ app.use((req, res, next) => {
 });
 
 if(isAccessFromOffice){
-    console.log('isAccessFromOfficeMode', isAccessFromOffice);
-    console.log('API key', req.headers['x-api-key']);
-    if (!req.headers['x-api-key'] || req.headers['x-api-key'] !== API_KEY) {
-        isAccessFromOffice = false;
-    }else{
-        console.log('Granted from office', isAccessFromOffice);
-    }
 }else{
     console.log('isAccessFromOffice1', isAccessFromOffice);
-
-    app.use(expressjwt({
-        secret:TOKENSECRET,
-        algorithms: ['HS256']
-    })
-    .unless({
-        path:['/login','/graphql','/websocket']
-    }));
+    
 }    
+
+
+app.use(expressjwt({
+    secret:TOKENSECRET,
+    algorithms: ['HS256']
+})
+.unless({
+    path:['/login','/graphql','/websocket']
+}));
 
 
 
