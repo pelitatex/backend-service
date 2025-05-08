@@ -1,4 +1,4 @@
-import {FRONTEND_URL, PORT_GATEWAY, ENVIRONMENT, ALLOWED_IPS, NODE2_URL, TOKENSECRET} from "./config/loadEnv.js";
+import {FRONTEND_URL, PORT_GATEWAY, ENVIRONMENT, ALLOWED_IPS, NODE2_URL, TOKENSECRET, API_KEY} from "./config/loadEnv.js";
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
@@ -54,6 +54,7 @@ app.use(helmet());
 
 let isAccessFromOffice = false;
 let isAccessFromMachine = false;
+let jwtExceptionRoute = ['/login','/websocket'];
 
 console.log('environment', process.env.NODE_ENV);
 
@@ -67,7 +68,12 @@ app.use((req, res, next) => {
     }
     const trustedOrigins = FRONTEND_URL.split(',');
     
-    const hostname = req.headers.origin ? new URL(req.headers.origin).hostname : '';
+    try {
+        const hostname = req.headers.origin ? new URL(req.headers.origin).hostname : '';
+    } catch (error) {
+        console.error('Error parsing hostname:', error.message);
+        return res.status(400).send({error:`Invalid origin`});        
+    }
     console.log(`Mode: ${clientIP}, ${hostname}`);
 
     if(process.env.NODE_ENV === 'test'){
@@ -79,6 +85,17 @@ app.use((req, res, next) => {
 
     res.header('Access-Control-Allow-Origin', req.headers.origin); // Ensure this header is set
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    
+    if (req.headers['x-api-key']) {
+        const apiKey = req.headers['x-api-key'];
+        if (apiKey === API_KEY) {
+            isAccessFromMachine = true;
+            jwtExceptionRoute.push('/graphql');
+        } else {
+            console.log('Invalid API Key');
+        }
+    } 
+
     if (ENVIRONMENT === "development") {
         // In development, allow all access
         console.log(`Development Mode: Access granted to IP - ${clientIP}, Hostname - ${hostname}`);
@@ -117,17 +134,9 @@ app.use(expressjwt({
     algorithms: ['HS256']
 })
 .unless({
-    path:['/login','/graphql','/websocket']
+    path:jwtExceptionRoute
 }));
 
-if(!isAccessFromOffice || !isAccessFromMachine){
-    console.log('isAccessFromOffice0', isAccessFromOffice, isAccessFromMachine);
-
-
-}else{
-    console.log('isAccessFromOffice1', isAccessFromOffice, isAccessFromMachine);
-    
-}
 
 
 (async () => {
