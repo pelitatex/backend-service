@@ -67,11 +67,6 @@ app.use((req, res, next) => {
         clientIP = clientIP.substring(7);
     }
     const trustedOrigins = FRONTEND_URL.split(',');
-    
-    let hostname = "";
-    hostname = req.headers.origin ? new URL(req.headers.origin).hostname : '';
-    
-    console.log(`Mode: ${clientIP}, ${hostname}`);
 
     if(process.env.NODE_ENV === 'test'){
         console.log('environment2', process.env.NODE_ENV);
@@ -83,15 +78,20 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', req.headers.origin); // Ensure this header is set
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
     
-    if (req.headers['x-api-key']) {
-        const apiKey = req.headers['x-api-key'];
-        if (apiKey === API_KEY) {
-            isAccessFromMachine = true;
-            jwtExceptionRoute.push('/graphql');
-        } else {
-            console.log('Invalid API Key');
+    let hostname = "";
+    hostname = req.headers.origin ? new URL(req.headers.origin).hostname : '';
+    const apiKey = req.headers['x-api-key'];
+
+    if (req.headers['x-api-key'] && apiKey === API_KEY) {
+        jwtExceptionRoute.push('/graphql');
+        isAccessFromMachine = true;
+    }else{
+        if (!req.headers.origin) {
+            console.error('Error parsing hostname:', error.message);
+            return res.status(400).send({error:`Invalid origin`});        
         }
-    } 
+        console.log(`Mode: ${clientIP}, ${hostname}`);
+    }
 
     if (ENVIRONMENT === "development") {
         // In development, allow all access
