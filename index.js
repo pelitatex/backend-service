@@ -108,7 +108,7 @@ app.use((req, res, next) => {
             if (req.headers['x-api-key'] && req.headers['x-api-key'] === API_KEY) {
                 isAccessFromMachine = true;
             }else{
-                console.log('Granted from office', isAccessFromOffice);
+                console.log('Rejected api key:', req.headers['x-api-key']);
             }
             next();
         } else {
@@ -127,7 +127,7 @@ app.use((req, res, next) => {
 
 });
 
-if(!isAccessFromOffice && !isAccessFromMachine){
+if(!isAccessFromOffice || !isAccessFromMachine){
     console.log('isAccessFromOffice0', isAccessFromOffice, isAccessFromMachine);
 
     app.use(expressjwt({
