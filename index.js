@@ -101,8 +101,7 @@ app.use((req, res, next) => {
         // In production, restrict to allowed IPs and trusted origins
         if (allowedIPs.includes(clientIP) || trustedOrigins.includes(req.headers.origin)) {
             console.log(`Production Mode: Access granted to IP - ${clientIP}, Origin - ${req.headers.origin}`);
-            isAccessFromOffice = true;
-
+            
             console.log('isAccessFromOfficeMode', isAccessFromOffice);
             console.log('API key', req.headers['x-api-key']);
             if (req.headers['x-api-key'] && req.headers['x-api-key'] === API_KEY) {
