@@ -68,12 +68,9 @@ app.use((req, res, next) => {
     }
     const trustedOrigins = FRONTEND_URL.split(',');
     
-    try {
-        const hostname = req.headers.origin ? new URL(req.headers.origin).hostname : '';
-    } catch (error) {
-        console.error('Error parsing hostname:', error.message);
-        return res.status(400).send({error:`Invalid origin`});        
-    }
+    let hostname = "";
+    hostname = req.headers.origin ? new URL(req.headers.origin).hostname : '';
+    
     console.log(`Mode: ${clientIP}, ${hostname}`);
 
     if(process.env.NODE_ENV === 'test'){
