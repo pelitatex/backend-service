@@ -80,6 +80,8 @@ app.use((req, res, next) => {
     
     let hostname = "";
     hostname = req.headers.origin ? new URL(req.headers.origin).hostname : '';
+    console.log(`Mode: ${clientIP}, ${hostname}`);
+
     const apiKey = req.headers['x-api-key'];
 
     if (req.headers['x-api-key'] && apiKey === API_KEY) {
@@ -87,10 +89,8 @@ app.use((req, res, next) => {
         isAccessFromMachine = true;
     }else{
         if (!req.headers.origin) {
-            console.error('Error parsing hostname:', error.message);
             return res.status(400).send({error:`Invalid origin`});        
         }
-        console.log(`Mode: ${clientIP}, ${hostname}`);
     }
 
     if (ENVIRONMENT === "development") {
