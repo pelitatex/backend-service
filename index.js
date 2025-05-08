@@ -127,16 +127,17 @@ app.use((req, res, next) => {
 
 });
 
+app.use(expressjwt({
+    secret:TOKENSECRET,
+    algorithms: ['HS256']
+})
+.unless({
+    path:['/login','/graphql','/websocket']
+}));
+
 if(!isAccessFromOffice || !isAccessFromMachine){
     console.log('isAccessFromOffice0', isAccessFromOffice, isAccessFromMachine);
 
-    app.use(expressjwt({
-        secret:TOKENSECRET,
-        algorithms: ['HS256']
-    })
-    .unless({
-        path:['/login','/graphql','/websocket']
-    }));
 
 }else{
     console.log('isAccessFromOffice1', isAccessFromOffice, isAccessFromMachine);
