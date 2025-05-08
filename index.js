@@ -53,6 +53,7 @@ app.use(morgan('dev'));
 app.use(helmet());
 
 let isAccessFromOffice = false;
+let isAccessFromMachine = false;
 
 console.log('environment', process.env.NODE_ENV);
 
@@ -104,11 +105,11 @@ app.use((req, res, next) => {
 
             console.log('isAccessFromOfficeMode', isAccessFromOffice);
             console.log('API key', req.headers['x-api-key']);
-            /* if (!req.headers['x-api-key'] || req.headers['x-api-key'] !== API_KEY) {
-                isAccessFromOffice = false;
+            if (!req.headers['x-api-key'] || req.headers['x-api-key'] !== API_KEY) {
+                isAccessFromMachine = true;
             }else{
                 console.log('Granted from office', isAccessFromOffice);
-            } */
+            }
             next();
         } else {
             console.error(`Production Mode: Access denied to IP - ${clientIP}, Origin - ${req.headers.origin}`);
@@ -126,21 +127,21 @@ app.use((req, res, next) => {
 
 });
 
-if(isAccessFromOffice){
+if(!isAccessFromOffice && !isAccessFromMachine){
+    console.log('isAccessFromOffice0', isAccessFromOffice, isAccessFromMachine);
+
+    app.use(expressjwt({
+        secret:TOKENSECRET,
+        algorithms: ['HS256']
+    })
+    .unless({
+        path:['/login','/graphql','/websocket']
+    }));
+
 }else{
-    console.log('isAccessFromOffice1', isAccessFromOffice);
+    console.log('isAccessFromOffice1', isAccessFromOffice, isAccessFromMachine);
     
-}    
-
-
-app.use(expressjwt({
-    secret:TOKENSECRET,
-    algorithms: ['HS256']
-})
-.unless({
-    path:['/login','/graphql','/websocket']
-}));
-
+}
 
 
 (async () => {
