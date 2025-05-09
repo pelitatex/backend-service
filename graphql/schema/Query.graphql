@@ -22,7 +22,7 @@ type Query{
     allSatuan: [Satuan]
     allCustomer(offset: Int = 0, limit: Int = 10, search:String = ""): [Customer]
     customer(id: ID!): Customer
-    supplier(id: ID!): Supplier        
+    supplier(id: ID!): Supplier
     allSupplier: [Supplier]
     toko(id: ID!): Toko
     allToko: [Toko]

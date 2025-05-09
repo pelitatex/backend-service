@@ -15,9 +15,19 @@ const barangResolver = {
         allBarang: handleResolverError(async (_, args, context) => {
             
             const pool = context.pool;
-            const { offset = 0, limit = 10 } = args; 
-            const query = `SELECT * FROM nd_barang LIMIT ? OFFSET ?`;
-            const [rows] = await pool.query(query, [limit, offset]);
+            const { offset = 0, limit = 10, search="" } = args;
+            let query = "";
+            let rows = [];
+
+            if (search != "") {
+                query = `SELECT * FROM nd_barang WHERE sku_id LIKE ? OR nama_jual LIKE ? OR nama_beli LIKE ? LIMIT ? OFFSET ?`;
+                const searchParam = `%${search}%`;
+                rows = await pool.query(query, [searchParam, searchParam, searchParam, limit, offset]);
+            } else {
+                query = `SELECT * FROM nd_barang LIMIT ? OFFSET ?`;
+                rows = await pool.query(query, [limit, offset]);
+            }
+            
             return rows;
             
         }),

@@ -12,9 +12,18 @@ const warnaResolver = {
     }),
     allWarna: handleResolverError(async(_,args, context)=>{
       const pool = context.pool;
-      const { offset = 0, limit = 10 } = args; 
-      const query = 'SELECT * FROM nd_warna LIMIT ? OFFSET ?';
-      const [rows] = await pool.query(query, [limit, offset]);
+      const { offset = 0, limit = 10, search="" } = args;
+      let query = "";
+      let rows = [];
+      
+      if (search != "") {
+        query = `SELECT * FROM nd_warna WHERE warna_jual LIKE ? OR warna_beli LIKE ? OR kode_warna LIKE ? LIMIT ? OFFSET ?`;
+        const searchParam = `%${search}%`;
+        [rows] = await pool.query(query, [searchParam, searchParam, searchParam, limit, offset]);
+      } else {
+        query = `SELECT * FROM nd_warna LIMIT ? OFFSET ?`;
+        [rows] = await pool.query(query, [limit, offset]);
+      }
       return rows;
     })
   },
