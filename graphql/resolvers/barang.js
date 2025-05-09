@@ -15,8 +15,9 @@ const barangResolver = {
         allBarang: handleResolverError(async (_, args, context) => {
             
             const pool = context.pool;
-            const query = `SELECT * FROM nd_barang`;
-            const [rows] = await pool.query(query);
+            const { offset = 0, limit = 10 } = args; 
+            const query = `SELECT * FROM nd_barang LIMIT ? OFFSET ?`;
+            const [rows] = await pool.query(query, [limit, offset]);
             return rows;
             
         }),

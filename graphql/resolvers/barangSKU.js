@@ -23,13 +23,13 @@ const barangSKUResolver = {
       const [rows] = await pool.query(query, [args.id]);
       return rows[0];
     }),
-    allBarangSKU: handleResolverError(async(_,args, context)=>{
+    allBarangSKU: handleResolverError(async(_, args, context) => {
       const pool = context.pool;
-      // context.useSatuanLoader = false;
-      const query = 'SELECT * FROM nd_barang_sku';
-      const [rows] = await pool.query(query);
-      return rows;
       
+      const { offset = 0, limit = 10 } = args; 
+      const query = 'SELECT * FROM nd_barang_sku LIMIT ? OFFSET ?';
+      const [rows] = await pool.query(query, [limit, offset]);
+      return rows;
     })
   },
   Mutation:{

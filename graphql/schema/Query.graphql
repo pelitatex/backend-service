@@ -11,13 +11,13 @@ type Query{
     tipe(id:Int!):BarangComponent
     allTipe: [BarangComponent]
     barangSKU(id: ID!): BarangSKU
-    allBarangSKU: [BarangSKU]
+    allBarangSKU(offset: Int = 0, limit: Int = 10): [BarangSKU]
     barangToko(toko_id: Int!): BarangToko
     allBarangToko: [BarangToko]
     barang(id: ID!): Barang
-    allBarang: [Barang]
+    allBarang(offset: Int = 0, limit: Int = 10): [Barang]
     warna(id: ID!): Warna
-    allWarna: [Warna]
+    allWarna(offset: Int = 0, limit: Int = 10): [Warna]
     satuan(id: ID!): Satuan
     allSatuan: [Satuan]
     allCustomer: [Customer]
