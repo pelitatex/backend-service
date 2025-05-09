@@ -19,7 +19,7 @@ const getAlias = async (context, id) => {
 
 const penerimaanBarangResolver = {
   Query:{
-    penerimaanBarangById: handleResolverError(async(_,args, context)=>{ 
+    penerimaanBarang: handleResolverError(async(_,args, context)=>{ 
       const alias = await getAlias(context, args.toko_id);
       const otherAppUrl = `${NODE2_URL}/penerimaan_barang_by_id/${alias}`;
       let rows = await axios.get(otherAppUrl,{params: {id: args.id}});

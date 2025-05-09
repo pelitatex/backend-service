@@ -51,6 +51,8 @@ const corsOptions= {
 app.use(cors(corsOptions)); 
 app.use(morgan('dev'));
 app.use(helmet());
+// Middleware to parse JSON bodies
+app.use(express.json());
 
 let isAccessFromOffice = false;
 let isAccessFromMachine = false;
@@ -180,8 +182,6 @@ app.get('/hello', (req, res) => {
     res.json({message: 'Request allowed'});
 });
 
-// Middleware to parse JSON bodies
-app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
 
