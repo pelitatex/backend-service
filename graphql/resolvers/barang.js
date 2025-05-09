@@ -22,10 +22,10 @@ const barangResolver = {
             if (search != "") {
                 query = `SELECT * FROM nd_barang WHERE sku_id LIKE ? OR nama_jual LIKE ? OR nama_beli LIKE ? LIMIT ? OFFSET ?`;
                 const searchParam = `%${search}%`;
-                rows = await pool.query(query, [searchParam, searchParam, searchParam, limit, offset]);
+                [rows] = await pool.query(query, [searchParam, searchParam, searchParam, limit, offset]);
             } else {
                 query = `SELECT * FROM nd_barang LIMIT ? OFFSET ?`;
-                rows = await pool.query(query, [limit, offset]);
+                [rows] = await pool.query(query, [limit, offset]);
             }
             
             return rows;
