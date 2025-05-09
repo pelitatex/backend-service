@@ -89,7 +89,7 @@ app.use((req, res, next) => {
         isAccessFromMachine = true;
     }else{
         if (!req.headers.origin) {
-            return res.status(400).send({error:`Invalid origin`});        
+            return res.status(400).send({error:`Invalid origin`});
         }
     }
 
@@ -130,8 +130,24 @@ app.use(expressjwt({
     secret:TOKENSECRET,
     algorithms: ['HS256']
 })
-.unless({
-    path:jwtExceptionRoute
+.unless((req) => {
+    if(jwtExceptionRoute.includes(req.path)){
+        return true;
+    }
+
+    if(req.path === '/graphql' && req.method === 'POST'){
+        try {
+            const body = req.body;
+            if(body && body.query && body.query.includes('mutation login')) {
+                console.log('login mutation');
+                return true;
+            }            
+        } catch (error) {
+            console.error('Error parsing GraphQL request:', error);
+        }
+    }
+
+
 }));
 
 
@@ -156,9 +172,7 @@ app.get('/uploads/customer/ids/:filename', (req, res) => {
         if (err) {
             res.status(404).json({ error: 'File not found' });
         }
-    });
-
-    
+    });    
 });
 
 app.get('/hello', (req, res) => {
