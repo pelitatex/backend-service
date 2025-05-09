@@ -25,10 +25,20 @@ const barangSKUResolver = {
     }),
     allBarangSKU: handleResolverError(async(_, args, context) => {
       const pool = context.pool;
-      
-      const { offset = 0, limit = 10 } = args; 
-      const query = 'SELECT * FROM nd_barang_sku LIMIT ? OFFSET ?';
-      const [rows] = await pool.query(query, [limit, offset]);
+
+      const { offset = 0, limit = 10, search="" } = args;
+      let condQuery = "";
+      let query = "";
+      let rows = [];
+
+      if(search !== "") {
+        query = 'SELECT * FROM nd_barang_sku WHERE (sku_id LIKE ? OR nama_barang LIKE ? OR nama_jual LIKE ?) LIMIT ? OFFSET ?';
+        [rows] = await pool.query(query, [`%${search}%`, `%${search}%`, `%${search}%`, limit, offset]);
+      }else{
+        query = 'SELECT * FROM nd_barang_sku LIMIT ? OFFSET ?';
+        [rows] = await pool.query(query, [limit, offset]);
+      }
+
       return rows;
     })
   },

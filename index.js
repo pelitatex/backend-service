@@ -133,12 +133,13 @@ app.use(expressjwt({
 .unless((req) => {
     if(jwtExceptionRoute.includes(req.path)){
         return true;
+        
     }
 
     if(req.path === '/graphql' && req.method === 'POST'){
         try {
             const body = req.body;
-            if(body && body.query && body.query.includes('mutation login')) {
+            if(body && body.query && body.query.toLowerCase().includes('mutation login')) {
                 console.log('login mutation');
                 return true;
             }            
