@@ -13,9 +13,20 @@ const customerResolver = {
     }),
     allCustomer: handleResolverError(async(_,args,context)=>{
       const pool = context.pool;
-      
-      const query = 'SELECT * FROM nd_customer';
-      const [rows] = await pool.query(query);
+
+      const { offset = 0, limit = 10, search="" } = args;
+      let query = "";
+      let rows = [];
+
+      if (search != "") {
+        query = `SELECT * FROM nd_customer WHERE nama LIKE ? OR nik LIKE ? OR npwp LIKE ? LIMIT ? OFFSET ?`;
+        const searchParam = `%${search}%`;
+        [rows] = await pool.query(query, [searchParam, searchParam, searchParam, limit, offset]);
+      } else {
+        query = `SELECT * FROM nd_customer LIMIT ? OFFSET ?`;
+        [rows] = await pool.query(query, [limit, offset]);
+      }
+
       return rows;
     })
   },
