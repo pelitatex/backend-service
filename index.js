@@ -70,11 +70,12 @@ app.use((req, res, next) => {
     }
     const trustedOrigins = FRONTEND_URL.split(',');
 
-    if(process.env.NODE_ENV === 'test'){
+    /* if(process.env.NODE_ENV === 'test'){
+        jwtExceptionRoute.push('/graphql');
         console.log('environment2', process.env.NODE_ENV);
         isAccessFromOffice = true;
         next();
-    }
+    } */
 
 
     res.header('Access-Control-Allow-Origin', req.headers.origin); // Ensure this header is set
@@ -99,7 +100,7 @@ app.use((req, res, next) => {
         // In development, allow all access
         console.log(`Development Mode: Access granted to IP - ${clientIP}, Hostname - ${hostname}`);
         next();
-    } else if (ENVIRONMENT === "testing") {
+    } else if (ENVIRONMENT === "test") {
         // In testing, restrict access only to allowed IPs
         if (allowedIPs.includes(clientIP) || hostname === "localhost" || trustedOrigins.includes(req.headers.origin)) {
             console.log(`Testing Mode: Access granted to IP - ${clientIP}, Hostname - ${hostname} `);
@@ -533,10 +534,10 @@ app.post('/upload-image/customer_ids', async (req, res) => {
     }
 }); */
 
-const MAX_RETRIES = 3;
 app.use(
     '/graphql',
     graphqlHTTP( async (req, res) => {
+        const MAX_RETRIES = 3;
         let xTenant = "default";
         /* if (req.headers['x-tenant']) {
             xTenant = req.headers['x-tenant'];

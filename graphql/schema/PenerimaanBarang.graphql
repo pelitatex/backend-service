@@ -1,18 +1,21 @@
 type PenerimaanBarang {
-    id: ID!
-    tanggal: String!
-    no_plat: String!
-    jam_input: String!
-    daftarBarang: [PenerimaanBarangDetail]
+    id: Int
+    no_plat: String
+    tanggal_input: String
+    daftar_barang: [PenerimaanBarangDetail]
 }
 
 type PenerimaanBarangDetail {
+    barang_sku_id: String!
+    barang_id: Int!
+    warna_id: Int!
+    satuan_id: Int!
     nama_barang: String!
-    nama_warna: String!
     qty: Float!
     jumlah_roll: Int!
 }
 
 input ConfirmPenerimaanBarangInput {
     confirmationStatus: Boolean!
+    
 }

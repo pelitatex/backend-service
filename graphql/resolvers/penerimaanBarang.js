@@ -3,6 +3,7 @@ import { queryLogger } from "../../helpers/queryTransaction.js";
 import handleResolverError from "../handleResolverError.js";
 import { NODE2_URL } from "../../config/loadEnv.js";
 import axios from "axios";
+import { response } from "express";
 
 const getAlias = async (context, id) => {
   try {
@@ -32,8 +33,8 @@ const penerimaanBarangResolver = {
         id: responseData.id || 0,
         tanggal: responseData.tanggal || '',
         no_plat: responseData.no_plat || '',
-        jam_input: responseData.jam_input || '',
-        daftarBarang: responseData.daftarBarang || [],
+        tanggal_input: responseData.tanggal_input || '',
+        daftar_barang: responseData.daftarBarang || [],
       };
       
       return transformedData;
@@ -43,21 +44,24 @@ const penerimaanBarangResolver = {
       const alias = await getAlias(context, args.toko_id);
       const otherAppUrl = `${NODE2_URL}/penerimaan_barang_by_tanggal/${alias}`;
       let rows = await axios.get(otherAppUrl,{params: {tanggal_start: args.tanggal_start, tanggal_end: args.tanggal_end}});
-      
-      const responseData = rows?.data?.data || [];
-  
-      // Transform into the expected format
 
-      const transformedData =  responseData.map((item) =>{
+      const responseData = rows?.data?.data || [];
+
+      
+      // Transform into the expected format
+      
+      console.log("responseData", responseData);
+      const transformedData =  responseData?.penerimaanBarang.map((item) =>{
+        console.log("daftarBarang", item.daftarBarang);
         return {
-          id: item.id || 0,
-          tanggal: item.tanggal || '',
+          id: item.penerimaan_barang_id || 0,
+          tanggal_input: item.tanggal_input || '',
           no_plat: item.no_plat || '',
-          jam_input: item.jam_input || '',
-          daftarBarang: item.daftarBarang || [],
+          daftar_barang: item.daftarBarang || [],
         };
       });
 
+        console.log("transformedData", transformedData);
       return transformedData;
 
     })

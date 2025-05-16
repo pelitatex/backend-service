@@ -35,5 +35,5 @@ type Query{
     department(id: ID!): Department
     allDepartment: [Department]
     penerimaanBarang(id: ID!, toko_id:Int!): PenerimaanBarang
-    penerimaanBarangByTanggal(toko_id:Int, tanggal_start: String!, tanggal_end:String!): PenerimaanBarang    
+    penerimaanBarangByTanggal(toko_id:Int, tanggal_start: String!, tanggal_end:String!): [PenerimaanBarang]    
 }
