@@ -15,7 +15,23 @@ type PenerimaanBarangDetail {
     jumlah_roll: Int!
 }
 
-enum PenerimaanBarangStatus {
+
+type PenerimaanBarangStatus {
+    id: Int
+    no_plat: String
+    tanggal_input: String
+    daftar_status: [PenerimaanBarangStatusList]
+}
+
+type PenerimaanBarangStatusList {
+    id: Int
+    penerimaan_barang_id: Int!
+    status_penerimaan: PenerimaanBarangStatusEnum!
+    createdAt: String
+
+}
+
+enum PenerimaanBarangStatusEnum {
     """
     - menunggu data dari gudang
     """
@@ -34,8 +50,9 @@ enum PenerimaanBarangStatus {
     FINISHED
 }
 
+
 input ConfirmPenerimaanBarangInput {
     toko_id: Int!
-    status: PenerimaanBarangStatus!
+    status_penerimaan: PenerimaanBarangStatusEnum!
     no_plat: String
 }
