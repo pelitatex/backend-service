@@ -34,6 +34,7 @@ type Query{
     allDocument(offset: Int = 0, limit: Int = 10, search:String = "", document_type_id:Int=0, departemen_id:Int=0): [Document]
     department(id: ID!): Department
     allDepartment: [Department]
+    penerimaanBarangStatus(id: ID!, toko_id:Int!): PenerimaanBarangStatus
     penerimaanBarang(id: ID!, toko_id:Int!): PenerimaanBarang
     penerimaanBarangByTanggal(toko_id:Int, tanggal_start: String!, tanggal_end:String!): [PenerimaanBarang]    
 }

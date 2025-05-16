@@ -16,10 +16,22 @@ type PenerimaanBarangDetail {
 }
 
 enum PenerimaanBarangStatus {
-    MENUNGGU_KONFIRMASI_GUDANG
+    """
+    - menunggu data dari gudang
+    """
+    MENUNGGU_DATA_GUDANG
+    """
+    - menunggu konfirmasi dari admin/akunting
+    """
     MENUNGGU_KONFIRMASI_ADMIN
-    COMPLETED
-    UNMATCH
+    """
+    - penerimaan barang sudah dikonfirmasi
+    """
+    SUDAH_KONFIRMASI
+    """
+    - menunggu pemindahan dari staging ke gudang
+    """
+    FINISHED
 }
 
 input ConfirmPenerimaanBarangInput {

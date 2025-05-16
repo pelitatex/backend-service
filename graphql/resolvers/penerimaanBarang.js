@@ -64,7 +64,19 @@ const penerimaanBarangResolver = {
         console.log("transformedData", transformedData);
       return transformedData;
 
-    })
+    }),
+    penerimaanBarangStatus: handleResolverError(async(_,args, context)=>{
+      const alias = await getAlias(context, args.toko_id);
+      const otherAppUrl = `${NODE2_URL}/penerimaan_barang_status/${alias}`;
+      let rows = await axios.get(otherAppUrl,{params: {status: args.status}});
+
+      const responseData = rows?.data?.data || [];
+
+      console.log("responseData", responseData);
+      const data = responseData?.penerimaanBarang || [];
+      return data;
+
+    }),
   },
   Mutation: {
     confirmPenerimaanBarang: handleResolverError(async (_, {id, input}, context) => {
@@ -76,7 +88,12 @@ const penerimaanBarangResolver = {
         status: status,
         no_plat: no_plat
       }});
-      return rows;
+
+      if (rows?.data?.status !== 'success') {
+        return true;
+      }else {
+        return false;
+      }
 
     }),
   }
