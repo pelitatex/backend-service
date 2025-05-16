@@ -68,9 +68,14 @@ const penerimaanBarangResolver = {
   },
   Mutation: {
     confirmPenerimaanBarang: handleResolverError(async (_, {id, input}, context) => {
-      const alias = await getAlias(context, args.toko_id);
-      const otherAppUrl = `${NODE2_URL}/penerimaan_barang_konfirmasi/${alias}`;
-      let rows = await axios.put(otherAppUrl,{params: {id:id, confirmationStatus: input.confirmationStatus}});
+      const {toko_id, status, no_plat} = input;
+      const alias = await getAlias(context, toko_id);
+      const otherAppUrl = `${NODE2_URL}/penerimaan_barang_update_status/${alias}`;
+      let rows = await axios.put(otherAppUrl,{params: {
+        id: id,
+        status: status,
+        no_plat: no_plat
+      }});
       return rows;
 
     }),

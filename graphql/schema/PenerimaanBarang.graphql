@@ -15,7 +15,15 @@ type PenerimaanBarangDetail {
     jumlah_roll: Int!
 }
 
+enum PenerimaanBarangStatus {
+    MENUNGGU_KONFIRMASI_GUDANG
+    MENUNGGU_KONFIRMASI_ADMIN
+    COMPLETED
+    UNMATCH
+}
+
 input ConfirmPenerimaanBarangInput {
-    confirmationStatus: Boolean!
-    
+    toko_id: Int!
+    status: PenerimaanBarangStatus!
+    no_plat: String
 }
