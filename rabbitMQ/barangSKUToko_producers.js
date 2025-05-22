@@ -47,9 +47,12 @@ export const assignBarangToko = async (data) => {
         ch.consume(q.queue, function(msg) {
             let response = msg.content.toString();
             if (msg.properties.correlationId === correlationId) {
+                const res = JSON.parse(response);
                 console.log(`response for ${correlationId}`, response);
-                if(response.status === 'success'){
-                    console.log(' [.] ', response.message);
+                console.log('status', res.status);
+                console.log('message', res.message);
+                console.log('params', company, toko_id, barang_id, satuan_id, pool);
+                if(res.status === 'success'){
                     assignAllBarangSKUToko(company, toko_id, barang_id, satuan_id, pool);
                 }else{
                     console.error(' [.] ', response.message);
@@ -79,6 +82,7 @@ export const assignBarangToko = async (data) => {
 }
 
 export const assignAllBarangSKUToko = async (tokoAlias, toko_id, barang_id, satuan_id, pool) => {
+    console.log('assignAllBarangSKUToko', tokoAlias, barang_id, satuan_id);
     const {connection} = await getRabbitMQ();
 
     if (typeof connection === 'undefined') 
@@ -135,10 +139,11 @@ export const assignAllBarangSKUToko = async (tokoAlias, toko_id, barang_id, satu
                 let response = msg.content.toString();
                 if (msg.properties.correlationId === correlationId) {
                     console.log(`response for ${correlationId}`, response);
-                    if(response.status === 'success'){
-                        console.log(`[.]  ${response.affectedRows} ditambahkan`);
+                    const res = JSON.parse(response);
+                    if(res.status === 'success'){
+                        console.log(`[.]  ${res.affectedRows} ditambahkan`);
                     }else{
-                        console.error(' [.] ', response.message);
+                        console.error(' [.] ', res.message);
                     }
                 }
             }, {noAck:true});

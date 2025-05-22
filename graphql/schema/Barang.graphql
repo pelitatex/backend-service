@@ -1,6 +1,5 @@
 type Barang {
     id: ID!
-    sku_id: Int
     nama_jual: String!
     satuan_id: Int
     jenis_barang: String
@@ -16,7 +15,6 @@ type Barang {
 }
 
 input AddBarangInput {
-    sku_id: Int
     nama_jual: String!
     nama_beli: String
     satuan_id: Int
@@ -31,7 +29,6 @@ input AddBarangInput {
 }
 
 input UpdateBarangInput {
-    sku_id: Int
     nama_jual: String!
     nama_beli: String
     satuan_id: Int

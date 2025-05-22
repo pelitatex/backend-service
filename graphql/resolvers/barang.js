@@ -20,7 +20,7 @@ const barangResolver = {
             let rows = [];
 
             if (search != "") {
-                query = `SELECT * FROM nd_barang WHERE sku_id LIKE ? OR nama_jual LIKE ? OR nama_beli LIKE ? LIMIT ? OFFSET ?`;
+                query = `SELECT * FROM nd_barang WHERE nama_jual LIKE ? OR nama_beli LIKE ? LIMIT ? OFFSET ?`;
                 const searchParam = `%${search}%`;
                 [rows] = await pool.query(query, [searchParam, searchParam, searchParam, limit, offset]);
             } else {
@@ -36,7 +36,6 @@ const barangResolver = {
         addBarang: handleResolverError(async (_, {input}, context) => {
             const pool = context.pool;
             const {
-                sku_id,
                 nama_jual,
                 nama_beli,
                 satuan_id,
@@ -52,11 +51,14 @@ const barangResolver = {
             } = input;
             
 
-            const query = `INSERT INTO nd_barang (sku_id, nama_jual, satuan_id, jenis_barang, grade, bahan, tipe, fitur, qty_warning, deskripsi_info, status_aktif) 
-                           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+            const query = `INSERT INTO nd_barang (nama_jual, satuan_id, jenis_barang, grade, 
+                            bahan, tipe, fitur, qty_warning, 
+                            deskripsi_info, status_aktif) 
+                           VALUES ( ?, ?, ?, ?, 
+                           ?, ?, ?, ?, 
+                           ?, ?)`;
 
             const params = [
-                sku_id,
                 nama_jual,
                 satuan_id,
                 jenis_barang,
@@ -83,7 +85,7 @@ const barangResolver = {
                 insertId = result.insertId;
     
                 if (nama_beli != '') {
-                    const queryBeli = `INSERT INTO nd_barang_beli (nama, barang_id, status_aktif ) VALUES (?, ?)`;
+                    const queryBeli = `INSERT INTO nd_barang_beli (nama, barang_id, status_aktif ) VALUES (?, ?, ?)`;
                     const [resultBeli] = await pool.query(queryBeli, [nama_beli, result.id, 1]);
                     if(resultBeli.affectedRows == 0){
                         throw new Error('Gagal Insert Barang Beli');
@@ -101,7 +103,6 @@ const barangResolver = {
             queryLogger(pool, `nd_barang`, insertId, query, params);
             
             return {id: insertId,
-                sku_id,
                 nama_jual,
                 nama_beli,
                 satuan_id,
@@ -119,7 +120,7 @@ const barangResolver = {
             const pool = context.pool;
             
             const {
-                sku_id, nama_jual, 
+                nama_jual, 
                 nama_beli,
                 satuan_id, jenis_barang,
                 grade, bahan, tipe, fitur,
@@ -127,13 +128,13 @@ const barangResolver = {
             } = input;
 
             const query = `UPDATE nd_barang 
-                           SET sku_id = ?, nama_jual = ?, satuan_id = ?, jenis_barang = ?, 
+                           SET nama_jual = ?, satuan_id = ?, jenis_barang = ?, 
                            grade = ?, bahan = ?, tipe = ?, fitur = ?, 
                            qty_warning = ?, deskripsi_info = ?, status_aktif = ? 
                            WHERE id = ?`;
             
             const params = [
-                sku_id, nama_jual, satuan_id, jenis_barang, 
+                nama_jual, satuan_id, jenis_barang, 
                 grade, bahan, tipe, fitur, 
                 qty_warning, deskripsi_info, status_aktif, 
                 id
@@ -155,7 +156,6 @@ const barangResolver = {
             }
 
             return {id,
-                sku_id,
                 nama_jual,
                 nama_beli:nama_beli,
                 satuan_id,
