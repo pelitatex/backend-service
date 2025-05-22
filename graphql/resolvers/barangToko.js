@@ -67,7 +67,7 @@ const barangTokoResolver = {
           pool: pool
         }
 
-        await assignBarangToko(dataRMQ);
+        await assignBarangToko(dataRMQ. resId);
       
         return {id:resId};
       } catch (error) {

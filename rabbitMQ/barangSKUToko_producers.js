@@ -1,7 +1,8 @@
 import {v4 as uuidv4} from 'uuid';
 import { getRabbitMQ } from './connection.js';
+import { last } from 'lodash';
 
-export const assignBarangToko = async (data) => {
+export const assignBarangToko = async (data, resId) => {
     const {connection} = await getRabbitMQ();
     if(typeof connection === 'undefined')
         throw new Error('No Connection');
@@ -53,7 +54,7 @@ export const assignBarangToko = async (data) => {
                 console.log('message', res.message);
                 console.log('params', company, toko_id, barang_id, satuan_id, pool);
                 if(res.status === 'success'){
-                    assignAllBarangSKUToko(company, toko_id, barang_id, satuan_id, pool);
+                    assignAllBarangSKUToko(company, toko_id, barang_id, satuan_id, pool, resId);
                 }else{
                     console.error(' [.] ', response.message);
                 }
@@ -81,7 +82,7 @@ export const assignBarangToko = async (data) => {
     }
 }
 
-export const assignAllBarangSKUToko = async (tokoAlias, toko_id, barang_id, satuan_id, pool) => {
+export const assignAllBarangSKUToko = async (tokoAlias, toko_id, barang_id, satuan_id, pool, resId) => {
     console.log('assignAllBarangSKUToko', tokoAlias, barang_id, satuan_id);
     const {connection} = await getRabbitMQ();
 
@@ -140,8 +141,21 @@ export const assignAllBarangSKUToko = async (tokoAlias, toko_id, barang_id, satu
                 if (msg.properties.correlationId === correlationId) {
                     console.log(`response for ${correlationId}`, response);
                     const res = JSON.parse(response);
+                    console.log('res', res);
                     if(res.status === 'success'){
-                        console.log(`[.]  ${res.affectedRows} ditambahkan`);
+                        console.log(`[.] sukses  ${res.affectedRows} ditambahkan`);
+                        let syncData = {
+                            is_synced: 1,
+                            last_synced: new Date(),
+                        }
+                        const querySync = `UPDATE nd_toko_barang_assignment SET ? WHERE id = ?`;
+                        pool.query(querySync, [syncData, resId], (err, result) => {
+                            if(err){
+                                console.error('Error updating sync data', err);
+                            }else{
+                                console.log('Sync data updated', result);
+                            }
+                        });
                     }else{
                         console.error(' [.] ', res.message);
                     }
