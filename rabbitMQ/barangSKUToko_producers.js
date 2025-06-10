@@ -76,6 +76,8 @@ export const assignBarangToko = async (data, resId) => {
                 }
             }
         );
+
+
     } catch (error) {
         console.error(error);
         throw error;

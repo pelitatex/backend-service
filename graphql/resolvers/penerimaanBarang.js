@@ -3,7 +3,7 @@ import { queryLogger } from "../../helpers/queryTransaction.js";
 import handleResolverError from "../handleResolverError.js";
 import { NODE2_URL } from "../../config/loadEnv.js";
 import axios from "axios";
-import { response } from "express";
+import axiosRetry from "axios-retry";
 
 const getAlias = async (context, id) => {
   try {
@@ -17,6 +17,16 @@ const getAlias = async (context, id) => {
     
   }
 }
+
+axiosRetry(axios, {
+  retries: 3, // Number of retries
+  retryDelay: (retryCount) => {
+    return retryCount * 1000; // Exponential backoff
+  },
+  retryCondition: (error) => {
+    return error.response.status === 500 || error.response.status === 503; // Retry on specific status codes
+  },
+});
 
 const penerimaanBarangResolver = {
   Query:{
