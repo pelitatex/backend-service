@@ -3,15 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <title>Pelitatex Documentation</title>
+    <style>
+        body {
+            background: #f6f8fa;
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            color: #222;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: #2d5be3;
+            letter-spacing: 1px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            gap: 2rem;
+        }
+        li {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            transition: box-shadow 0.2s;
+        }
+        li:hover {
+            box-shadow: 0 4px 16px rgba(45,91,227,0.12);
+        }
+        a {
+            display: block;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            color: #2d5be3;
+            font-weight: 500;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            transition: background 0.2s, color 0.2s;
+        }
+        a:hover {
+            background: #2d5be3;
+            color: #fff;
+        }
+    </style>
 </head>
 <body>
     <h1>Welcome to Pelitatex Documentation</h1>
     <ul>
         <li>
             <a href="chart/architecture-diagram.html">Architecture</a>
-            <a href="chart/flowdata-diagram.html">Flow Data</a>
-            <a href="chart/requirement.md">Requirement</a>
         </li>
+        <li><a href="chart/flowdata-diagram.html">Flow Data</a></li>
+        <li><a href="chart/requirement.md">Requirement</a></li>
     </ul>
 </body>
 </html>
