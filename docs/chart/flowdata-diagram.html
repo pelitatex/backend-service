@@ -1,0 +1,276 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Flowdata Diagram</title>
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+        <style>
+            html {
+                font-size: 16px;
+                line-height: 1.6;
+            }
+            body {
+                font-family: Arial, sans-serif;
+                margin: 20px;
+                max-width: fit-content;
+            }
+            h1 {
+                color: #333;
+            }
+            .diagram {
+                margin-top: 20px;
+                background-color: #f0f0f0;
+                border: 1px solid #ccc;
+                padding: 10px;
+                border-radius: 5px;
+            }
+
+            .section-title {
+                color: #555;
+                background-color: orange;
+                margin-top: 20px;
+                padding: 10px;
+            }
+
+            .flow {
+                margin: 40px 0px;
+            }
+            
+        </style>
+    </head>
+  <body>
+    <h1>Flow Data</h1>
+    <div>
+        Index
+        <ul>
+            <li><a href="#addCustomer">Menambah Customer Baru</a></li>
+            <li><a href="#updateCustomer">Memperbarui Data Customer</a></li>
+            <li><a href="#addBarang">Menambah Barang Baru</a></li>
+            <li><a href="#updateBarang">Memperbarui Data Barang</a></li>
+            <li><a href="#addBarangSKU">Menambah SKU Baru</a></li>
+            <li><a href="#assignBarangToko">Assign Barang Ke Toko</a></li>
+        </ul>
+    </div>
+    <div class="flow">
+        <h2 id="addCustomer" class="section-title">Menambah Customer Baru</h2>
+        <div class="diagram">
+            <pre class="mermaid">
+                sequenceDiagram
+                    participant Admin
+                    participant Frontend as Frontend (Vercel)
+                    participant BackendNew as Backend Baru (VPS2)
+                    participant ERP as ERP Lama (PHP - VPS1)
+                    participant DBNew as DB Integrasi (MySQL VPS2)
+                    participant DBERP as DB ERP (MySQL VPS1)
+    
+                    Admin->>Frontend: Tambah customer baru
+                    Frontend->>BackendNew: POST /graphql (createCustomer)
+                    BackendNew->>DBNew: Simpan customer
+    
+                    ERP->>BackendNew: GET /customers
+                    BackendNew-->>ERP: Daftar customer terbaru
+    
+                    ERP->>DBERP: Cek apakah customer ada
+                    alt Jika belum ada
+                    ERP->>DBERP: INSERT INTO customer
+                end
+                
+            </pre>
+            <p>Flow Data Diagram</p>
+        </div>
+    
+        <div>
+            <ol>
+                <li>Admin menambahkan customer melalui frontend → backend baru menyimpan ke DB integrasi (VPS2)</li>
+                <li>ERP lama (PHP) memanggil API ke backend baru saat user membuka form transaksi</li>
+                <li>Backend baru mengirimkan daftar customer terbaru</li>
+                <li>ERP lama mengecek apakah customer sudah ada di database lokal</li>
+                <li>Jika belum ada ERP sistem ERP lama menyimpan customer baru tersebut ke MySQL lokal</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="flow">
+        <h2 id="updateCustomer" class="section-title">Memperbarui Data Customer</h2>
+        <div class="diagram">
+            <pre class="mermaid">
+                sequenceDiagram
+                    participant Admin
+                    participant Frontend as Frontend (Vercel)
+                    participant BackendNew as Backend Baru (VPS2)
+                    participant LayerAPI as Layer API (Express + Prisma - VPS1)
+                    participant RabbitMQ as RabbitMQ (VPS2)
+                    participant DBLocal as MySQL Lokal (VPS1)
+    
+                    Admin->>Frontend: Update data customer
+                    Frontend->>BackendNew: POST /graphql (updateCustomer)
+                    BackendNew->>RabbitMQ: Kirim notifikasi perubahan customer
+                    LayerAPI->>RabbitMQ: Konsumsi notifikasi perubahan customer
+                    LayerAPI->>DBLocal: Update data customer di MySQL lokal
+            </pre>
+            <p>Flow Data Memperbarui Customer</p>
+        </div>
+
+        <div>
+            <ol>
+                <li>Admin memperbarui data customer melalui frontend → backend baru memperbarui di DB integrasi (VPS2)</li>
+                <li>Backend baru mengirim notifikasi dan data perubahan kepada RabbitMQ</li>
+                <li>LayerAPI mengkonsumsi data perubahan dari RabbitMQ</li>
+                <li>Layer API memperbarui data customer di MySQL lokal</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="flow">
+        <h2 id="addBarang" class="section-title">Menambah Barang Baru</h2>
+        <div class="diagram">
+            <pre class="mermaid">
+                sequenceDiagram
+                    participant Admin
+                    participant Frontend as Frontend (Vercel)
+                    participant BackendNew as Backend Baru (VPS2)
+                    participant DBNew as DB Integrasi (MySQL VPS2)
+    
+                    Admin->>Frontend: Tambah barang baru
+                    Frontend->>BackendNew: POST /graphql (createBarang)
+                    BackendNew->>DBNew: Simpan barang baru
+            </pre>
+            <p>Flow Data Menambah Barang Baru</p>
+        </div>
+
+        <div>
+            <ol>
+                <li>Admin menambahkan barang baru melalui frontend → backend baru menyimpan ke DB integrasi (VPS2)</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="flow">
+        <h2 class="section-title" id="updateBarang">Memperbarui Data Barang</h2>
+        <div class="diagram">
+            <pre class="mermaid">
+                sequenceDiagram
+                    participant Admin
+                    participant Frontend as Frontend (Vercel)
+                    participant BackendNew as Backend Baru (VPS2)
+                    participant LayerAPI as Layer API (Express + Prisma - VPS1)
+                    participant RabbitMQ as RabbitMQ (VPS2)
+                    participant DBLocal as MySQL Lokal (VPS1)
+    
+                    Admin->>Frontend: Update data barang
+                    Frontend->>BackendNew: POST /graphql (updateBarang)
+                    BackendNew->>RabbitMQ: Kirim notifikasi perubahan barang
+                    LayerAPI->>RabbitMQ: Konsumsi notifikasi perubahan barang
+                    LayerAPI->>DBLocal: Update data barang di MySQL lokal
+            </pre>
+            <p>Flow Data Memperbarui Barang</p>
+        </div>
+
+        <div>
+            <ol>
+                <li>Admin memperbarui data barang melalui frontend → backend baru memperbarui di DB integrasi (VPS2)</li>
+                <li>Backend baru mengecek barang ini di assign ke toko mana saja</li>
+                <li>Backend baru mengirim notifikasi perubahan barang kepada RabbitMQ</li>
+                <li>LayerAPI mengkonsumsi notifikasi perubahan dari RabbitMQ</li>
+                <li>Jika belum ada Layer API memperbarui data barang di MySQL lokal</li>
+            </ol>
+        </div>
+    </div>
+    
+
+    <div class="flow">
+        <h2 id="addBarangSKU" class="section-title">Menambah SKU Baru</h2>
+        <div class="diagram">
+            <pre class="mermaid">
+                sequenceDiagram
+                    participant Admin
+                    participant Frontend as Frontend (Vercel)
+                    participant BackendNew as Backend Baru (VPS2)
+                    participant LayerAPI as Layer API (Express + Prisma - VPS1)
+                    participant RabbitMQ as RabbitMQ (VPS2)
+                    participant DBLocal as MySQL Lokal (VPS1)
+    
+                    Admin->>Frontend: Tambah SKU baru
+                    Frontend->>BackendNew: POST /graphql (createSKU)
+                    BackendNew->>DBNew: Simpan SKU baru
+                    BackendNew->>RabbitMQ: Kirim notifikasi perubahan SKU
+                    LayerAPI->>RabbitMQ: Konsumsi notifikasi perubahan SKU
+                    LayerAPI->>DBLocal: Update data SKU di MySQL lokal
+            </pre>
+            <p>Flow Data Menambah SKU Baru</p>
+        </div>
+        
+        <div>
+            <ol>
+                <li>Admin menambahkan SKU baru untuk barang melalui frontend → backend baru menyimpan ke DB integrasi (VPS2)</li>
+                <li>Backend baru mengecek barang untuk SKU ini di assign ke toko mana saja</li>
+                <li>Backend baru mengirim notifikasi perubahan SKU kepada RabbitMQ</li>
+                <li>LayerAPI mengkonsumsi notifikasi perubahan dari RabbitMQ</li>
+                <li>Layer API memperbarui data SKU di MySQL lokal</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="flow">
+        <h2 id="assignBarangToko" class="section-title">Assign Barang Ke Toko</h2>
+        <div class="diagram">
+            <pre class="mermaid">
+                sequenceDiagram
+                    participant Admin
+                    participant Frontend
+                    participant Backend as Backend Baru (VPS2)
+                    participant MQ as RabbitMQ
+                    participant API as Layer API (VPS1)
+                    participant DBLocal as MySQL Lokal
+
+                    Admin->>Frontend: Input data toko & barang
+                    Frontend->>Backend: Kirim data (GraphQL/API)
+                    Backend->>DBLocal: Simpan ke DB Integrasi
+                    Backend->>MQ: Publish "new_store_item"
+
+                    API->>MQ: Consume "new_store_item"
+                    API->>DBLocal: Cek apakah data sudah ada
+                    alt Data belum ada
+                        API->>DBLocal: INSERT toko & barang
+                    end
+                    API-->>Backend: Kirim response success
+
+                    Backend->>MQ: Kirim daftar SKU (limit 50 per queue)
+                    API->>MQ: Consume SKU batch
+                    API->>DBLocal: Simpan SKU ke MySQL lokal
+                    API-->>Backend: Kirim response success
+
+                    alt Masih ada SKU
+                        Backend->>MQ: Kirim batch SKU berikutnya
+                        API->>MQ: Lanjut konsumsi SKU
+                    end
+
+            </pre>
+            <p>Flow Data Assign Barang Ke Toko</p>
+        </div>
+        <div>
+            <ol>
+                <li>Admin menggabungkan data toko dan barang melalui frontend. Data tersebut disimpan oleh backend baru ke dalam database integrasi (VPS2).</li>
+                <li>Backend baru mengirim notifikasi penambahan data toko dan barang ke RabbitMQ.</li>
+                <li>Layer API mengkonsumsi notifikasi tersebut dari RabbitMQ.</li>
+                <li>Layer API memeriksa apakah data toko dan barang sudah ada di database lokal.</li>
+                <li>Jika belum ada, Layer API menambahkan data toko dan barang ke MySQL lokal.</li>
+                <li>Layer API mengirim respons sukses ke backend baru.</li>
+                <li>Backend baru mengirim daftar SKU (maksimal 50 per antrian) melalui RabbitMQ.</li>
+                <li>Layer API mengkonsumsi data SKU dari RabbitMQ.</li>
+                <li>Layer API mengirim respons sukses ke backend baru.</li>
+                <li>Proses ini akan diulang jika masih terdapat data SKU yang belum dikirim.</li>
+            </ol>
+
+        </div>
+    </div>
+    
+
+    
+
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+  </body>
+</html>

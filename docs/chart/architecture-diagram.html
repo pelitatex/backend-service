@@ -1,0 +1,167 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Architecture Diagram</title>
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+        <style>
+            html {
+                font-size: 16px;
+                line-height: 1.6;
+            }
+            body {
+                font-family: Arial, sans-serif;
+                margin: 20px;
+                max-width: fit-content;
+            }
+            h1 {
+                color: #333;
+            }
+            .diagram {
+                margin-top: 20px;
+                background-color: #f0f0f0;
+                border: 1px solid #ccc;
+                padding: 10px;
+                border-radius: 5px;
+            }
+            
+        </style>
+    </head>
+  <body>
+    <h1>Architecture</h1>
+    <div class="diagram">
+        <pre class="mermaid">
+            graph TD
+            subgraph Vercel
+                Frontend[Frontend]
+            end
+    
+            subgraph VPS2
+                BackendCentral[Express + GraphQL]
+                DBCentral[MySQL]
+            end
+    
+            subgraph VPS1
+                DB1[(DB Toko 1)]
+                DB2[(DB Toko 2)]
+                DB3[(DB Toko 3)]
+                LayerAPI[API Layer - Express + Prisma]
+                ERP[ERP Lama - PHP + MySQL]
+            end
+    
+            subgraph InHouse
+                MobileBackend[Backend Mobile - Express]
+                LocalDB[Local DB Barcode]
+            end
+    
+            Frontend -->|GraphQL| BackendCentral
+            BackendCentral --> DBCentral
+    
+            BackendCentral -->|HTTP/API| LayerAPI
+            BackendCentral -->|RabbitMQ| LayerAPI
+    
+            LayerAPI --> DB1
+            LayerAPI --> DB2
+            LayerAPI --> DB3
+
+            ERP --> DB1
+            ERP --> DB2
+            ERP --> DB3
+    
+            MobileBackend --> LocalDB
+            MobileBackend -->|API| LayerAPI
+            
+        </pre>
+        <p>Diagram Architecture</p>
+    </div>
+
+    <div>
+        <p>
+            <h2> Overview</h2>
+
+            <h3>Physical Infrastructure</h3> 
+
+            <ol>
+                <li> <b>**VPS 1**</b>
+                    <ul>
+                        <li> Aplikasi ERP lama (Fullstack PHP + MySQL)</li>
+                        <li> Setiap perusahaan memiliki folder & database terpisah</li>
+                        <li> Tambahan: API layer (Express.js + Prisma) untuk mengambil data dari DB lama</li>
+                    </ul>
+                </li>
+                <ol><hr></ol>
+                <li> <b>**VPS 2**</b>
+                    <ul>
+                        <li> Backend baru (Express.js + GraphQL + MySQL)</li>
+                        <li> Satu base code & database untuk semua perusahaan</li>
+                        <li> Digunakan untuk integrasi data utama: customer, item, supplier</li>
+                        <li> Berkomunikasi dengan VPS1 via:
+                            <ul>
+                                <li>HTTP API</li>
+                                <li>RabbitMQ</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <ol><hr></ol>
+                <li><b>**Server In-House**</b>
+                    <ul>
+                        <li> Backend mobile (Express.js)</li>
+                        <li> Menyimpan dan mengirim data barcode</li>
+                        <li> Mengirim status barcode ke VPS1 via API</li>
+                    </ul>
+                </li>
+                <ol><hr></ol>
+                <li>
+                    <b>**Frontend (Vercel)**</b>
+                    <ul>
+                        <li> UI modern untuk pengguna ERP baru</li>
+                        <li> Terhubung ke VPS2 menggunakan GraphQL</li>
+                    </ul>
+                </li>
+
+            </ol>
+
+            <h3>Communication</h3> 
+
+            <ol>
+                <li> <b>**VPS1 ↔ VPS2**</b>
+                    <ul>
+                        <li>Integrasi data menggunakan HTTP API dan RabbitMQ</li>
+                        <li>RabbitMQ digunakan untuk mengirim pesan antar node</li>
+                    </ul>
+                </li>
+                <ol><hr></ol>
+                <li> <b>**VPS1 Internal Layer**</b>
+                    <ul>
+                        <li>Express.js API sebagai jembatan untuk mengakses DB ERP lama</li>
+                    </ul>
+                </li>
+                <ol><hr></ol>
+                <li> <b>**Frontend → VPS2**</b>
+                    <ul>
+                        <li>GraphQL API untuk komunikasi data</li>
+                    </ul>
+                </li>
+                <ol><hr></ol>
+                <li> <b>**In-House Server → VPS1**</b>
+                    <ul>
+                        <li>REST API untuk status barcode</li>
+                    </ul>
+                </li>
+            </ol>
+
+
+        </p>
+    </div>
+
+    
+
+    
+
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+  </body>
+</html>
