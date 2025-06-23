@@ -1,4 +1,4 @@
-<html>
+<html lang="id">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -49,6 +49,12 @@
             <li><a href="#updateBarang">Memperbarui Data Barang</a></li>
             <li><a href="#addBarangSKU">Menambah SKU Baru</a></li>
             <li><a href="#assignBarangToko">Assign Barang Ke Toko</a></li>
+            <li><a href="#addDepartment">Menambah Department Baru</a></li>
+            <li><a href="#updateDepartment">Memperbarui Data Department</a></li>
+            <li><a href="#addDocumentControl">Menambah Document Control Baru</a></li>
+            <li><a href="#updateDocumentControl">Memperbarui Data Document Control</a></li>
+            <li><a href="#createDocument">Membuat Dokumen Baru</a></li>
+            <li><a href="#updateDocument">Memperbarui Data Dokumen</a></li>
         </ul>
     </div>
     <div class="flow">
@@ -58,7 +64,7 @@
                 sequenceDiagram
                     participant Admin
                     participant Frontend as Frontend (Vercel)
-                    participant BackendNew as Backend Baru (VPS2)
+                    participant BackendNew as backend-service (VPS2)
                     participant ERP as ERP Lama (PHP - VPS1)
                     participant DBNew as DB Integrasi (MySQL VPS2)
                     participant DBERP as DB ERP (MySQL VPS1)
@@ -81,9 +87,9 @@
     
         <div>
             <ol>
-                <li>Admin menambahkan customer melalui frontend → backend baru menyimpan ke DB integrasi (VPS2)</li>
-                <li>ERP lama (PHP) memanggil API ke backend baru saat user membuka form transaksi</li>
-                <li>Backend baru mengirimkan daftar customer terbaru</li>
+                <li>Admin menambahkan customer melalui frontend → backend-service menyimpan ke DB integrasi (VPS2)</li>
+                <li>ERP lama (PHP) memanggil API ke backend-service saat user membuka form transaksi</li>
+                <li>backend-service mengirimkan daftar customer terbaru</li>
                 <li>ERP lama mengecek apakah customer sudah ada di database lokal</li>
                 <li>Jika belum ada ERP sistem ERP lama menyimpan customer baru tersebut ke MySQL lokal</li>
             </ol>
@@ -97,8 +103,8 @@
                 sequenceDiagram
                     participant Admin
                     participant Frontend as Frontend (Vercel)
-                    participant BackendNew as Backend Baru (VPS2)
-                    participant LayerAPI as Layer API (Express + Prisma - VPS1)
+                    participant BackendNew as backend-service (VPS2)
+                    participant LayerAPI as pelita_api (Express + Prisma - VPS1)
                     participant RabbitMQ as RabbitMQ (VPS2)
                     participant DBLocal as MySQL Lokal (VPS1)
     
@@ -113,10 +119,10 @@
 
         <div>
             <ol>
-                <li>Admin memperbarui data customer melalui frontend → backend baru memperbarui di DB integrasi (VPS2)</li>
-                <li>Backend baru mengirim notifikasi dan data perubahan kepada RabbitMQ</li>
+                <li>Admin memperbarui data customer melalui frontend → backend-service memperbarui di DB integrasi (VPS2)</li>
+                <li>Backend-service mengirim notifikasi dan data perubahan kepada RabbitMQ</li>
                 <li>LayerAPI mengkonsumsi data perubahan dari RabbitMQ</li>
-                <li>Layer API memperbarui data customer di MySQL lokal</li>
+                <li>pelita_api memperbarui data customer di MySQL lokal</li>
             </ol>
         </div>
     </div>
@@ -128,7 +134,7 @@
                 sequenceDiagram
                     participant Admin
                     participant Frontend as Frontend (Vercel)
-                    participant BackendNew as Backend Baru (VPS2)
+                    participant BackendNew as backend-service (VPS2)
                     participant DBNew as DB Integrasi (MySQL VPS2)
     
                     Admin->>Frontend: Tambah barang baru
@@ -140,7 +146,7 @@
 
         <div>
             <ol>
-                <li>Admin menambahkan barang baru melalui frontend → backend baru menyimpan ke DB integrasi (VPS2)</li>
+                <li>Admin menambahkan barang baru melalui frontend → backend-service menyimpan ke DB integrasi (VPS2)</li>
             </ol>
         </div>
     </div>
@@ -152,8 +158,8 @@
                 sequenceDiagram
                     participant Admin
                     participant Frontend as Frontend (Vercel)
-                    participant BackendNew as Backend Baru (VPS2)
-                    participant LayerAPI as Layer API (Express + Prisma - VPS1)
+                    participant BackendNew as backend-service (VPS2)
+                    participant LayerAPI as pelita_api (Express + Prisma - VPS1)
                     participant RabbitMQ as RabbitMQ (VPS2)
                     participant DBLocal as MySQL Lokal (VPS1)
     
@@ -168,11 +174,11 @@
 
         <div>
             <ol>
-                <li>Admin memperbarui data barang melalui frontend → backend baru memperbarui di DB integrasi (VPS2)</li>
-                <li>Backend baru mengecek barang ini di assign ke toko mana saja</li>
-                <li>Backend baru mengirim notifikasi perubahan barang kepada RabbitMQ</li>
+                <li>Admin memperbarui data barang melalui frontend → backend-service memperbarui di DB integrasi (VPS2)</li>
+                <li>backend-service mengecek barang ini di assign ke toko mana saja</li>
+                <li>backend-service mengirim notifikasi perubahan barang kepada RabbitMQ</li>
                 <li>LayerAPI mengkonsumsi notifikasi perubahan dari RabbitMQ</li>
-                <li>Jika belum ada Layer API memperbarui data barang di MySQL lokal</li>
+                <li>Jika belum ada pelita_api memperbarui data barang di MySQL lokal</li>
             </ol>
         </div>
     </div>
@@ -185,8 +191,8 @@
                 sequenceDiagram
                     participant Admin
                     participant Frontend as Frontend (Vercel)
-                    participant BackendNew as Backend Baru (VPS2)
-                    participant LayerAPI as Layer API (Express + Prisma - VPS1)
+                    participant BackendNew as backend-service (VPS2)
+                    participant LayerAPI as pelita_api (Express + Prisma - VPS1)
                     participant RabbitMQ as RabbitMQ (VPS2)
                     participant DBLocal as MySQL Lokal (VPS1)
     
@@ -202,11 +208,11 @@
         
         <div>
             <ol>
-                <li>Admin menambahkan SKU baru untuk barang melalui frontend → backend baru menyimpan ke DB integrasi (VPS2)</li>
-                <li>Backend baru mengecek barang untuk SKU ini di assign ke toko mana saja</li>
-                <li>Backend baru mengirim notifikasi perubahan SKU kepada RabbitMQ</li>
+                <li>Admin menambahkan SKU baru untuk barang melalui frontend → backend-service menyimpan ke DB integrasi (VPS2)</li>
+                <li>backend-service mengecek barang untuk SKU ini di assign ke toko mana saja</li>
+                <li>backend-service mengirim notifikasi perubahan SKU kepada RabbitMQ</li>
                 <li>LayerAPI mengkonsumsi notifikasi perubahan dari RabbitMQ</li>
-                <li>Layer API memperbarui data SKU di MySQL lokal</li>
+                <li>pelita_api memperbarui data SKU di MySQL lokal</li>
             </ol>
         </div>
     </div>
@@ -218,9 +224,9 @@
                 sequenceDiagram
                     participant Admin
                     participant Frontend
-                    participant Backend as Backend Baru (VPS2)
+                    participant Backend as backend-service (VPS2)
                     participant MQ as RabbitMQ
-                    participant API as Layer API (VPS1)
+                    participant API as pelita_api (VPS1)
                     participant DBLocal as MySQL Lokal
 
                     Admin->>Frontend: Input data toko & barang
@@ -250,21 +256,161 @@
         </div>
         <div>
             <ol>
-                <li>Admin menggabungkan data toko dan barang melalui frontend. Data tersebut disimpan oleh backend baru ke dalam database integrasi (VPS2).</li>
-                <li>Backend baru mengirim notifikasi penambahan data toko dan barang ke RabbitMQ.</li>
-                <li>Layer API mengkonsumsi notifikasi tersebut dari RabbitMQ.</li>
-                <li>Layer API memeriksa apakah data toko dan barang sudah ada di database lokal.</li>
-                <li>Jika belum ada, Layer API menambahkan data toko dan barang ke MySQL lokal.</li>
-                <li>Layer API mengirim respons sukses ke backend baru.</li>
-                <li>Backend baru mengirim daftar SKU (maksimal 50 per antrian) melalui RabbitMQ.</li>
-                <li>Layer API mengkonsumsi data SKU dari RabbitMQ.</li>
-                <li>Layer API mengirim respons sukses ke backend baru.</li>
+                <li>Admin menggabungkan data toko dan barang melalui frontend. Data tersebut disimpan oleh backend-service ke dalam database integrasi (VPS2).</li>
+                <li>backend-service mengirim notifikasi penambahan data toko dan barang ke RabbitMQ.</li>
+                <li>pelita_api mengkonsumsi notifikasi tersebut dari RabbitMQ.</li>
+                <li>pelita_api memeriksa apakah data toko dan barang sudah ada di database lokal.</li>
+                <li>Jika belum ada, pelita_api menambahkan data toko dan barang ke MySQL lokal.</li>
+                <li>pelita_api mengirim respons sukses ke backend-service.</li>
+                <li>backend-service mengirim daftar SKU (maksimal 50 per antrian) melalui RabbitMQ.</li>
+                <li>pelita_api mengkonsumsi data SKU dari RabbitMQ.</li>
+                <li>pelita_api mengirim respons sukses ke backend-service.</li>
                 <li>Proses ini akan diulang jika masih terdapat data SKU yang belum dikirim.</li>
             </ol>
 
         </div>
     </div>
+
+    <div class="flow">
+        <h2 id="addDepartment" class="section-title">Menambah Department Baru</h2>
+        <div class="diagram">
+            <pre class="mermaid">
+                sequenceDiagram
+                    participant Admin
+                    participant Frontend as Frontend (Vercel)
+                    participant BackendNew as backend-service (VPS2)
+                    participant DBNew as DB Integrasi (MySQL VPS2)
     
+                    Admin->>Frontend: Tambah department baru
+                    Frontend->>BackendNew: POST /graphql (createDepartment)
+                    BackendNew->>DBNew: Simpan department baru
+            </pre>
+            <p>Flow Data Menambah Department Baru</p>
+        </div>
+
+        <div>
+            <ol>
+                <li>Admin menambahkan department baru melalui frontend → backend-service menyimpan ke DB integrasi (VPS2)</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="flow">
+        <h2 id="updateDepartment" class="section-title">Memperbarui Data Department</h2>
+        <div class="diagram">
+            <pre class="mermaid">
+                sequenceDiagram
+                    participant Admin
+                    participant Frontend as Frontend (Vercel)
+                    participant BackendNew as backend-service (VPS2)
+    
+                    Admin->>Frontend: Update data department
+                    Frontend->>BackendNew: POST /graphql (updateDepartment)
+            </pre>
+            <p>Flow Data Memperbarui Department</p>
+        </div>
+
+        <div>
+            <ol>
+                <li>Admin memperbarui data department melalui frontend → backend-service memperbarui di DB integrasi (VPS2)</li>
+            </ol>
+        </div>
+    </div>
+    
+    <div class="flow">
+        <h2 id="addDocumentControl" class="section-title">Menambah Document Control Baru</h2>
+        <div class="diagram">
+            <pre class="mermaid">
+                sequenceDiagram
+                    participant Admin
+                    participant Frontend as Frontend (Vercel)
+                    participant BackendNew as backend-service (VPS2)
+                    participant DBNew as DB Integrasi (MySQL VPS2)
+    
+                    Admin->>Frontend: Tambah document control baru
+                    Frontend->>BackendNew: POST /graphql (createDocumentControl)
+                    BackendNew->>DBNew: Simpan document control baru
+            </pre>
+            <p>Flow Data Menambah Document Control Baru</p>
+        </div>
+
+        <div>
+            <ol>
+                <li>Admin menambahkan document control baru melalui frontend → backend-service menyimpan ke DB integrasi (VPS2)</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="flow">
+        <h2 id="updateDocumentControl" class="section-title">Memperbarui Data Document Control</h2>
+        <div class="diagram">
+            <pre class="mermaid">
+                sequenceDiagram
+                    participant Admin
+                    participant Frontend as Frontend (Vercel)
+                    participant BackendNew as backend-service (VPS2)
+                    participant DBNew as DB Integrasi (MySQL VPS2)
+    
+                    Admin->>Frontend: Update data document control
+                    Frontend->>BackendNew: POST /graphql (updateDocumentControl)
+                    BackendNew->>DBNew: Perbarui document control
+            </pre>
+            <p>Flow Data Memperbarui Document Control</p>
+        </div>
+        <div>
+            <ol>
+                <li>Admin memperbarui data document control melalui frontend → backend-service memperbarui di DB integrasi (VPS2)</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="flow">
+        <h2 id="createDocument" class="section-title">Membuat Dokumen Baru</h2>
+        <div class="diagram">
+            <pre class="mermaid">
+                sequenceDiagram
+                    participant Admin
+                    participant Frontend as Frontend (Vercel)
+                    participant BackendNew as backend-service (VPS2)
+                    participant DBNew as DB Integrasi (MySQL VPS2)
+    
+                    Admin->>Frontend: Buat document baru
+                    Frontend->>BackendNew: POST /graphql (createDocument)
+                    BackendNew->>DBNew: Simpan document baru
+            </pre>
+            <p>Flow Data Membuat Dokumen Baru</p>
+        </div>
+
+        <div>
+            <ol>
+                <li>Admin membuat document baru melalui frontend → backend-service menyimpan ke DB integrasi (VPS2)</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="flow">
+        <h2 id="updateDocument" class="section-title">Memperbarui Data Dokumen</h2>
+        <div class="diagram">
+            <pre class="mermaid">
+                sequenceDiagram
+                    participant Admin
+                    participant Frontend as Frontend (Vercel)
+                    participant BackendNew as backend-service (VPS2)
+                    participant DBNew as DB Integrasi (MySQL VPS2)
+    
+                    Admin->>Frontend: Update data dokumen
+                    Frontend->>BackendNew: POST /graphql (updateDocument)
+                    BackendNew->>DBNew: Perbarui data dokumen
+            </pre>
+            <p>Flow Data Memperbarui Dokumen</p>
+        </div>
+
+        <div>
+            <ol>
+                <li>Admin memperbarui data dokumen melalui frontend → backend-service memperbarui di DB integrasi (VPS2)</li>
+            </ol>
+        </div>
+    </div>
 
     
 

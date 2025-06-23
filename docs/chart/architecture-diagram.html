@@ -1,4 +1,4 @@
-<html>
+<html lang="id">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -37,15 +37,15 @@
             end
     
             subgraph VPS2
-                BackendCentral[Express + GraphQL]
+                BackendCentral[backend-service - Express + GraphQL]
                 DBCentral[MySQL]
             end
     
-            subgraph VPS1
+            subgraph VPS1m
                 DB1[(DB Toko 1)]
                 DB2[(DB Toko 2)]
                 DB3[(DB Toko 3)]
-                LayerAPI[API Layer - Express + Prisma]
+                LayerAPI[pelita_api - Express + Prisma]
                 ERP[ERP Lama - PHP + MySQL]
             end
     
@@ -151,6 +151,11 @@
                 </li>
             </ol>
 
+            <h3>Github Arsitektur Ini</h3>
+            <ol>
+                <li> <a href="https://github.com/pelitatex/backend-service">Backend Service</a> - Express + GraphQL</li>         
+                <li> <a href="https://github.com/astrobemo/pelita_api">Pelita API</a> - Express + Prisma</li>       
+            </ol>
 
         </p>
     </div>
